@@ -150,6 +150,7 @@
 <string name="settings_gesture_lock_screen_requires_accessibility">Nécessite l\'autorisation d\'accessibilité</string>
 <string name="accessibility_lock_screen_service_label">Quick Search</string>
 <string name="accessibility_lock_screen_service_description">Permet à Quick Search de verrouiller l’écran avec le geste de double appui sur l’écran d’accueil, de réagir aux appuis sur l’encoche, de s’ouvrir d’un balayage depuis le bord ou via un bouton flottant dans n’importe quelle application, et d’afficher SpeedBump pour les applications ouvertes en dehors de Quick Search. Il vérifie seulement quelle application est ouverte et ne lit pas le contenu de l’écran.</string>
+<string name="accessibility_service_stopped_hint">Android a arrêté le service d\'accessibilité de Quick Search. Désactivez-le puis réactivez-le dans les paramètres d\'accessibilité.</string>
 <string name="accessibility_permission_disclaimer_title">Avis relatif à l’autorisation d’accessibilité</string>
 <string name="accessibility_lock_screen_disclosure_message">Quick Search utilise l’accessibilité pour :\n\n• Activer le geste de double appui pour verrouiller l’écran.\n• Ouvrir Quick Search avec des gestes de balayage depuis le bord.\n• Ouvrir Quick Search avec le bouton flottant.\n• Exécuter des actions lorsque vous appuyez sur l’encoche.\n• Afficher SpeedBump lorsqu’une application avec SpeedBump est ouverte en dehors de Quick Search. Pour cela, il vérifie seulement quelle application est ouverte.\n\nIl ne lit, ne collecte, ne stocke et ne partage ni le contenu de votre écran ni aucune autre donnée personnelle.</string>
 <string name="settings_gesture_none">Aucun</string>
@@ -528,6 +529,12 @@
 <string name="file_extension_label">Fichiers .%s</string>
 <string name="file_info_modified">Dernière modification</string>
 <string name="file_info_path">Chemin</string>
+<string name="action_folder_info">Infos du dossier</string>
+<string name="file_info_contents">Contenu</string>
+<plurals name="file_info_item_count">
+    <item quantity="one">%d élément</item>
+    <item quantity="other">%d éléments</item>
+</plurals>
 <string name="file_path_sd_card">Carte SD</string>
 <string name="file_info_size">Taille</string>
 <string name="file_info_type">Type</string>
@@ -1198,19 +1205,19 @@
 <string name="widget_countdown_progress_hint">Indique la part du temps écoulée depuis que vous avez choisi la date.</string>
 <string name="widget_world_clock_widget_title">Widget d\'horloge mondiale</string>
 <string name="widget_world_clock_locations">Lieux</string>
-<string name="widget_world_clock_locations_hint">Jusqu\'à %1$d horloges, affichées de gauche à droite. Touchez un lieu pour le renommer.</string>
 <string name="widget_world_clock_add_location">Ajouter un lieu</string>
-<string name="widget_world_clock_search_hint">Rechercher une ville, un pays ou un fuseau horaire</string>
+<string name="widget_world_clock_search_hint">Rechercher un pays ou un fuseau horaire</string>
 <string name="widget_world_clock_no_results">Aucun lieu trouvé</string>
-<string name="widget_world_clock_label_hint">Nom sur le widget</string>
+<string name="widget_world_clock_edit_name">Modifier le nom de l\'horloge</string>
 <string name="widget_icon_center">Centré</string>
 <string name="widget_icon_left">Gauche</string>
 <string name="widget_icon_off">Désactivé</string>
 <string name="widget_loading_state">Chargement des paramètres du widget…</string>
 <string name="widget_mic_action_default">Par défaut</string>
 <string name="widget_mic_action_digital_assistant">Assistant</string>
-<string name="widget_mic_action_digital_assistant_limitation">En raison des limitations d\'Android, vous ne pouvez pas déclencher l\'assistant à moins que Google ne soit défini comme application d\'assistant numérique.</string>
-<string name="widget_mic_action_digital_assistant_link_phrase">l\'application d\'assistant numérique</string>
+<string name="widget_mic_action_digital_assistant_current">%1$s est actuellement défini comme votre assistant numérique, appuyez ici pour le modifier.</string>
+<string name="widget_mic_action_digital_assistant_none">Aucun assistant numérique n’est défini, appuyez ici pour en choisir un.</string>
+<string name="widget_mic_action_digital_assistant_tap_here">appuyez ici</string>
 <string name="widget_mic_icon">Icône Micro</string>
 <string name="widget_search_icon">Icône Recherche</string>
 <string name="widget_settings_title">Widget de recherche</string>

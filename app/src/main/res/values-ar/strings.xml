@@ -151,6 +151,7 @@
     <string name="settings_gesture_lock_screen_requires_accessibility">يتطلب إذن تسهيل الاستخدام</string>
     <string name="accessibility_lock_screen_service_label">Quick Search</string>
     <string name="accessibility_lock_screen_service_description">يتيح لتطبيق Quick Search قفل الشاشة بإيماءة النقر المزدوج على الشاشة الرئيسية، والاستجابة للنقر على النتوء، وفتحه بالسحب من الحافة أو بزر عائم في أي تطبيق، وعرض SpeedBump للتطبيقات التي تُفتح خارج Quick Search. يتحقق فقط من التطبيق المفتوح ولا يقرأ محتوى الشاشة.</string>
+    <string name="accessibility_service_stopped_hint">أوقف Android خدمة تسهيل الاستخدام في Quick Search. أوقفها ثم شغّلها مرة أخرى في إعدادات تسهيل الاستخدام.</string>
     <string name="accessibility_permission_disclaimer_title">إخلاء مسؤولية إذن إمكانية الوصول</string>
     <string name="accessibility_lock_screen_disclosure_message">يستخدم Quick Search ميزة إمكانية الوصول من أجل:\n\n• تفعيل إيماءة النقر المزدوج لقفل الشاشة.\n• فتح Quick Search باستخدام إيماءات السحب من الحافة.\n• فتح Quick Search باستخدام الزر العائم.\n• تنفيذ إجراءات عند النقر على النتوء.\n• عرض SpeedBump عند فتح تطبيق مفعّل له SpeedBump خارج Quick Search. ولهذا يتحقق فقط من التطبيق المفتوح.\n\nلا يقرأ محتوى شاشتك أو بياناتك الشخصية الأخرى ولا يجمعها أو يخزنها أو يشاركها.</string>
     <string name="settings_gesture_none">بلا</string>
@@ -529,6 +530,12 @@
     <string name="file_extension_label">ملفات .%s</string>
     <string name="file_info_modified">آخر تعديل</string>
     <string name="file_info_path">المسار</string>
+    <string name="action_folder_info">معلومات المجلد</string>
+    <string name="file_info_contents">المحتويات</string>
+    <plurals name="file_info_item_count">
+        <item quantity="one">%d عنصر</item>
+        <item quantity="other">%d عناصر</item>
+    </plurals>
     <string name="file_path_sd_card">بطاقة SD</string>
     <string name="file_info_size">الحجم</string>
     <string name="file_info_type">النوع</string>
@@ -1199,19 +1206,19 @@
     <string name="widget_countdown_progress_hint">يعرض مقدار ما مضى من الوقت منذ تعيين التاريخ.</string>
     <string name="widget_world_clock_widget_title">أداة الساعة العالمية</string>
     <string name="widget_world_clock_locations">المواقع</string>
-    <string name="widget_world_clock_locations_hint">حتى %1$d ساعات، تُعرض من اليسار إلى اليمين. انقر على موقع لإعادة تسميته.</string>
     <string name="widget_world_clock_add_location">إضافة موقع</string>
-    <string name="widget_world_clock_search_hint">ابحث عن مدينة أو بلد أو منطقة زمنية</string>
+    <string name="widget_world_clock_search_hint">ابحث عن دولة أو منطقة زمنية</string>
     <string name="widget_world_clock_no_results">لم يتم العثور على مواقع</string>
-    <string name="widget_world_clock_label_hint">الاسم على الأداة</string>
+    <string name="widget_world_clock_edit_name">تعديل اسم الساعة</string>
     <string name="widget_icon_center">توسيط</string>
     <string name="widget_icon_left">يسار</string>
     <string name="widget_icon_off">إيقاف</string>
     <string name="widget_loading_state">جارٍ تحميل إعدادات عنصر واجهة المستخدم…</string>
     <string name="widget_mic_action_default">الافتراضي</string>
     <string name="widget_mic_action_digital_assistant">المساعد</string>
-    <string name="widget_mic_action_digital_assistant_limitation">نظراً لقيود نظام Android، لا يمكنك تشغيل المساعد الرقمي ما لم يتم تعيين Google كتطبيق المساعد الرقمي الافتراضي.</string>
-    <string name="widget_mic_action_digital_assistant_link_phrase">تطبيق المساعد الرقمي</string>
+    <string name="widget_mic_action_digital_assistant_current">تم تعيين %1$s حاليًا كمساعدك الرقمي، اضغط هنا للتغيير.</string>
+    <string name="widget_mic_action_digital_assistant_none">لم يتم تعيين مساعد رقمي، اضغط هنا لتعيين واحد.</string>
+    <string name="widget_mic_action_digital_assistant_tap_here">اضغط هنا</string>
     <string name="widget_mic_icon">أيقونة الميكروفون</string>
     <string name="widget_search_icon">أيقونة البحث</string>
     <string name="widget_settings_title">إعدادات أداة البحث</string>

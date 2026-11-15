@@ -150,6 +150,7 @@
     <string name="settings_gesture_lock_screen_requires_accessibility">Erfordert Bedienungshilfen-Berechtigung</string>
     <string name="accessibility_lock_screen_service_label">Quick Search</string>
     <string name="accessibility_lock_screen_service_description">Ermöglicht Quick Search, den Bildschirm mit der Doppeltipp-Geste auf dem Startbildschirm zu sperren, auf Tippen auf die Notch zu reagieren, sich in jeder App per Wischen vom Rand oder über eine schwebende Schaltfläche zu öffnen und SpeedBump für Apps anzuzeigen, die außerhalb von Quick Search geöffnet werden. Es prüft nur, welche App geöffnet ist, und liest keine Bildschirminhalte.</string>
+    <string name="accessibility_service_stopped_hint">Android hat den Bedienungshilfen-Dienst von Quick Search beendet. Schalte ihn in den Bedienungshilfen-Einstellungen aus und wieder ein.</string>
     <string name="accessibility_permission_disclaimer_title">Hinweis zur Berechtigung für Bedienungshilfen</string>
     <string name="accessibility_lock_screen_disclosure_message">Quick Search verwendet die Bedienungshilfe, um:\n\n• die Doppeltipp-Geste zum Sperren des Bildschirms zu aktivieren.\n• Quick Search mit Wischgesten vom Bildschirmrand zu öffnen.\n• Quick Search über die schwebende Schaltfläche zu öffnen.\n• Aktionen beim Tippen auf die Notch auszuführen.\n• SpeedBump anzuzeigen, wenn eine App mit SpeedBump außerhalb von Quick Search geöffnet wird. Dafür wird nur geprüft, welche App geöffnet ist.\n\nEs liest, erfasst, speichert oder teilt weder deine Bildschirminhalte noch andere persönliche Daten.</string>
     <string name="settings_gesture_none">Keine</string>
@@ -528,6 +529,12 @@
     <string name="file_extension_label">.%s-Dateien</string>
     <string name="file_info_modified">Zuletzt geändert</string>
     <string name="file_info_path">Pfad</string>
+    <string name="action_folder_info">Ordnerinfo</string>
+    <string name="file_info_contents">Inhalt</string>
+    <plurals name="file_info_item_count">
+        <item quantity="one">%d Element</item>
+        <item quantity="other">%d Elemente</item>
+    </plurals>
     <string name="file_path_sd_card">SD-Karte</string>
     <string name="file_info_size">Größe</string>
     <string name="file_info_type">Typ</string>
@@ -1198,19 +1205,19 @@
     <string name="widget_countdown_progress_hint">Zeigt, wie viel der Zeit seit dem Festlegen des Datums vergangen ist.</string>
     <string name="widget_world_clock_widget_title">Weltuhr-Widget</string>
     <string name="widget_world_clock_locations">Orte</string>
-    <string name="widget_world_clock_locations_hint">Bis zu %1$d Uhren, von links nach rechts angezeigt. Tippe auf einen Ort, um ihn umzubenennen.</string>
     <string name="widget_world_clock_add_location">Ort hinzufügen</string>
-    <string name="widget_world_clock_search_hint">Stadt, Land oder Zeitzone suchen</string>
+    <string name="widget_world_clock_search_hint">Land oder Zeitzone suchen</string>
     <string name="widget_world_clock_no_results">Keine Orte gefunden</string>
-    <string name="widget_world_clock_label_hint">Name im Widget</string>
+    <string name="widget_world_clock_edit_name">Uhrnamen bearbeiten</string>
     <string name="widget_icon_center">Mitte</string>
     <string name="widget_icon_left">Links</string>
     <string name="widget_icon_off">Aus</string>
     <string name="widget_loading_state">Widget-Einstellungen werden geladen…</string>
     <string name="widget_mic_action_default">Standard</string>
     <string name="widget_mic_action_digital_assistant">Assistent</string>
-    <string name="widget_mic_action_digital_assistant_limitation">Aufgrund von Android-Einschränkungen kann der Assistent nicht ausgelöst werden, wenn Google nicht als Digitalassistent-App festgelegt ist.</string>
-    <string name="widget_mic_action_digital_assistant_link_phrase">Digitalassistent-App</string>
+    <string name="widget_mic_action_digital_assistant_current">%1$s ist derzeit als dein Digitalassistent festgelegt, tippe hier, um ihn zu ändern.</string>
+    <string name="widget_mic_action_digital_assistant_none">Kein Digitalassistent festgelegt, tippe hier, um einen festzulegen.</string>
+    <string name="widget_mic_action_digital_assistant_tap_here">tippe hier</string>
     <string name="widget_mic_icon">Mikrofon-Symbol</string>
     <string name="widget_search_icon">Such-Symbol</string>
     <string name="widget_settings_title">Such-Widget</string>

@@ -150,6 +150,7 @@
     <string name="settings_gesture_lock_screen_requires_accessibility">Requires Accessibility Permission</string>
     <string name="accessibility_lock_screen_service_label">Quick Search</string>
     <string name="accessibility_lock_screen_service_description">Allows Quick Search to lock the screen from the Home double-tap gesture, respond to notch taps, open from an edge swipe or a floating button in any app, and show SpeedBump for apps opened outside Quick Search. It only checks which app is open and does not read screen content.</string>
+    <string name="accessibility_service_stopped_hint">Android stopped Quick Search\'s accessibility service. Turn it off and on again in Accessibility settings.</string>
     <string name="accessibility_permission_disclaimer_title">Accessibility Permission Disclaimer</string>
     <string name="accessibility_lock_screen_disclosure_message">Quick Search uses Accessibility to:\n\n• Enable double-tap to lock screen gesture.\n• Open Quick Search using edge swipe gestures.\n• Open Quick Search using floating button.\n• Run actions when you tap the notch.\n• Show SpeedBump when an app with SpeedBump is opened outside Quick Search. For this, it only checks which app is open.\n\nIt does not read, collect, store, or share your screen content or other personal data.</string>
     <string name="settings_gesture_none">None</string>
@@ -536,6 +537,12 @@
     <string name="file_extension_label">.%s files</string>
     <string name="file_info_modified">Last modified</string>
     <string name="file_info_path">Path</string>
+    <string name="action_folder_info">Folder Info</string>
+    <string name="file_info_contents">Contents</string>
+    <plurals name="file_info_item_count">
+        <item quantity="one">%d item</item>
+        <item quantity="other">%d items</item>
+    </plurals>
     <string name="file_path_sd_card">SD card</string>
     <string name="file_info_size">Size</string>
     <string name="file_info_type">Type</string>
@@ -1218,19 +1225,19 @@
     <string name="widget_countdown_progress_hint">Shows how much of the time from when you set the date has passed.</string>
     <string name="widget_world_clock_widget_title">World Clock Widget</string>
     <string name="widget_world_clock_locations">Locations</string>
-    <string name="widget_world_clock_locations_hint">Up to %1$d clocks, shown left to right. Tap a location to rename it.</string>
     <string name="widget_world_clock_add_location">Add location</string>
-    <string name="widget_world_clock_search_hint">Search city, country or time zone</string>
+    <string name="widget_world_clock_search_hint">Search country or time zone</string>
     <string name="widget_world_clock_no_results">No locations found</string>
-    <string name="widget_world_clock_label_hint">Name on widget</string>
+    <string name="widget_world_clock_edit_name">Edit Clock Name</string>
     <string name="widget_icon_center">Center</string>
     <string name="widget_icon_left">Left</string>
     <string name="widget_icon_off">Off</string>
     <string name="widget_loading_state">Loading widget settings…</string>
     <string name="widget_mic_action_default">Default</string>
     <string name="widget_mic_action_digital_assistant">Assistant</string>
-    <string name="widget_mic_action_digital_assistant_limitation">Due to Android\'s limitations, you cannot trigger the assistant unless Google is set as the digital assistant app.</string>
-    <string name="widget_mic_action_digital_assistant_link_phrase">digital assistant app</string>
+    <string name="widget_mic_action_digital_assistant_current">%1$s is currently set as your digital assistant, tap here to change.</string>
+    <string name="widget_mic_action_digital_assistant_none">No digital assistant is set, tap here to set one.</string>
+    <string name="widget_mic_action_digital_assistant_tap_here">tap here</string>
     <string name="widget_mic_icon">Mic Icon</string>
     <string name="widget_search_icon">Search Icon</string>
     <string name="widget_settings_title">Search Widget</string>
