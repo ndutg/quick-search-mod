@@ -1,10 +1,13 @@
 package com.tk.quicksearch.settings.settingsDetailScreen
 
+import androidx.compose.material3.IconButtonDefaults
+import com.tk.quicksearch.shared.ui.components.AppIconButton
+import com.tk.quicksearch.shared.ui.components.AppMessages
+import com.tk.quicksearch.shared.ui.theme.AppColors
+import com.tk.quicksearch.shared.ui.theme.AppShapes
 import com.tk.quicksearch.search.apps.appLock.AppLockGate
 import android.content.Context
-import android.widget.Toast
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
@@ -18,6 +21,7 @@ import androidx.compose.ui.semantics.CustomAccessibilityAction
 import androidx.compose.ui.semantics.customActions
 import androidx.compose.ui.semantics.semantics
 import com.tk.quicksearch.shared.ui.components.AppDropdownMenu
+import com.tk.quicksearch.shared.ui.components.AppDropdownMenuItem
 import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import kotlin.math.abs
 import androidx.compose.foundation.clickable
@@ -25,7 +29,6 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.ui.draw.rotate
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -38,9 +41,6 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.selection.toggleable
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.TextButton
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.Role
@@ -59,7 +59,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -81,20 +80,19 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.tk.quicksearch.R
-import com.tk.quicksearch.settings.shared.SettingsNavigationRow
 import com.tk.quicksearch.settings.shared.SettingsCardItem
-import androidx.compose.foundation.layout.PaddingValues
 import com.tk.quicksearch.search.apps.rememberAppIcon
 import com.tk.quicksearch.search.notificationHistory.NotificationHistoryAccess
 import com.tk.quicksearch.search.notificationHistory.NotificationHistoryEntry
 import com.tk.quicksearch.search.notificationHistory.NotificationHistoryStore
-import com.tk.quicksearch.settings.shared.SettingsCard
-import com.tk.quicksearch.shared.ui.theme.AppColors
+import com.tk.quicksearch.shared.ui.components.SegmentedTile
+import com.tk.quicksearch.settings.shared.SettingsSegmentNavigationRow
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import java.util.Date
 import java.util.Locale
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import com.tk.quicksearch.shared.ui.components.AppTextButton
 
 /**
  * Lists the notifications captured while notification listener access was granted, filtered by the
@@ -182,29 +180,24 @@ fun NotificationHistorySettingsSection(
 
     Column(modifier = modifier) {
         if (accessGranted == false) {
-            SettingsCard(modifier = Modifier.fillMaxWidth()) {
-                SettingsNavigationRow(
-                    item =
-                        SettingsCardItem(
-                            title = stringResource(R.string.permission_required_title),
-                            description = stringResource(R.string.notification_history_permission_desc),
-                            icon = MaterialSymbols.NotificationsActive,
-                            actionOnPress = { NotificationHistoryAccess.openSettings(context) },
-                        ),
-                    contentPadding =
-                        PaddingValues(
-                            horizontal = DesignTokens.CardHorizontalPadding,
-                            vertical = DesignTokens.CardVerticalPadding,
-                        ),
-                )
-            }
+            SettingsSegmentNavigationRow(
+                item =
+                    SettingsCardItem(
+                        title = stringResource(R.string.permission_required_title),
+                        description = stringResource(R.string.notification_history_permission_desc),
+                        icon = MaterialSymbols.NotificationsActive,
+                        actionOnPress = { NotificationHistoryAccess.openSettings(context) },
+                    ),
+                index = 0,
+                count = 1,
+            )
             return@Column
         }
         // Access state is unknown until the first check completes; avoid flashing either state.
         if (accessGranted == null || loadedEntries == null) return@Column
 
-        SettingsCard(modifier = Modifier.fillMaxWidth()) {
-            if (filteredEntries.isEmpty()) {
+        if (filteredEntries.isEmpty()) {
+            SegmentedTile(index = 0, count = 1) {
                 Box(
                     modifier = Modifier.fillMaxWidth().padding(DesignTokens.SpacingLarge),
                     contentAlignment = Alignment.Center,
@@ -222,21 +215,25 @@ fun NotificationHistorySettingsSection(
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
-            } else {
-                LazyColumn(
-                    state = listState,
-                    modifier = Modifier.fillMaxWidth().heightIn(max = screenHeight),
-                ) {
-                    itemsIndexed(
-                        items = filteredEntries,
-                        // Unique per row (matches the database's unique index), so removals animate.
-                        key = { _, entry -> "${entry.key}|${entry.title}|${entry.text}" },
-                    ) { index, entry ->
-                        val appLabel = appLabels[entry.packageName] ?: entry.packageName
-                        Column(modifier = Modifier.animateItem()) {
-                            SwipeToDeleteContainer(
-                                onDelete = { NotificationHistoryStore.remove(context, entry) },
-                            ) {
+            }
+        } else {
+            LazyColumn(
+                state = listState,
+                modifier =
+                    Modifier.fillMaxWidth().heightIn(max = screenHeight).clip(AppShapes.extraLarge),
+                verticalArrangement = Arrangement.spacedBy(DesignTokens.SegmentedListGap),
+            ) {
+                itemsIndexed(
+                    items = filteredEntries,
+                    // Unique per row (matches the database's unique index), so removals animate.
+                    key = { _, entry -> "${entry.key}|${entry.title}|${entry.text}" },
+                ) { index, entry ->
+                    val appLabel = appLabels[entry.packageName] ?: entry.packageName
+                    Column(modifier = Modifier.animateItem()) {
+                        SwipeToDeleteContainer(
+                            onDelete = { NotificationHistoryStore.remove(context, entry) },
+                        ) {
+                            SegmentedTile(index = index, count = filteredEntries.size) {
                                 NotificationHistoryRow(
                                     entry = entry,
                                     appLabel = appLabel,
@@ -244,11 +241,7 @@ fun NotificationHistorySettingsSection(
                                     onClick = {
                                         AppLockGate.runAfterUnlock(context, entry.packageName, appLabel) {
                                             if (!NotificationHistoryLauncher.open(context, entry)) {
-                                                Toast.makeText(
-                                                    context,
-                                                    context.getString(R.string.common_error_unable_to_open, appLabel),
-                                                    Toast.LENGTH_SHORT,
-                                                ).show()
+                                                AppMessages.show(context, context.getString(R.string.common_error_unable_to_open, appLabel))
                                             }
                                         }
                                     },
@@ -260,9 +253,6 @@ fun NotificationHistorySettingsSection(
                                         )
                                     },
                                 )
-                            }
-                            if (index < filteredEntries.lastIndex) {
-                                HorizontalDivider(color = AppColors.SettingsDivider)
                             }
                         }
                     }
@@ -297,6 +287,7 @@ private fun NotificationHistoryRow(
             modifier =
                 Modifier.fillMaxWidth()
                     .combinedClickable(
+                        role = Role.Button,
                         onClick = onClick,
                         onLongClick = {
                             haptics.performHapticFeedback(HapticFeedbackType.LongPress)
@@ -314,7 +305,7 @@ private fun NotificationHistoryRow(
 
             Column(
                 modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(2.dp),
+                verticalArrangement = Arrangement.spacedBy(DesignTokens.TextColumnSpacing),
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -348,10 +339,11 @@ private fun NotificationHistoryRow(
                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier =
                                 Modifier
-                                    .size(20.dp)
+                                    .size(DesignTokens.IconSizeSmall)
                                     .rotate(chevronRotation)
-                                    .clip(CircleShape)
-                                    .clickable { expanded = !expanded },
+                                    .clip(AppShapes.full)
+                                    // Small visual; Compose expands the hit area to the 48dp minimum.
+                                    .clickable(role = Role.Button) { expanded = !expanded },
                         )
                     }
                 }
@@ -367,7 +359,7 @@ private fun NotificationHistoryRow(
                 if (entry.text.isNotBlank()) {
                     Text(
                         text = entry.text,
-                        style = MaterialTheme.typography.bodySmall,
+                        style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         maxLines = if (expanded) Int.MAX_VALUE else COLLAPSED_TEXT_MAX_LINES,
                         modifier = Modifier.animateContentSize(),
@@ -385,9 +377,9 @@ private fun NotificationHistoryRow(
             onDismissRequest = { showMenu = false },
             focusable = true,
         ) {
-            DropdownMenuItem(
-                text = { Text(text = stringResource(R.string.notification_history_hide_app, appLabel)) },
-                leadingIcon = { Icon(imageVector = MaterialSymbols.VisibilityOff, contentDescription = null) },
+            AppDropdownMenuItem(
+                text = stringResource(R.string.notification_history_hide_app, appLabel),
+                icon = MaterialSymbols.VisibilityOff,
                 onClick = {
                     showMenu = false
                     onHideApp()
@@ -457,7 +449,7 @@ private fun SwipeToDeleteContainer(
                         contentAlignment = Alignment.Center,
                     ) {
                         Icon(
-                            imageVector = MaterialSymbols.Delete,
+                            imageVector = MaterialSymbols.DeleteOutline,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.onError,
                         )
@@ -521,7 +513,7 @@ private fun NotificationHistoryAppFilterDialog(
                 )
             },
             confirmButton = {
-                TextButton(
+                AppTextButton(
                     onClick = {
                         showClearAllConfirmation = false
                         onClearAll()
@@ -534,7 +526,7 @@ private fun NotificationHistoryAppFilterDialog(
                 }
             },
             dismissButton = {
-                TextButton(onClick = { showClearAllConfirmation = false }) {
+                AppTextButton(onClick = { showClearAllConfirmation = false }) {
                     Text(text = stringResource(R.string.dialog_cancel))
                 }
             },
@@ -558,21 +550,17 @@ private fun NotificationHistoryAppFilterDialog(
                     modifier = Modifier.weight(1f),
                 )
                 if (hasEntries) {
-                    Surface(
+                    AppIconButton(
                         onClick = { showClearAllConfirmation = true },
-                        shape = CircleShape,
-                        color = MaterialTheme.colorScheme.error.copy(alpha = 0.12f),
-                        contentColor = MaterialTheme.colorScheme.error,
+                        tooltip = stringResource(R.string.settings_action_clear_all),
+                        colors =
+                            IconButtonDefaults.iconButtonColors(
+                                contentColor = MaterialTheme.colorScheme.error,
+                            ),
                     ) {
                         Icon(
-                            imageVector = MaterialSymbols.Delete,
+                            imageVector = MaterialSymbols.DeleteOutline,
                             contentDescription = stringResource(R.string.settings_action_clear_all),
-                            modifier =
-                                Modifier
-                                    .padding(
-                                        horizontal = DesignTokens.SpacingMedium,
-                                        vertical = DesignTokens.SpacingXSmall,
-                                    ).size(20.dp),
                         )
                     }
                 }
@@ -605,7 +593,7 @@ private fun NotificationHistoryAppFilterDialog(
             }
         },
         confirmButton = {
-            TextButton(onClick = onDismiss) {
+            AppTextButton(onClick = onDismiss) {
                 Text(text = stringResource(R.string.dialog_done))
             }
         },
@@ -620,11 +608,11 @@ private fun NotificationHistoryAppFilterItem(
     onClick: () -> Unit,
 ) {
     val iconResult = rememberAppIcon(packageName = packageName)
-    val contentAlpha = if (checked) 1f else 0.4f
+    val contentAlpha = if (checked) 1f else AppColors.ContentFaintAlpha
     Column(
         modifier =
             Modifier.fillMaxWidth()
-                .clip(RoundedCornerShape(DesignTokens.SpacingMedium))
+                .clip(AppShapes.medium)
                 .toggleable(value = checked, role = Role.Checkbox, onValueChange = { onClick() })
                 .padding(vertical = DesignTokens.SpacingXSmall),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -653,7 +641,7 @@ private fun NotificationHistoryAppFilterItem(
                     modifier =
                         Modifier.align(Alignment.TopEnd)
                             .size(20.dp)
-                            .clip(CircleShape)
+                            .clip(AppShapes.full)
                             .background(MaterialTheme.colorScheme.primary),
                     contentAlignment = Alignment.Center,
                 ) {
@@ -661,7 +649,7 @@ private fun NotificationHistoryAppFilterItem(
                         imageVector = MaterialSymbols.Check,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.onPrimary,
-                        modifier = Modifier.size(14.dp),
+                        modifier = Modifier.size(DesignTokens.ButtonIconSizeExtraSmall),
                     )
                 }
             }

@@ -1,5 +1,11 @@
 package com.tk.quicksearch.search.deviceSettings
 
+import androidx.compose.ui.semantics.Role
+import com.tk.quicksearch.search.searchScreen.components.ExpandButtonSegment
+import com.tk.quicksearch.search.searchScreen.shared.segmentedRowsActive
+import com.tk.quicksearch.search.searchScreen.shared.resultRowsContainerPadding
+import com.tk.quicksearch.search.searchScreen.shared.ResultSegment
+import com.tk.quicksearch.search.searchScreen.shared.ResultRowDivider
 import com.tk.quicksearch.search.searchScreen.shared.LocalSearchCardLayoutEnabled
 import com.tk.quicksearch.search.searchScreen.shared.compactEdgeToEdge
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -13,7 +19,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -39,11 +44,9 @@ import com.tk.quicksearch.search.searchScreen.SearchScreenConstants
 import com.tk.quicksearch.search.searchScreen.components.ExpandableResultsCard
 import com.tk.quicksearch.search.searchScreen.components.ExpandButtonDivider
 import com.tk.quicksearch.search.searchScreen.components.topPredictedRowContainer
-import com.tk.quicksearch.search.searchScreen.components.topPredictedRowContentPadding
 import com.tk.quicksearch.search.searchScreen.components.resultRowVerticalPadding
 import com.tk.quicksearch.search.searchScreen.components.rememberQueryHighlightedText
 import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
-import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.util.hapticConfirm
 
@@ -84,7 +87,7 @@ fun DeviceSettingsResultsSection(
 
         Column(
                 modifier = modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
         ) {
                 val hasPredictedRow =
                         predictedSettingId != null &&
@@ -103,6 +106,7 @@ fun DeviceSettingsResultsSection(
                         fillExpandedHeight = fillExpandedHeight,
                         showWallpaperBackground = showWallpaperBackground,
                         overlayCardColor = overlayCardColor,
+                    segmented = true,
                 ) { contentModifier, cardState ->
                         val displayRows =
                                 if (cardState.displayAsExpanded) {
@@ -121,13 +125,15 @@ fun DeviceSettingsResultsSection(
                                                 },
                                         ),
                         ) {
+                                val segmentCount = displayRows.size + if (cardState.shouldShowExpandButton) 1 else 0
+                                val segmented = segmentedRowsActive()
                                 Column(
                                         modifier =
                                                 Modifier.padding(
-                                                        start = DesignTokens.SpacingLarge,
-                                                        top = 4.dp,
-                                                        end = DesignTokens.SpacingMedium,
-                                                        bottom = 4.dp,
+                                                        start = resultRowsContainerPadding(DesignTokens.SpacingLarge),
+                                                        top = resultRowsContainerPadding(4.dp),
+                                                        end = resultRowsContainerPadding(DesignTokens.SpacingMedium),
+                                                        bottom = resultRowsContainerPadding(4.dp),
                                                 )
                                                 .padding(
                                                         bottom =
@@ -143,6 +149,7 @@ fun DeviceSettingsResultsSection(
                                                         predictedSettingId == shortcut.id &&
                                                                 !useCardLevelPrediction
 
+                                                ResultSegment(index = index, count = segmentCount) {
                                                 SettingResultRow(
                                                         shortcut = shortcut,
                                                         isPinned =
@@ -163,18 +170,17 @@ fun DeviceSettingsResultsSection(
                                                         isPredicted = showPredictedOnRow,
                                                         showPinnedItemMenu = showPinnedItemMenu,
                                                 )
+                                                }
 
                                                 if (index != displayRows.lastIndex &&
                                                         !showPredictedOnRow) {
-                                                        HorizontalDivider(
-                                                                modifier = Modifier.compactEdgeToEdge().fillMaxWidth(),
-                                                                color = overlayDividerColor
-                                                                                ?: if (showWallpaperBackground) AppColors.WallpaperDivider else MaterialTheme.colorScheme.outlineVariant,
-                                                        )
+                                                        ResultRowDivider(showWallpaperBackground, color = overlayDividerColor)
                                                 }
                                         }
 
-                                        if (cardState.shouldShowExpandButton) {
+                                        if (cardState.shouldShowExpandButton && segmented) {
+                                                ExpandButtonSegment(index = segmentCount - 1, count = segmentCount, onClick = onExpandClick)
+                                        } else if (cardState.shouldShowExpandButton) {
                                                 ExpandButtonDivider(showWallpaperBackground)
                                                 ExpandButton(
                                                         onClick = onExpandClick,
@@ -182,7 +188,7 @@ fun DeviceSettingsResultsSection(
                                                                 Modifier.align(
                                                                                 Alignment.CenterHorizontally,
                                                                         )
-                                                                        .padding(top = if (LocalSearchCardLayoutEnabled.current) 4.dp else 0.dp),
+                                                                        .padding(top = if (LocalSearchCardLayoutEnabled.current) DesignTokens.SpacingXSmall else 0.dp),
                                                 )
                                         }
                                 }
@@ -224,6 +230,7 @@ internal fun SettingResultRow(
                                 .heightIn(min = ROW_MIN_HEIGHT.dp)
                                 .topPredictedRowContainer(isTopPredicted = isPredicted)
                                 .combinedClickable(
+                                        role = Role.Button,
                                         onClick = {
                                                 hapticConfirm(view)()
                                                 onClick(shortcut)
@@ -235,9 +242,8 @@ internal fun SettingResultRow(
                                                                 null
                                                         },
                                 )
-                                .topPredictedRowContentPadding()
-                                .padding(vertical = resultRowVerticalPadding(12.dp)),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                                .padding(vertical = resultRowVerticalPadding(DesignTokens.SpacingMedium)),
+                horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium),
                 verticalAlignment = Alignment.CenterVertically,
         ) {
                 Icon(
@@ -245,7 +251,7 @@ internal fun SettingResultRow(
                         contentDescription = null,
                         tint = iconTint,
                         modifier =
-                                Modifier.size(if (icon != null) 30.dp else ICON_SIZE.dp)
+                                Modifier.size(if (icon != null) DesignTokens.IconSize + DesignTokens.SpacingXSmall else ICON_SIZE.dp)
                                         .padding(start = DesignTokens.SpacingXSmall),
                 )
 
@@ -255,7 +261,7 @@ internal fun SettingResultRow(
                 ) {
                         Text(
                                 text = rememberQueryHighlightedText(shortcut.title),
-                                style = MaterialTheme.typography.bodyMedium,
+                                style = MaterialTheme.typography.bodyLarge,
                                 color = MaterialTheme.colorScheme.onSurface,
                                 maxLines = 2,
                                 overflow = TextOverflow.Ellipsis,
@@ -265,7 +271,7 @@ internal fun SettingResultRow(
                                         ->
                                         Text(
                                                 text = rememberQueryHighlightedText(description),
-                                                style = MaterialTheme.typography.bodySmall,
+                                                style = MaterialTheme.typography.bodyMedium,
                                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                                 maxLines = 2,
                                                 overflow = TextOverflow.Ellipsis,
@@ -280,7 +286,7 @@ internal fun SettingResultRow(
                                 contentDescription =
                                         stringResource(R.string.desc_navigate_forward),
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.padding(end = 6.dp),
+                                modifier = Modifier.padding(end = DesignTokens.SpacingSmall),
                         )
                 }
 

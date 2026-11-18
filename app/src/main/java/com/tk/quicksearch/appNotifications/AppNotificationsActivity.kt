@@ -1,11 +1,11 @@
 package com.tk.quicksearch.appNotifications
 
+import com.tk.quicksearch.shared.ui.components.AppExtendedFloatingActionButton
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
-import androidx.activity.OnBackPressedCallback
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -13,7 +13,7 @@ import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.viewModels
 import androidx.core.content.IntentCompat
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -26,14 +26,11 @@ import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
@@ -43,6 +40,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import com.tk.quicksearch.shared.ui.components.PredictiveBackSlideHandler
+import com.tk.quicksearch.shared.ui.components.predictiveBackSlide
+import com.tk.quicksearch.shared.ui.components.rememberPredictiveBackSlideState
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -54,16 +54,18 @@ import com.tk.quicksearch.search.data.AppNotificationFilters
 import com.tk.quicksearch.search.data.preferences.GlancePreferences
 import com.tk.quicksearch.search.data.userAppPreferences.UserAppPreferences
 import com.tk.quicksearch.search.searchScreen.searchScreenLayout.rememberAppLabel
-import com.tk.quicksearch.settings.settingsDetailScreen.CalendarSettingsBarCornerShape
 import com.tk.quicksearch.settings.settingsDetailScreen.SettingsDetailHeader
-import com.tk.quicksearch.settings.shared.SettingsCard
+import com.tk.quicksearch.shared.ui.theme.DesignTokens
+import com.tk.quicksearch.shared.ui.components.SegmentedTile
+import com.tk.quicksearch.shared.ui.components.SegmentedGroup
 import com.tk.quicksearch.settings.shared.SettingsScreenBackground
 import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
-import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.ui.theme.QuickSearchTheme
 import com.tk.quicksearch.shared.util.AppLanguageManager
 import com.tk.quicksearch.shared.util.setSystemBarsDark
+import com.tk.quicksearch.shared.ui.components.AppIconButton
+import com.tk.quicksearch.shared.ui.components.AppIconButtonStyle
 
 /** Holds the At a Glance widget's list that [AppNotificationsActivity] edits and returns. */
 internal const val EXTRA_WIDGET_FILTERS = "com.tk.quicksearch.appNotifications.WIDGET_FILTERS"
@@ -96,13 +98,21 @@ internal object EditWidgetAppNotificationFilters : ActivityResultContract<AppNot
 class AppNotificationsActivity : ComponentActivity() {
     private val viewModel: AppNotificationsViewModel by viewModels()
 
+    /** Set when the back gesture has already slid the page away, so closing adds no animation. */
+    private var closedByBackGesture = false
+
+    /** Every way out (header back, back key, back gesture) ends here. */
     @Suppress("DEPRECATION")
-    private fun finishWithSlide() {
+    override fun finish() {
         if (viewModel.isWidget) {
             viewModel.filters.value?.let { setResult(RESULT_OK, Intent().putExtra(EXTRA_WIDGET_FILTERS, it)) }
         }
-        finish()
-        overridePendingTransition(R.anim.custom_info_slide_in_left, R.anim.custom_info_slide_out_right)
+        super.finish()
+        if (closedByBackGesture) {
+            overridePendingTransition(0, 0)
+        } else {
+            overridePendingTransition(R.anim.custom_info_slide_in_left, R.anim.custom_info_slide_out_right)
+        }
     }
 
     override fun attachBaseContext(newBase: Context) {
@@ -116,9 +126,6 @@ class AppNotificationsActivity : ComponentActivity() {
             navigationBarStyle = SystemBarStyle.dark(android.graphics.Color.TRANSPARENT),
         )
         super.onCreate(savedInstanceState)
-        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() = finishWithSlide()
-        })
         val preferences = UserAppPreferences(applicationContext)
         setContent {
             val useDarkSystemBars = when (preferences.getAppThemeMode()) {
@@ -138,14 +145,19 @@ class AppNotificationsActivity : ComponentActivity() {
                 customAccentColorArgb = preferences.getCustomAccentColorArgb(),
                 deviceThemeEnabled = preferences.isDeviceThemeEnabled(),
             ) {
+                val backSlide = rememberPredictiveBackSlideState()
+                PredictiveBackSlideHandler(backSlide) {
+                    closedByBackGesture = true
+                    finish()
+                }
                 SettingsScreenBackground(
                     appTheme = preferences.getAppTheme(),
                     overlayThemeIntensity = preferences.getOverlayThemeIntensity(),
                     deviceThemeEnabled = preferences.isDeviceThemeEnabled(),
                     amoledThemeEnabled = preferences.isAmoledThemeEnabled(),
-                    modifier = Modifier.background(MaterialTheme.colorScheme.background),
+                    modifier = Modifier.predictiveBackSlide(backSlide).background(MaterialTheme.colorScheme.background),
                 ) {
-                    AppNotificationsScreen(onBack = ::finishWithSlide, viewModel = viewModel)
+                    AppNotificationsScreen(onBack = ::finish, viewModel = viewModel)
                 }
             }
         }
@@ -184,27 +196,17 @@ private fun AppNotificationsScreen(
             )
         },
         bottomBar = {
-            // Matches the Create new tool button in Tools settings.
-            ExtendedFloatingActionButton(
+            // Matches the Add button in the At a Glance bottom bar.
+            AppExtendedFloatingActionButton(
                 onClick = {
                     viewModel.loadInstalledApps()
                     showAppPicker = true
                 },
-                expanded = true,
+                text = stringResource(R.string.app_notifications_add_app),
+                icon = MaterialSymbols.Add,
                 modifier = Modifier.fillMaxWidth()
                     .padding(horizontal = DesignTokens.ContentHorizontalPadding)
                     .padding(bottom = DesignTokens.SpacingLarge),
-                shape = CalendarSettingsBarCornerShape,
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary,
-                text = { Text(text = stringResource(R.string.app_notifications_add_app)) },
-                icon = {
-                    Icon(
-                        imageVector = MaterialSymbols.Add,
-                        contentDescription = null,
-                        modifier = Modifier.size(AddAppIconSize),
-                    )
-                },
             )
         },
     ) { padding ->
@@ -223,7 +225,8 @@ private fun AppNotificationsScreen(
                 modifier = Modifier.padding(horizontal = DesignTokens.SpacingXSmall),
             )
 
-            SettingsCard(modifier = Modifier.fillMaxWidth()) {
+            val sourceCount = filters.apps.size + 1
+            SegmentedGroup {
                 SourceRow(
                     packageName = null,
                     title = stringResource(R.string.app_notifications_any_app),
@@ -232,10 +235,11 @@ private fun AppNotificationsScreen(
                     } else {
                         keywordsSummary(filters.keywords)
                     },
+                    index = 0,
+                    count = sourceCount,
                     onClick = { editing = ANY_APP },
                 )
-                filters.apps.forEach { app ->
-                    HorizontalDivider(color = AppColors.SettingsDivider)
+                filters.apps.forEachIndexed { index, app ->
                     SourceRow(
                         packageName = app.packageName,
                         title = rememberAppLabel(app.packageName),
@@ -244,6 +248,8 @@ private fun AppNotificationsScreen(
                         } else {
                             keywordsSummary(app.keywords)
                         },
+                        index = index + 1,
+                        count = sourceCount,
                         onClick = { editing = app.packageName },
                         onRemove = { viewModel.removeApp(app.packageName) },
                     )
@@ -293,20 +299,22 @@ private fun AppNotificationsScreen(
 }
 
 /**
- * A source in the list: icon, name, a summary of what it shows (up to two lines), and a chevron.
- * With [onRemove], a divider and a delete button follow the chevron, like a navigation toggle row.
+ * A source tile at [index] of [count]: icon, name, a summary of what it shows (up to two lines), and
+ * a chevron. With [onRemove], a tonal delete button replaces the chevron.
  */
 @Composable
 private fun SourceRow(
     packageName: String?,
     title: String,
     subtitle: String,
+    index: Int,
+    count: Int,
     onClick: () -> Unit,
     onRemove: (() -> Unit)? = null,
-) {
+) = SegmentedTile(index = index, count = count, onClick = onClick) {
     Row(
-        modifier = Modifier.fillMaxWidth().clickable(onClick = onClick)
-            .padding(horizontal = DesignTokens.SpacingLarge, vertical = DesignTokens.SpacingMedium),
+        modifier = Modifier.fillMaxWidth()
+            .padding(horizontal = DesignTokens.SpacingLarge, vertical = DesignTokens.SpacingLarge),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium),
     ) {
@@ -321,28 +329,34 @@ private fun SourceRow(
             )
             Text(
                 text = subtitle,
-                style = MaterialTheme.typography.bodySmall,
+                style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
             )
         }
-        Icon(
-            imageVector = MaterialSymbols.ChevronRight,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
         if (onRemove != null) {
-            VerticalDivider(modifier = Modifier.height(DesignTokens.IconSize), color = AppColors.SettingsDivider)
-            IconButton(onClick = onRemove) {
+            val error = MaterialTheme.colorScheme.error
+            AppIconButton(
+                onClick = onRemove,
+                tooltip = stringResource(R.string.app_notifications_remove_app, title),
+                style = AppIconButtonStyle.Tonal,
+                colors = IconButtonDefaults.filledTonalIconButtonColors(
+                    containerColor = error.copy(alpha = AppColors.TintTonalAlpha),
+                    contentColor = error,
+                ),
+            ) {
                 Icon(
                     imageVector = MaterialSymbols.DeleteOutline,
                     contentDescription = stringResource(R.string.app_notifications_remove_app, title),
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
+        } else {
+            Icon(
+                imageVector = MaterialSymbols.ChevronRight,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
         }
     }
 }
-
-private val AddAppIconSize = 18.dp

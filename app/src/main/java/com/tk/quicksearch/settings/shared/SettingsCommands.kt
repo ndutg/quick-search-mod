@@ -1,6 +1,7 @@
 package com.tk.quicksearch.settings.shared
 
 import com.tk.quicksearch.search.appSettings.AppSettingsToggleKey
+import com.tk.quicksearch.search.appSettings.BooleanSetting
 import com.tk.quicksearch.search.core.AccentColorMode
 import com.tk.quicksearch.search.core.AppIconShape
 import com.tk.quicksearch.search.core.AppSuggestionTabType
@@ -14,9 +15,15 @@ import com.tk.quicksearch.search.core.SearchSectionRegistry
 import com.tk.quicksearch.search.core.SearchSection
 import com.tk.quicksearch.search.core.SearchUiState
 import com.tk.quicksearch.search.core.SearchViewModel
+import com.tk.quicksearch.search.core.setBooleanSetting
 import com.tk.quicksearch.search.models.SecondaryRankingSignal
 
 sealed interface SettingsCommand {
+    data class SetBoolean(
+        val setting: BooleanSetting,
+        val enabled: Boolean,
+    ) : SettingsCommand
+
     data class Toggle(
         val key: AppSettingsToggleKey,
         val enabled: Boolean,
@@ -89,6 +96,7 @@ sealed interface SettingsCommand {
 
 internal fun SearchViewModel.applySettingsCommand(command: SettingsCommand) {
     when (command) {
+        is SettingsCommand.SetBoolean -> setBooleanSetting(command.setting, command.enabled)
         is SettingsCommand.Toggle -> {
             val sectionToggle = SearchSectionRegistry.sectionForToggle(command.key)
             if (sectionToggle != null) {
@@ -114,10 +122,8 @@ internal fun SearchViewModel.applySettingsCommand(command: SettingsCommand) {
                     setSearchEngineCompactMode(command.enabled)
                 AppSettingsToggleKey.SEARCH_ENGINE_ALIAS_SUFFIX ->
                     setSearchEngineAliasSuffixEnabled(command.enabled)
-                AppSettingsToggleKey.CALCULATOR -> setCalculatorEnabled(command.enabled)
-                AppSettingsToggleKey.UNIT_CONVERTER -> setUnitConverterEnabled(command.enabled)
-                AppSettingsToggleKey.DATE_CALCULATOR -> setDateCalculatorEnabled(command.enabled)
-                AppSettingsToggleKey.COLOR_VISUALIZER -> setColorVisualizerEnabled(command.enabled)
+                AppSettingsToggleKey.ALIAS_TRIGGER_AFTER_SPACE ->
+                    setAliasTriggerAfterSpaceEnabled(command.enabled)
                 AppSettingsToggleKey.APP_SUGGESTIONS -> setAppSuggestionsEnabled(command.enabled)
                 AppSettingsToggleKey.SHOW_ALL_APPS_BUTTON -> setShowAllAppsButton(command.enabled)
                 AppSettingsToggleKey.INCLUDE_NON_LAUNCHABLE_APPS_IN_SEARCH ->
@@ -147,7 +153,6 @@ internal fun SearchViewModel.applySettingsCommand(command: SettingsCommand) {
                         },
                     )
                 AppSettingsToggleKey.SHOW_FOLDERS -> setShowFolders(command.enabled)
-                AppSettingsToggleKey.FILE_PREVIEWS -> setFilePreviewsEnabled(command.enabled)
                 AppSettingsToggleKey.SHOW_SYSTEM_FILES -> setShowSystemFiles(command.enabled)
                 AppSettingsToggleKey.DIRECT_DIAL -> setDirectDialEnabled(command.enabled)
                 AppSettingsToggleKey.NUMBER_SEARCH -> setNumberSearchEnabled(command.enabled)
@@ -156,6 +161,7 @@ internal fun SearchViewModel.applySettingsCommand(command: SettingsCommand) {
                 AppSettingsToggleKey.THEMED_ICONS -> setThemedIconsEnabled(command.enabled)
                 AppSettingsToggleKey.DEVICE_THEME -> setDeviceThemeEnabled(command.enabled)
                 AppSettingsToggleKey.AMOLED_THEME -> setAmoledThemeEnabled(command.enabled)
+                AppSettingsToggleKey.SEARCH_CHROME_BLUR -> setSearchChromeBlurEnabled(command.enabled)
                 AppSettingsToggleKey.USE_SYSTEM_FONT -> setUseSystemFont(command.enabled)
                 AppSettingsToggleKey.CURRENCY_CONVERTER -> setCurrencyConverterEnabled(command.enabled)
                 AppSettingsToggleKey.WORLD_CLOCK -> setWorldClockEnabled(command.enabled)
@@ -169,7 +175,8 @@ internal fun SearchViewModel.applySettingsCommand(command: SettingsCommand) {
                 AppSettingsToggleKey.APP_RESULT_ROWS,
                 AppSettingsToggleKey.FONT_SIZE,
                 AppSettingsToggleKey.APP_ICON_SIZE,
-                AppSettingsToggleKey.HOME_TEXT_COLOR -> Unit
+                AppSettingsToggleKey.HOME_TEXT_COLOR,
+                AppSettingsToggleKey.ACCENT_COLOR -> Unit
                 AppSettingsToggleKey.SEARCH_APPS,
                 AppSettingsToggleKey.SEARCH_APP_SHORTCUTS,
                 AppSettingsToggleKey.SEARCH_CONTACTS,
@@ -238,10 +245,7 @@ internal fun SearchUiState.isAppSettingToggleEnabled(toggleKey: AppSettingsToggl
         AppSettingsToggleKey.APP_LABELS -> showAppLabels
         AppSettingsToggleKey.SEARCH_ENGINE_COMPACT_MODE -> isSearchEngineCompactMode
         AppSettingsToggleKey.SEARCH_ENGINE_ALIAS_SUFFIX -> isSearchEngineAliasSuffixEnabled
-        AppSettingsToggleKey.CALCULATOR -> calculatorEnabled
-        AppSettingsToggleKey.UNIT_CONVERTER -> unitConverterEnabled
-        AppSettingsToggleKey.DATE_CALCULATOR -> dateCalculatorEnabled
-        AppSettingsToggleKey.COLOR_VISUALIZER -> colorVisualizerEnabled
+        AppSettingsToggleKey.ALIAS_TRIGGER_AFTER_SPACE -> isAliasTriggerAfterSpaceEnabled
         AppSettingsToggleKey.APP_SUGGESTIONS -> appSuggestionsEnabled
         AppSettingsToggleKey.SHOW_ALL_APPS_BUTTON -> showAllAppsButton
         AppSettingsToggleKey.INCLUDE_NON_LAUNCHABLE_APPS_IN_SEARCH ->
@@ -260,7 +264,6 @@ internal fun SearchUiState.isAppSettingToggleEnabled(toggleKey: AppSettingsToggl
         AppSettingsToggleKey.AUTO_CLOSE_OVERLAY -> autoCloseOverlay
         AppSettingsToggleKey.CIRCULAR_APP_ICONS -> appIconShape == AppIconShape.CIRCLE
         AppSettingsToggleKey.SHOW_FOLDERS -> showFolders
-        AppSettingsToggleKey.FILE_PREVIEWS -> filePreviewsEnabled
         AppSettingsToggleKey.SHOW_SYSTEM_FILES -> showSystemFiles
         AppSettingsToggleKey.DIRECT_DIAL -> directDialEnabled
         AppSettingsToggleKey.NUMBER_SEARCH -> numberSearchEnabled
@@ -268,6 +271,7 @@ internal fun SearchUiState.isAppSettingToggleEnabled(toggleKey: AppSettingsToggl
         AppSettingsToggleKey.THEMED_ICONS -> themedIconsEnabled
         AppSettingsToggleKey.DEVICE_THEME -> deviceThemeEnabled
         AppSettingsToggleKey.AMOLED_THEME -> amoledThemeEnabled
+        AppSettingsToggleKey.SEARCH_CHROME_BLUR -> searchChromeBlurEnabled
         AppSettingsToggleKey.USE_SYSTEM_FONT -> useSystemFont
         AppSettingsToggleKey.CURRENCY_CONVERTER -> currencyConverterEnabled
         // AI-backed tools read as off without an API key, matching the Tools settings page.
@@ -282,7 +286,8 @@ internal fun SearchUiState.isAppSettingToggleEnabled(toggleKey: AppSettingsToggl
         AppSettingsToggleKey.APP_RESULT_ROWS,
         AppSettingsToggleKey.FONT_SIZE,
         AppSettingsToggleKey.APP_ICON_SIZE,
-        AppSettingsToggleKey.HOME_TEXT_COLOR -> false
+        AppSettingsToggleKey.HOME_TEXT_COLOR,
+        AppSettingsToggleKey.ACCENT_COLOR -> false
         AppSettingsToggleKey.SEARCH_APPS,
         AppSettingsToggleKey.SEARCH_APP_SHORTCUTS,
         AppSettingsToggleKey.SEARCH_CONTACTS,

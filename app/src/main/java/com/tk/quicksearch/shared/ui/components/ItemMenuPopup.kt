@@ -1,5 +1,6 @@
 package com.tk.quicksearch.shared.ui.components
 
+import androidx.compose.ui.semantics.Role
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
@@ -22,8 +23,8 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -45,6 +46,9 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.onLongClick
+import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.onClick
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
@@ -59,6 +63,8 @@ import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.util.hapticConfirm
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import com.tk.quicksearch.shared.ui.theme.AppShapes
+import com.tk.quicksearch.shared.ui.theme.pressMorphShape
 
 /** A compact icon-over-label tile shown in the Shortcuts and Actions grids. */
 data class ItemMenuTile(
@@ -85,6 +91,7 @@ data class ItemMenuRow(
     /** Runs only after this button remains continuously pressed for [longHoldDurationMillis]. */
     val onLongHold: (() -> Unit)? = null,
     val longHoldDurationMillis: Long = 0L,
+    val longHoldLabel: String? = null,
     val trailingText: String? = null,
     val destructive: Boolean = false,
     /** List rows only: shown in a small dropdown on long press when [onLongClick] isn't set. */
@@ -136,28 +143,26 @@ fun ItemMenuPopup(
     footer: List<ItemMenuRow> = emptyList(),
     caption: (@Composable () -> Unit)? = null,
 ) {
-    val dialogBackground = AppColors.DialogBackground
     AppBottomPopup(
         onDismiss = onDismiss,
         title = title,
         leadingContent = leadingContent,
-        containerColor = dialogBackground,
-        contentCardColor = dialogBackground,
-        // Matches the popup's 24dp top padding so the header sits evenly between the edge and the menu.
-        contentSpacing = DesignTokens.SpacingXXLarge,
-        headerSpacing = DesignTokens.SpacingMedium,
+        contentCardColor = AppColors.DialogBackground,
+        // Same top inset as contact actions, with room between the header and the first group.
+        contentSpacing = DesignTokens.SpacingLarge,
+        bottomPadding = DesignTokens.SpacingLarge,
         contentTopPadding = 0.dp,
         // The popup's own bottom padding already separates the last item from the edge.
         contentBottomPadding = 0.dp,
         // Lets the tiles and rows use more of the popup's width.
-        contentHorizontalPadding = 4.dp,
+        contentHorizontalPadding = 0.dp,
     ) {
         Column(modifier = Modifier.fillMaxWidth()) {
             val showGridTitles = shortcuts.isNotEmpty() && actions.isNotEmpty()
             if (shortcuts.isNotEmpty()) {
                 if (showGridTitles) ItemMenuSectionTitle(shortcutsTitle)
                 ItemMenuTileGrid(tiles = shortcuts)
-                if (actions.isNotEmpty()) Spacer(Modifier.height(DesignTokens.SpacingLarge))
+                if (actions.isNotEmpty()) Spacer(Modifier.height(DesignTokens.SpacingSmall))
             }
             if (actions.isNotEmpty()) {
                 if (showGridTitles) ItemMenuSectionTitle(actionsTitle)
@@ -166,7 +171,7 @@ fun ItemMenuPopup(
             val hasGrids = shortcuts.isNotEmpty() || actions.isNotEmpty()
             val visibleButtonRows = buttonRows.filter { it.isNotEmpty() }
             if (visibleButtonRows.isNotEmpty()) {
-                if (hasGrids) Spacer(Modifier.height(DesignTokens.SpacingMedium))
+                if (hasGrids) Spacer(Modifier.height(DesignTokens.SpacingSmall))
                 Column(verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall)) {
                     visibleButtonRows.forEach { buttons -> ItemMenuButtonRow(buttons) }
                 }
@@ -175,20 +180,24 @@ fun ItemMenuPopup(
                 if (visibleButtonRows.isNotEmpty()) {
                     Spacer(Modifier.height(DesignTokens.SpacingSmall))
                 } else if (hasGrids) {
-                    Spacer(Modifier.height(DesignTokens.SpacingMedium))
+                    Spacer(Modifier.height(DesignTokens.SpacingSmall))
                 }
-                rows.forEach { row -> ItemMenuListRow(row) }
+                Column(verticalArrangement = Arrangement.spacedBy(DesignTokens.SegmentedListGap)) {
+                    rows.forEachIndexed { index, row ->
+                        ItemMenuListRow(row, index == 0, index == rows.lastIndex)
+                    }
+                }
             }
             if (footer.isNotEmpty()) {
-                Spacer(Modifier.height(DesignTokens.SpacingMedium))
+                Spacer(Modifier.height(DesignTokens.SpacingSmall))
                 ItemMenuButtonRow(footer)
             }
             if (caption != null) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        // Matches the popup's own 24dp bottom padding so the caption sits evenly between the footer and the edge.
-                        .padding(top = DesignTokens.SpacingXXLarge),
+                        // Matches the popup's own bottom padding so the caption sits evenly between the footer and the edge.
+                        .padding(top = DesignTokens.SpacingLarge),
                     contentAlignment = Alignment.Center,
                 ) {
                     caption()
@@ -235,9 +244,9 @@ fun ItemMenuLongPressDropdown(
         offset = DpOffset(x = 0.dp, y = 8.dp),
         containerColor = AppDropdownMenuDefaults.itemMenuContainerColor,
     ) {
-        DropdownMenuItem(
-            text = { Text(text = option.label) },
-            leadingIcon = { Icon(imageVector = option.icon, contentDescription = null) },
+        AppDropdownMenuItem(
+            text = option.label,
+            icon = option.icon,
             onClick = {
                 onDismiss()
                 option.onClick()
@@ -257,9 +266,12 @@ private fun resolveLongClick(
 private fun ItemMenuSectionTitle(text: String) {
     Text(
         text = text,
-        style = MaterialTheme.typography.labelMedium,
+        style = MaterialTheme.typography.labelLarge,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
-        modifier = Modifier.padding(bottom = DesignTokens.SpacingSmall),
+        modifier = Modifier.semantics { heading() }.padding(
+            start = DesignTokens.SpacingLarge,
+            bottom = DesignTokens.SpacingSmall,
+        ),
     )
 }
 
@@ -290,6 +302,13 @@ internal fun ItemMenuTileButton(
     tile: ItemMenuTile,
     modifier: Modifier = Modifier,
 ) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val tileShape =
+        pressMorphShape(
+            interactionSource,
+            rest = DesignTokens.CornerLargeIncreased,
+            pressed = DesignTokens.CornerSmall,
+        )
     val view = LocalView.current
     var showLongPressOption by remember { mutableStateOf(false) }
     var marqueeReplayKey by remember { mutableIntStateOf(0) }
@@ -298,10 +317,13 @@ internal fun ItemMenuTileButton(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(DesignTokens.ShapeSmall)
-                .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.06f))
+                .clip(tileShape)
+                .background(MaterialTheme.colorScheme.surfaceContainerHighest)
                 .combinedClickable(
                     onClick = tile.onClick,
+                    role = Role.Button,
+                    interactionSource = interactionSource,
+                    indication = LocalIndication.current,
                     onLongClick = onLongClick?.let { onLongClick ->
                         {
                             hapticConfirm(view)()
@@ -312,7 +334,7 @@ internal fun ItemMenuTileButton(
                 )
                 .padding(vertical = DesignTokens.SpacingMedium, horizontal = DesignTokens.SpacingXSmall),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(6.dp),
+            verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingXSmall),
         ) {
             Box(modifier = Modifier.size(24.dp), contentAlignment = Alignment.Center) {
                 CompositionLocalProvider(LocalContentColor provides AppColors.DialogText) {
@@ -339,7 +361,8 @@ internal fun ItemMenuTileButton(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun ItemMenuListRow(row: ItemMenuRow) {
+private fun ItemMenuListRow(row: ItemMenuRow, first: Boolean, last: Boolean) {
+    val shape = AppShapes.segment(first = first, last = last)
     val view = LocalView.current
     val contentColor =
         if (row.destructive) MaterialTheme.colorScheme.error else AppColors.DialogText
@@ -350,9 +373,12 @@ private fun ItemMenuListRow(row: ItemMenuRow) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .heightIn(min = 48.dp)
-                .clip(DesignTokens.ShapeSmall)
+                .heightIn(min = DesignTokens.ItemMenuRowHeight)
+                .clip(shape)
+                // Same fill as the tiles and buttons around it.
+                .background(MaterialTheme.colorScheme.surfaceContainerHighest)
                 .combinedClickable(
+                    role = Role.Button,
                     onClick = row.onClick,
                     onLongClick = onLongClick?.let { onLongClick ->
                         {
@@ -362,11 +388,11 @@ private fun ItemMenuListRow(row: ItemMenuRow) {
                         }
                     },
                 )
-                .padding(vertical = DesignTokens.SpacingSmall),
+                .padding(horizontal = DesignTokens.SpacingLarge, vertical = DesignTokens.SpacingSmall),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingLarge),
         ) {
-            Box(modifier = Modifier.size(22.dp), contentAlignment = Alignment.Center) {
+            Box(modifier = Modifier.size(DesignTokens.IconSize), contentAlignment = Alignment.Center) {
                 CompositionLocalProvider(LocalContentColor provides contentColor) {
                     row.icon()
                 }
@@ -392,7 +418,7 @@ private fun ItemMenuListRow(row: ItemMenuRow) {
                     imageVector = MaterialSymbols.KeyboardArrowRight,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.size(20.dp),
+                    modifier = Modifier.size(DesignTokens.IconSizeSmall),
                 )
             }
         }
@@ -428,13 +454,25 @@ private fun ItemMenuButton(
 ) {
     val view = LocalView.current
     val contentColor =
-        if (button.destructive) MaterialTheme.colorScheme.error else AppColors.DialogText
-    val containerColor =
-        if (button.destructive) {
-            MaterialTheme.colorScheme.error.copy(alpha = 0.12f)
-        } else {
-            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.06f)
-        }
+        if (button.destructive) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
+    val containerColor = MaterialTheme.colorScheme.surfaceContainerHighest
+    if (button.iconOnly && button.onLongClick == null && button.onLongHold == null) {
+        AppIconButton(
+            onClick = button.onClick,
+            tooltip = button.label,
+            style = AppIconButtonStyle.Tonal,
+            colors = IconButtonDefaults.filledTonalIconButtonColors(
+                containerColor = containerColor,
+                contentColor = contentColor,
+            ),
+            anchorModifier = modifier,
+            modifier = Modifier.size(DesignTokens.ItemMenuRowHeight).semantics {
+                contentDescription = button.label
+            },
+            content = button.icon,
+        )
+        return
+    }
     var marqueeReplayKey by remember { mutableIntStateOf(0) }
     val longHoldInteractionSource = remember { MutableInteractionSource() }
     val longHoldIndication = LocalIndication.current
@@ -443,7 +481,12 @@ private fun ItemMenuButton(
         if (button.onLongHold != null && button.longHoldDurationMillis > 0L) {
             Modifier
                 .indication(longHoldInteractionSource, longHoldIndication)
-                .semantics {
+                .semantics(mergeDescendants = true) {
+                    role = Role.Button
+                    onLongClick(label = button.longHoldLabel) {
+                        button.onLongHold.invoke()
+                        true
+                    }
                     onClick {
                         button.onClick()
                         true
@@ -476,6 +519,7 @@ private fun ItemMenuButton(
                 }
         } else {
             Modifier.combinedClickable(
+                role = Role.Button,
                 onClick = button.onClick,
                 onLongClick = button.onLongClick?.let { onLongClick ->
                     {
@@ -490,8 +534,8 @@ private fun ItemMenuButton(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .heightIn(min = 48.dp)
-                .clip(DesignTokens.ShapeSmall)
+                .heightIn(min = DesignTokens.ItemMenuRowHeight)
+                .clip(AppShapes.full)
                 .background(containerColor)
                 .then(clickModifier)
                 .then(if (button.iconOnly) Modifier.semantics { contentDescription = button.label } else Modifier)

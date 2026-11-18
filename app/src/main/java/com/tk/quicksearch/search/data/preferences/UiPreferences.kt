@@ -23,38 +23,11 @@ data class CompactLayoutPriorUi(
 
 /** Preferences for UI-related settings such as layout, messaging app, banners, etc. */
 class UiPreferences(context: Context) : UiPreferencesFeatures(context) {
-    fun isCalculatorEnabled(): Boolean = getBooleanPref(UiPreferences.KEY_CALCULATOR_ENABLED, true)
-
-    fun setCalculatorEnabled(enabled: Boolean) {
-        setBooleanPref(UiPreferences.KEY_CALCULATOR_ENABLED, enabled)
-    }
-
-    fun isUnitConverterEnabled(): Boolean =
-            getBooleanPref(UiPreferences.KEY_UNIT_CONVERTER_ENABLED, true)
-
-    fun setUnitConverterEnabled(enabled: Boolean) {
-        setBooleanPref(UiPreferences.KEY_UNIT_CONVERTER_ENABLED, enabled)
-    }
-
-    fun isDateCalculatorEnabled(): Boolean =
-            getBooleanPref(UiPreferences.KEY_DATE_CALCULATOR_ENABLED, true)
-
-    fun setDateCalculatorEnabled(enabled: Boolean) {
-        setBooleanPref(UiPreferences.KEY_DATE_CALCULATOR_ENABLED, enabled)
-    }
-
     fun isCurrencyConverterEnabled(): Boolean =
             getBooleanPref(UiPreferences.KEY_CURRENCY_CONVERTER_ENABLED, true)
 
     fun setCurrencyConverterEnabled(enabled: Boolean) {
         setBooleanPref(UiPreferences.KEY_CURRENCY_CONVERTER_ENABLED, enabled)
-    }
-
-    fun isColorVisualizerEnabled(): Boolean =
-            getBooleanPref(UiPreferences.KEY_COLOR_VISUALIZER_ENABLED, true)
-
-    fun setColorVisualizerEnabled(enabled: Boolean) {
-        setBooleanPref(UiPreferences.KEY_COLOR_VISUALIZER_ENABLED, enabled)
     }
 
     fun isWorldClockEnabled(): Boolean =
@@ -388,8 +361,6 @@ class UiPreferences(context: Context) : UiPreferencesFeatures(context) {
         const val KEY_CLEAR_QUERY_ON_LAUNCH = "clear_query_on_launch"
         const val KEY_AUTO_CLOSE_OVERLAY = "auto_close_overlay"
         const val KEY_OVERLAY_MODE_ENABLED = "overlay_mode_enabled"
-        const val KEY_MESSAGING_APP = "messaging_app"
-        const val KEY_CALLING_APP = "calling_app"
         const val KEY_PRIMARY_CONTACT_BUTTON = "primary_contact_button"
         const val KEY_SECONDARY_CONTACT_BUTTON = "secondary_contact_button"
         const val KEY_FIRST_LAUNCH = "first_launch"
@@ -420,6 +391,7 @@ class UiPreferences(context: Context) : UiPreferencesFeatures(context) {
         const val KEY_THEMED_ICONS_ENABLED = "themed_icons_enabled"
         const val KEY_DEVICE_THEME_ENABLED = "device_theme_enabled"
         const val KEY_AMOLED_THEME_ENABLED = "amoled_theme_enabled"
+        const val KEY_SEARCH_CHROME_BLUR_ENABLED = "search_chrome_blur_enabled"
         const val KEY_WALLPAPER_ACCENT_ENABLED = "wallpaper_accent_enabled"
         const val KEY_ACCENT_COLOR_MODE = "accent_color_mode"
         const val KEY_CUSTOM_ACCENT_COLOR_ARGB = "custom_accent_color_argb"
@@ -439,6 +411,7 @@ class UiPreferences(context: Context) : UiPreferencesFeatures(context) {
             }
         }
         const val KEY_SHOW_APP_LABELS = "show_app_labels"
+        const val KEY_APPEARANCE_CARD_EXPANDED_PREFIX = "appearance_card_expanded_"
         const val KEY_PHONE_APP_GRID_COLUMNS = "phone_app_grid_columns"
         const val KEY_APP_ICON_SIZE_STEP = "app_icon_size_step"
         const val DEFAULT_PHONE_APP_GRID_COLUMNS = 4
@@ -493,17 +466,13 @@ class UiPreferences(context: Context) : UiPreferencesFeatures(context) {
         const val KEY_AMAZON_DOMAIN = "amazon_domain"
 
         // Usage permission banner preferences keys
-        const val KEY_USAGE_PERMISSION_BANNER_DISMISS_COUNT =
-                "usage_permission_banner_dismiss_count"
-        const val KEY_USAGE_PERMISSION_BANNER_SESSION_DISMISSED =
-                "usage_permission_banner_session_dismissed"
 
         // Web search suggestions preferences keys
         const val KEY_WEB_SUGGESTIONS_ENABLED = "web_suggestions_enabled"
         const val KEY_WEB_SUGGESTIONS_COUNT = "web_suggestions_count"
         const val KEY_RECENT_QUERIES_DISPLAY_COUNT = "recent_queries_display_count"
         const val DEFAULT_RECENT_QUERIES_DISPLAY_COUNT = 1
-        val RECENT_QUERIES_DISPLAY_COUNT_OPTIONS = setOf(1, 3, 5, 7, 10)
+        val RECENT_QUERIES_DISPLAY_COUNT_OPTIONS = listOf(1, 3, 5, 7, 10)
         const val KEY_APP_RESULT_ROW_COUNT = "app_result_row_count"
         const val DEFAULT_APP_RESULT_ROW_COUNT = 1
         val APP_RESULT_ROW_COUNT_OPTIONS = setOf(1, 2)
@@ -524,9 +493,9 @@ class UiPreferences(context: Context) : UiPreferencesFeatures(context) {
         const val KEY_RECENT_QUERIES_ENABLED = "recent_queries_enabled"
 
         const val DEFAULT_WALLPAPER_BACKGROUND_ALPHA = 0.5f
-        const val DEFAULT_WALLPAPER_BLUR_RADIUS = 20f
+        const val DEFAULT_WALLPAPER_BLUR_RADIUS = 0f
         const val DEFAULT_WALLPAPER_BACKGROUND_ALPHA_LIGHT = 0.10f
-        const val DEFAULT_WALLPAPER_BLUR_RADIUS_LIGHT = 4.8f
+        const val DEFAULT_WALLPAPER_BLUR_RADIUS_LIGHT = 0f
         const val DEFAULT_APP_THEME = "MONOCHROME"
         const val DEFAULT_OVERLAY_THEME_INTENSITY = 0.5f
         const val DEFAULT_FONT_SCALE_MULTIPLIER = 1f
@@ -543,11 +512,7 @@ class UiPreferences(context: Context) : UiPreferencesFeatures(context) {
         const val MAX_WALLPAPER_BLUR_RADIUS = 40f
 
         // Calculator preferences keys
-        const val KEY_CALCULATOR_ENABLED = "calculator_enabled"
-        const val KEY_UNIT_CONVERTER_ENABLED = "unit_converter_enabled"
-        const val KEY_DATE_CALCULATOR_ENABLED = "date_calculator_enabled"
         const val KEY_CURRENCY_CONVERTER_ENABLED = "currency_converter_enabled"
-        const val KEY_COLOR_VISUALIZER_ENABLED = "color_visualizer_enabled"
         const val KEY_WORD_CLOCK_ENABLED = "word_clock_enabled"
         const val KEY_DICTIONARY_ENABLED = "dictionary_enabled"
         const val KEY_CURRENCY_CONVERTER_MODEL = "currency_converter_model"

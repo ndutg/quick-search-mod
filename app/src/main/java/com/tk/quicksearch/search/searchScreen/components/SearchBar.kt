@@ -1,7 +1,15 @@
 package com.tk.quicksearch.search.searchScreen.components
 
+import com.tk.quicksearch.R
+import androidx.compose.ui.res.stringResource
+import com.tk.quicksearch.shared.ui.components.AppIconButton
+import com.tk.quicksearch.shared.ui.theme.AppMotion
+import com.tk.quicksearch.shared.ui.theme.AppShapes
 import com.tk.quicksearch.search.searchScreen.insetCardBackdrop
 import com.tk.quicksearch.search.searchScreen.insetCardBackground
+import com.tk.quicksearch.onboarding.LocalWelcomeMorph
+import com.tk.quicksearch.onboarding.welcomeMorphTarget
+import com.tk.quicksearch.searchEngines.inline.insetCardGlow
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.fadeIn
@@ -10,13 +18,9 @@ import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Box
@@ -41,7 +45,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -77,33 +80,34 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import com.tk.quicksearch.search.core.SearchEngine
 import com.tk.quicksearch.search.core.SearchSection
-import com.tk.quicksearch.search.core.SearchToolType
+import com.tk.quicksearch.tools.inlineSearch.SearchToolType
 import com.tk.quicksearch.search.core.SearchTarget
 import com.tk.quicksearch.search.core.SearchBarStyle
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.app.HomeActivity
+import com.tk.quicksearch.app.navigation.LocalRootPageSettled
 import com.tk.quicksearch.app.startup.StartupTrace
 import com.tk.quicksearch.shared.ui.theme.LocalAppIsDarkTheme
 import com.tk.quicksearch.shared.util.hapticStrong
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.Locale
-private const val AliasIconMorphDurationMs = 260
-private const val LeadingIconEnterDurationMs = 180
-private const val LeadingIconExitDurationMs = 120
+private const val AliasIconMorphDurationMs = AppMotion.DurationStandard
+private const val LeadingIconEnterDurationMs = AppMotion.DurationShort
+private const val LeadingIconExitDurationMs = AppMotion.DurationQuick
 private const val LeadingIconEnterDelayMs = 40
 private const val LeadingIconEnterInitialScale = 0.88f
 private const val LeadingIconExitTargetScale = 0.88f
-private const val PlaceholderHintTransitionDurationMs = 700
+private const val PlaceholderHintTransitionDurationMs = AppMotion.DurationExtraLong
 private const val PlaceholderHintTransitionDelayMs = 120
 internal const val LightSearchBarShadowAmbientAlpha = 0.38f
 internal const val LightSearchBarShadowSpotAlpha = 0.62f
-/** Resting radius of the standalone bar, matching [DesignTokens.ShapeXXLarge]. */
+/** Resting radius of the standalone bar, matching [AppShapes.extraLarge]. */
 private val DefaultSearchBarCornerRadius = DesignTokens.Spacing28
 
 private val AliasMorphHorizontalTravel = DesignTokens.Spacing28
-private val AliasMorphVerticalTravel = DesignTokens.SpacingXXSmall
+private val AliasMorphVerticalTravel = DesignTokens.SpacingXSmall
 
 
 
@@ -175,10 +179,18 @@ internal fun PersistentSearchBar(
         }
     val accentColor = AppColors.Accent
     val restingBorderColor = searchBarStyle.borderColor(accentColor)
-    val iconAndTextColor = AppColors.getSearchBarTextAndIconColor(showWallpaperBackground)
+    val contrastBackground = searchBarContrastBackground(
+        searchBarStyle,
+        showWallpaperBackground,
+        opaqueBackground = opaqueBackground && !transparentBackground,
+    )
+    val iconAndTextColor = AppColors.getSearchBarTextAndIconColor(showWallpaperBackground).readableOn(contrastBackground)
+    val placeholderColor = iconAndTextColor.copy(alpha = DesignTokens.SearchFieldPlaceholderAlpha)
+        .readableOn(contrastBackground)
+    val accentIconColor = accentColor.readableOn(contrastBackground, minimumContrast = 3f)
     val isDarkTheme = LocalAppIsDarkTheme.current
     val lightWallpaperSearchBar = !isDarkTheme && showWallpaperBackground
-    val searchBarIconColor = AppColors.getSearchBarSecondaryIconTint(showWallpaperBackground)
+    val searchBarIconColor = AppColors.getSearchBarSecondaryIconTint(showWallpaperBackground).readableOn(contrastBackground, 3f)
     val isAliasDetected =
         isSearchBarAliasActive(
             detectedShortcutTarget = detectedShortcutTarget,
@@ -198,7 +210,7 @@ internal fun PersistentSearchBar(
             shortcutEnabled = shortcutEnabled,
             triggerWords = triggerWords,
             isSearchEngineAliasSuffixEnabled = isSearchEngineAliasSuffixEnabled && !isAliasDetected,
-            highlightColor = AppColors.LinkColor,
+            highlightColor = AppColors.LinkColor.readableOn(contrastBackground),
         )
     val leadingIconState =
         when {
@@ -233,7 +245,7 @@ internal fun PersistentSearchBar(
     val aliasMorphProgress = remember { Animatable(1f) }
     var aliasMorphText by remember { mutableStateOf<String?>(null) }
     var previousLeadingIconState by remember { mutableStateOf(leadingIconState) }
-    var hasCompletedStartupAutoFocus by remember { mutableStateOf(!autoFocusOnStart) }
+    var hasCompletedStartupAutoFocus by remember(autoFocusOnStart) { mutableStateOf(!autoFocusOnStart) }
     val searchBarInteractionSource = remember { MutableInteractionSource() }
     // A caret with no way to type is noise: hide it while the soft keyboard is closed, unless a
     // hardware keyboard can still type into the field.
@@ -345,7 +357,7 @@ internal fun PersistentSearchBar(
         aliasMorphProgress.snapTo(0f)
         aliasMorphProgress.animateTo(
             targetValue = 1f,
-            animationSpec = tween(durationMillis = AliasIconMorphDurationMs, easing = LinearOutSlowInEasing),
+            animationSpec = tween(durationMillis = AliasIconMorphDurationMs, easing = AppMotion.EmphasizedDecelerateEasing),
         )
         aliasMorphText = null
     }
@@ -358,8 +370,11 @@ internal fun PersistentSearchBar(
         }
     }
 
+    val pageSettled = LocalRootPageSettled.current
+    val latestPageSettled = rememberUpdatedState(pageSettled)
     val skipLaunchAutoFocus = LocalSearchReturningFromInAppPage.current
-    LaunchedEffect(autoFocusOnStart, hasLaidOutSearchField) {
+    LaunchedEffect(autoFocusOnStart, hasLaidOutSearchField, pageSettled) {
+        if (!pageSettled || hasCompletedStartupAutoFocus) return@LaunchedEffect
         if (!autoFocusOnStart || skipLaunchAutoFocus) {
             hasCompletedStartupAutoFocus = true
             return@LaunchedEffect
@@ -391,6 +406,7 @@ internal fun PersistentSearchBar(
                             if (
                                 autoFocusOnStart &&
                                 hasCompletedStartupAutoFocus &&
+                                latestPageSettled.value &&
                                 (context as? HomeActivity)?.consumeResumeAutoFocusSuppression() != true
                             ) {
                                 focusRequester.requestFocus()
@@ -404,68 +420,21 @@ internal fun PersistentSearchBar(
             onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
         }
     }
-    // Navigating to settings/widgets and back rebuilds this field from scratch, so a keyboard the
-    // user opened by hand is only restored when the ViewModel says it was open on the way out.
-    // The request is read once on entry: it is set while the outgoing field is still composed for
-    // the exit animation, and reacting there reopens the keyboard over the page being opened.
-    val restoreKeyboardOnThisEntry = remember { restoreKeyboardOnEnter }
-    LaunchedEffect(restoreKeyboardOnThisEntry, hasLaidOutSearchField) {
-        if (!restoreKeyboardOnThisEntry || !hasLaidOutSearchField) return@LaunchedEffect
+    // The IME changes Home's layout. Wait until the page settles before restoring it, and leave
+    // the request pending if a swipe only previews Home and is then cancelled.
+    LaunchedEffect(restoreKeyboardOnEnter, hasLaidOutSearchField, pageSettled) {
+        if (!restoreKeyboardOnEnter || !hasLaidOutSearchField || !pageSettled) return@LaunchedEffect
         focusRequester.requestFocus()
         keyboardController?.show()
         onRestoreKeyboardHandled()
     }
 
-    // Welcome animation: the gradient scans across the border once, ending on its white tail,
-    // then the glow fades out while the resting border fades in.
-    val animationProgress = remember { Animatable(0f) }
-
-    val glowAlpha = remember { Animatable(0f) }
-    val borderAlpha =
-        remember {
-            Animatable(
-                if (showWelcomeAnimation) 0f else 1f,
-            )
-        }
-
-    LaunchedEffect(showWelcomeAnimation, query.isEmpty()) {
-        if (showWelcomeAnimation) {
-            glowAlpha.snapTo(1f)
-            borderAlpha.snapTo(0f)
-            animationProgress.snapTo(0f)
-
-            animationProgress.animateTo(
-                targetValue = 1f,
-                animationSpec = tween(DesignTokens.AnimationDurationLong, easing = LinearEasing),
-            )
-
-            // The white end of the gradient holds the glow; the border is not snapped to opaque here.
-            delay(DesignTokens.AnimationDurationMicro.toLong())
-
-            launch {
-                glowAlpha.animateTo(
-                    targetValue = 0f,
-                    animationSpec = tween(DesignTokens.AnimationDurationFast, easing = LinearOutSlowInEasing),
-                )
-            }
-            launch {
-                borderAlpha.animateTo(
-                    targetValue = 1f,
-                    animationSpec = tween(DesignTokens.AnimationDurationFast, easing = LinearOutSlowInEasing),
-                )
-            }
-
-            delay(DesignTokens.AnimationDurationFast.toLong())
-            onWelcomeAnimationCompleted?.invoke()
-        } else if (query.isEmpty()) {
-            borderAlpha.snapTo(1f)
-        } else {
-            borderAlpha.animateTo(
-                targetValue = 1f,
-                animationSpec = tween(durationMillis = DesignTokens.AnimationDurationFast, easing = LinearOutSlowInEasing)
-            )
-        }
-    }
+    val borderSweep =
+        rememberSearchBarBorderSweep(
+            play = showWelcomeAnimation && LocalWelcomeMorph.current?.isActive != true,
+            queryIsEmpty = query.isEmpty(),
+            onCompleted = onWelcomeAnimationCompleted,
+        )
     // Palettes are centralized in AppColors to keep color tokens out of feature files.
     val activeColors = AppColors.SearchFieldGooglePalette
     val aliasMorphHorizontalTravelPx = with(density) { AliasMorphHorizontalTravel.toPx() }
@@ -475,6 +444,8 @@ internal fun PersistentSearchBar(
         modifier =
             modifier
                 .fillMaxWidth()
+                .welcomeMorphTarget(cornerRadius, searchBarBackground)
+                .then(if (transparentBackground) Modifier else Modifier.insetCardGlow(restingBorderColor, barShape))
                 .graphicsLayer {
                     // The inset strip already paints the card behind a transparent bar, so an
                     // accent-tinted shadow would only wash colour across the bar's interior.
@@ -494,7 +465,7 @@ internal fun PersistentSearchBar(
                     }
                 }
                 .drawBehind {
-                    val alpha = glowAlpha.value
+                    val alpha = borderSweep.glowAlpha
                     if (alpha > 0f) {
                         val strokeWidth = DesignTokens.SearchFieldBorderWidth.toPx()
                         val cornerRadiusVal = cornerRadius.toPx()
@@ -503,7 +474,7 @@ internal fun PersistentSearchBar(
 
                         // Slides the brush left so the border ends on the gradient's white tail.
                         val xOffset =
-                            -(animationProgress.value * size.width * DesignTokens.SearchFieldGradientTravelMultiplier)
+                            -(borderSweep.progress * size.width * DesignTokens.SearchFieldGradientTravelMultiplier)
 
                         val brush =
                             Brush.linearGradient(
@@ -520,18 +491,13 @@ internal fun PersistentSearchBar(
                         // Wide, faint strokes behind the border fake a blurred glow.
                         drawRoundRect(
                             brush = brush,
-                            cornerRadius =
-                                CornerRadius(cornerRadiusVal),
-                            style =
-                                Stroke(
-                                    width = strokeWidth * 4f,
-                                ), // Wide spill
+                            cornerRadius = CornerRadius(cornerRadiusVal),
+                            style = Stroke(width = strokeWidth * 4f), // Wide spill
                             alpha = alpha * 0.3f, // Low opacity
                         )
                         drawRoundRect(
                             brush = brush,
-                            cornerRadius =
-                                CornerRadius(cornerRadiusVal),
+                            cornerRadius = CornerRadius(cornerRadiusVal),
                             style =
                                 Stroke(
                                     width = strokeWidth * 2f,
@@ -542,8 +508,7 @@ internal fun PersistentSearchBar(
                         // 2. Draw "Core" sharp line
                         drawRoundRect(
                             brush = brush,
-                            cornerRadius =
-                                CornerRadius(cornerRadiusVal),
+                            cornerRadius = CornerRadius(cornerRadiusVal),
                             style = Stroke(width = strokeWidth),
                             alpha = alpha,
                         )
@@ -559,7 +524,7 @@ internal fun PersistentSearchBar(
                             width = searchBarStyle.borderWidth(),
                             color =
                                 restingBorderColor.copy(
-                                    alpha = (borderAlpha.value * restingBorderColor.alpha).coerceIn(0f, 1f),
+                                    alpha = (borderSweep.borderAlpha * restingBorderColor.alpha).coerceIn(0f, 1f),
                                 ),
                             shape = barShape,
                         )
@@ -571,7 +536,8 @@ internal fun PersistentSearchBar(
         TextField(
             value = textFieldValue,
             onValueChange = { rawValue ->
-                val newValue = rawValue.withoutAutoSpaceAfterLeadingDot(textFieldValue.text)
+                val newValue =
+                    rawValue.withLineBreaksAsSpaces().withoutAutoSpaceAfterLeadingDot(textFieldValue.text)
                 if (textFieldValue.text.isEmpty() && newValue.text.isNotEmpty()) {
                     StartupTrace.mark("QS.Home.FirstInputAccepted")
                 }
@@ -646,14 +612,14 @@ internal fun PersistentSearchBar(
                                 tween(
                                     durationMillis = PlaceholderHintTransitionDurationMs,
                                     delayMillis = PlaceholderHintTransitionDelayMs,
-                                    easing = LinearOutSlowInEasing,
+                                    easing = AppMotion.EmphasizedDecelerateEasing,
                                 ),
                         ) togetherWith
                             fadeOut(
                                 animationSpec =
                                     tween(
                                         durationMillis = PlaceholderHintTransitionDurationMs,
-                                        easing = FastOutSlowInEasing,
+                                        easing = AppMotion.EmphasizedEasing,
                                     ),
                             )
                     },
@@ -662,14 +628,13 @@ internal fun PersistentSearchBar(
                     Text(
                         text = text,
                         style = MaterialTheme.typography.titleMedium,
-                        color = iconAndTextColor.copy(alpha = DesignTokens.SearchFieldPlaceholderAlpha),
+                        color = placeholderColor,
                     )
                 }
             },
             textStyle =
                 MaterialTheme.typography.titleMedium.copy(color = iconAndTextColor),
-            singleLine = true,
-            maxLines = 1,
+            maxLines = SearchFieldMaxLines,
             leadingIcon = {
                 Box {
                     AnimatedContent(
@@ -681,7 +646,7 @@ internal fun PersistentSearchBar(
                                         tween(
                                             durationMillis = LeadingIconEnterDurationMs,
                                             delayMillis = LeadingIconEnterDelayMs,
-                                            easing = LinearOutSlowInEasing,
+                                            easing = AppMotion.EmphasizedDecelerateEasing,
                                         ),
                                 ) +
                                     scaleIn(
@@ -689,29 +654,26 @@ internal fun PersistentSearchBar(
                                             tween(
                                                 durationMillis = LeadingIconEnterDurationMs,
                                                 delayMillis = LeadingIconEnterDelayMs,
-                                                easing = LinearOutSlowInEasing,
+                                                easing = AppMotion.EmphasizedDecelerateEasing,
                                             ),
                                         initialScale = LeadingIconEnterInitialScale,
                                     )
                                 )
                                 .togetherWith(
                                     fadeOut(
-                                        animationSpec = tween(durationMillis = LeadingIconExitDurationMs),
+                                        animationSpec = tween(durationMillis = LeadingIconExitDurationMs, easing = AppMotion.EmphasizedAccelerateEasing),
                                     ) +
                                         scaleOut(
-                                            animationSpec = tween(durationMillis = LeadingIconExitDurationMs),
+                                            animationSpec = tween(durationMillis = LeadingIconExitDurationMs, easing = AppMotion.EmphasizedAccelerateEasing),
                                             targetScale = LeadingIconExitTargetScale,
                                         ),
                                 )
                         },
                         label = "search_bar_leading_icon",
                     ) { currentIconState ->
-                        Box(
-                            modifier = Modifier.clickable(
-                                interactionSource = remember { MutableInteractionSource() },
-                                indication = null,
-                                onClick = { showSectionMenu = true },
-                            ),
+                        AppIconButton(
+                            onClick = { showSectionMenu = true },
+                            tooltip = stringResource(R.string.search_section_menu_title),
                         ) {
                             SearchBarLeadingIcon(
                                 iconState = currentIconState,
@@ -722,10 +684,7 @@ internal fun PersistentSearchBar(
                     SearchBarSectionMenu(
                         expanded = showSectionMenu,
                         onDismiss = { showSectionMenu = false },
-                        onSectionSelected = { section ->
-                            showSectionMenu = false
-                            onSectionSelected(section)
-                        },
+                        onSectionSelected = onSectionSelected,
                     )
                 }
             },
@@ -734,7 +693,7 @@ internal fun PersistentSearchBar(
                     showClear = isAliasDetected || query.isNotEmpty(),
                     showSettings = showSettingsIcon && !searchBarStyle.showMicIcon,
                     showMic = searchBarStyle.showMicIcon,
-                    accentColor = accentColor,
+                    accentColor = accentIconColor,
                     iconColor = searchBarIconColor,
                     onClear = {
                         if (query.isNotEmpty()) {
@@ -784,7 +743,7 @@ internal fun PersistentSearchBar(
                     disabledContainerColor = AppColors.AppBackgroundTransparent,
                     focusedTextColor = iconAndTextColor,
                     unfocusedTextColor = iconAndTextColor,
-                    cursorColor = if (showCursor) MaterialTheme.colorScheme.primary else Color.Transparent,
+                    cursorColor = if (showCursor) accentIconColor else Color.Transparent,
                 ),
             visualTransformation = aliasVisualTransformation,
             interactionSource = searchBarInteractionSource,

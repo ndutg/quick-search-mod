@@ -10,6 +10,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
@@ -18,9 +19,13 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.core.content.ContextCompat
+import com.tk.quicksearch.app.HomeActivity
 import com.tk.quicksearch.app.MainActivity
+import com.tk.quicksearch.search.core.AccentColorMode
 import com.tk.quicksearch.search.core.BackgroundSource
 import com.tk.quicksearch.search.core.SearchUiState
+import com.tk.quicksearch.search.core.SearchViewModel
+import com.tk.quicksearch.shared.util.StartupBackgroundPreview
 import com.tk.quicksearch.shared.util.WallpaperUtils
 
 internal data class SearchScreenWallpaperState(
@@ -28,6 +33,8 @@ internal data class SearchScreenWallpaperState(
     val usesWallpaperBackground: Boolean,
     val usesSystemWallpaperBackdrop: Boolean,
     val usesMonoThemeFallback: Boolean,
+    /** The window's own system wallpaper shows under the blurred bitmap instead of a solid fallback. */
+    val systemWallpaperUnderBitmap: Boolean = false,
 )
 
 private data class CustomBitmapState(
@@ -49,18 +56,24 @@ internal fun SearchScreenWallpaperLogic(
     isOverlayPresentation: Boolean = false,
     /** False for surfaces drawn over other content, which need an opaque wallpaper image. */
     allowUnblurredSystemBackdrop: Boolean = true,
+    retainBitmap: Boolean = true,
 ): SearchScreenWallpaperState {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val canShowSystemWallpaperBackdrop =
         !isOverlayPresentation &&
             (context as? MainActivity)?.canShowSystemWallpaperBackdrop == true
+    // Only Home's opaque window shows nothing but the wallpaper behind it. MainActivity's window is
+    // translucent: left transparent, it also shows the app underneath (another launcher), at least
+    // during its opening transition. There the wallpaper is drawn from a bitmap when readable, and
+    // the system wallpaper behind the window is only the fallback when it isn't.
+    val systemWallpaperIsOnlyContentBehind = canShowSystemWallpaperBackdrop && context is HomeActivity
     // Without blur Android composites the same wallpaper behind the window, so the bitmap is only
     // read for its colors and a thumbnail is enough. Blurred wallpapers are drawn from a bitmap
     // scaled to what the blur leaves visible.
     val usesUnblurredSystemBackdrop =
         allowUnblurredSystemBackdrop &&
-            canShowSystemWallpaperBackdrop &&
+            systemWallpaperIsOnlyContentBehind &&
             state.backgroundSource == BackgroundSource.SYSTEM_WALLPAPER &&
             state.wallpaperBlurRadius <= 0f
     val wallpaperDivisor =
@@ -70,6 +83,7 @@ internal fun SearchScreenWallpaperLogic(
             WallpaperUtils.wallpaperDivisorForBlur(state.wallpaperBlurRadius)
         }
     var wallpaperChangeVersion by remember { mutableIntStateOf(0) }
+    val onWallpaperChanged by rememberUpdatedState(onSystemWallpaperChanged)
 
     DisposableEffect(context, state.backgroundSource) {
         if (state.backgroundSource != BackgroundSource.SYSTEM_WALLPAPER) {
@@ -87,7 +101,7 @@ internal fun SearchScreenWallpaperLogic(
                         if (intent?.action != wallpaperChangedAction) return
                         WallpaperUtils.invalidateWallpaperCache()
                         wallpaperChangeVersion++
-                        onSystemWallpaperChanged?.invoke()
+                        onWallpaperChanged?.invoke()
                     }
                 }
             val filter = IntentFilter(wallpaperChangedAction)
@@ -128,6 +142,8 @@ internal fun SearchScreenWallpaperLogic(
         }
     }
 
+    if (!retainBitmap) return SearchScreenWallpaperState(null, false, false, false)
+
     val shouldUseStartupPreview = wallpaperChangeVersion == 0
     val sourceWallpaperState =
         produceState<WallpaperBitmapState>(
@@ -139,6 +155,9 @@ internal fun SearchScreenWallpaperLogic(
                                 imageBitmap = it.asImageBitmap(),
                                 loadResult = WallpaperUtils.WallpaperLoadResult.Success(it),
                             )
+                        } ?: StartupBackgroundPreview.peek(state.startupBackgroundPreviewPath)?.let {
+                            // Decoded off the main thread while the activity was being created.
+                            WallpaperBitmapState(imageBitmap = it.asImageBitmap(), loadResult = null)
                         } ?: WallpaperBitmapState(imageBitmap = null, loadResult = null)
                     } else {
                         WallpaperBitmapState(
@@ -182,6 +201,8 @@ internal fun SearchScreenWallpaperLogic(
                             imageBitmap = result.bitmap.asImageBitmap(),
                             loadResult = result,
                         )
+                    // The full wallpaper is in memory now; the startup preview isn't needed.
+                    StartupBackgroundPreview.release()
                     if (!isOverlayPresentation) {
                         onWallpaperLoaded?.invoke()
                     }
@@ -198,7 +219,19 @@ internal fun SearchScreenWallpaperLogic(
     val customImageDivisor = WallpaperUtils.wallpaperDivisorForBlur(state.wallpaperBlurRadius)
     val sourceCustomBitmap =
         produceState(
-            CustomBitmapState(imageBitmap = null, isLoadFinished = false),
+            CustomBitmapState(
+                // A recreated activity reuses the decoded image; a cold start uses the preview
+                // decoded off the main thread while the activity was being created.
+                imageBitmap =
+                    if (state.backgroundSource == BackgroundSource.CUSTOM_IMAGE) {
+                        WallpaperUtils.getCachedOverlayCustomImageBitmap(state.customImageUri)
+                            ?: StartupBackgroundPreview.peek(state.startupBackgroundPreviewPath)
+                                ?.asImageBitmap()
+                    } else {
+                        null
+                    },
+                isLoadFinished = false,
+            ),
             state.backgroundSource,
             state.customImageUri,
             state.startupBackgroundPreviewPath,
@@ -223,6 +256,7 @@ internal fun SearchScreenWallpaperLogic(
                     imageBitmap = customBitmap ?: value.imageBitmap,
                     isLoadFinished = true,
                 )
+            if (customBitmap != null) StartupBackgroundPreview.release()
             if (customBitmap != null && !isOverlayPresentation) {
                 onWallpaperLoaded?.invoke()
             }
@@ -254,6 +288,15 @@ internal fun SearchScreenWallpaperLogic(
                 sourceWallpaperState.value.loadResult == WallpaperUtils.WallpaperLoadResult.SecurityError ||
                 (usesUnblurredSystemBackdrop &&
                     sourceWallpaperState.value.loadResult != WallpaperUtils.WallpaperLoadResult.Unavailable))
+    // While the blurred bitmap loads, Android already draws the system wallpaper behind this window,
+    // so show it (sharp) instead of a solid fallback; the blurred image then fades in over it.
+    val isLoadingBlurredSystemWallpaper =
+        allowUnblurredSystemBackdrop &&
+            systemWallpaperIsOnlyContentBehind &&
+            state.backgroundSource == BackgroundSource.SYSTEM_WALLPAPER &&
+            !usesSystemWallpaperBackdrop &&
+            imageBitmap == null &&
+            sourceWallpaperState.value.loadResult == null
     val useBitmapBackground =
         WallpaperUtils.shouldUseImageBackground(
             backgroundSource = state.backgroundSource,
@@ -263,7 +306,10 @@ internal fun SearchScreenWallpaperLogic(
                 !(shouldUseStartupPreview && sourceWallpaperState.value.imageBitmap != null),
         )
     val usesWallpaperBackground =
-        usesSystemWallpaperBackdrop || useBitmapBackground || isAwaitingStartupImage
+        usesSystemWallpaperBackdrop ||
+            useBitmapBackground ||
+            isAwaitingStartupImage ||
+            isLoadingBlurredSystemWallpaper
     val useMonoThemeFallback =
         !isOverlayPresentation &&
             state.backgroundSource != BackgroundSource.THEME &&
@@ -274,5 +320,23 @@ internal fun SearchScreenWallpaperLogic(
         usesWallpaperBackground = usesWallpaperBackground,
         usesSystemWallpaperBackdrop = usesSystemWallpaperBackdrop,
         usesMonoThemeFallback = useMonoThemeFallback,
+        // The window's own system wallpaper is the fallback under the blurred bitmap, so the screen
+        // never paints a solid color over it while that bitmap loads or fades in.
+        systemWallpaperUnderBitmap =
+            allowUnblurredSystemBackdrop &&
+                systemWallpaperIsOnlyContentBehind &&
+                state.backgroundSource == BackgroundSource.SYSTEM_WALLPAPER &&
+                !usesSystemWallpaperBackdrop &&
+                !useMonoThemeFallback,
     )
+}
+
+internal fun SearchViewModel.onWallpaperUnavailable() {
+    setWallpaperAvailable(false)
+    if (
+        uiState.value.backgroundSource == BackgroundSource.SYSTEM_WALLPAPER &&
+        uiState.value.accentColorMode == AccentColorMode.FROM_WALLPAPER
+    ) {
+        setAccentColorMode(AccentColorMode.NONE)
+    }
 }

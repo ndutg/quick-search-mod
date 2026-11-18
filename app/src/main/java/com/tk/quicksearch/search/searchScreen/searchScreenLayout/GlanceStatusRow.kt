@@ -1,6 +1,12 @@
 package com.tk.quicksearch.search.searchScreen.searchScreenLayout
 
-import androidx.compose.foundation.BorderStroke
+import androidx.compose.ui.semantics.Role
+import androidx.compose.foundation.layout.RowScope
+import com.tk.quicksearch.shared.ui.components.AppButtonSize
+import com.tk.quicksearch.shared.ui.components.AppButtonTone
+import com.tk.quicksearch.shared.ui.components.AppOutlinedButton
+import com.tk.quicksearch.shared.ui.components.AppButton
+import com.tk.quicksearch.shared.ui.components.AppIconButton
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
@@ -10,13 +16,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
+import com.tk.quicksearch.search.searchHistory.QUERY_ROW_ICON_SIZE
+import com.tk.quicksearch.search.searchHistory.QUERY_ROW_VERTICAL_PADDING
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -42,8 +47,12 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.tk.quicksearch.R
 import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
+import com.tk.quicksearch.shared.ui.theme.AppShapes
 
 internal val GlanceDismissButtonSize = 28.dp
+
+/** Same height as a search history row, so the home cards line up. */
+private val GlanceRowMinHeight = (QUERY_ROW_ICON_SIZE + QUERY_ROW_VERTICAL_PADDING * 2).dp
 
 /** Descriptions wrap in full rather than cutting off. */
 internal const val GlanceTextMaxLines = Int.MAX_VALUE
@@ -91,10 +100,11 @@ internal fun GlanceStatusRow(
     /** Null leaves the row without a tap target. */
     onClick: (() -> Unit)?,
     onLongClick: (() -> Unit)? = null,
-    titleStyle: TextStyle = MaterialTheme.typography.bodyMedium,
+    titleStyle: TextStyle = MaterialTheme.typography.bodyLarge,
+    titleColor: Color = MaterialTheme.colorScheme.onSurface,
     titleMaxLines: Int = 1,
     subtitle: String? = null,
-    subtitleStyle: TextStyle = MaterialTheme.typography.bodySmall,
+    subtitleStyle: TextStyle = MaterialTheme.typography.bodyMedium,
     pillText: String? = null,
     pillColors: GlancePillColors = glanceNeutralPillColors(),
     pillWidthText: String? = null,
@@ -105,9 +115,9 @@ internal fun GlanceStatusRow(
 ) {
     Row(
         modifier =
-            Modifier.fillMaxWidth().heightIn(min = 52.dp).padding(
-                start = 7.dp,
-                end = if (onDismiss == null) 7.dp else 0.dp,
+            Modifier.fillMaxWidth().heightIn(min = GlanceRowMinHeight).padding(
+                start = DesignTokens.GlanceRowHorizontalPadding,
+                end = if (onDismiss == null) DesignTokens.GlanceRowHorizontalPadding else 0.dp,
                 top = DesignTokens.SpacingMedium,
                 bottom = DesignTokens.SpacingMedium,
             ),
@@ -116,20 +126,20 @@ internal fun GlanceStatusRow(
         Row(
             modifier =
                 Modifier.weight(1f).then(
-                    if (onClick != null) Modifier.combinedClickable(onClick = onClick, onLongClick = onLongClick) else Modifier,
+                    if (onClick != null) Modifier.combinedClickable(role = Role.Button, onClick = onClick, onLongClick = onLongClick) else Modifier,
                 ),
             horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Box(modifier = Modifier.size(24.dp), contentAlignment = Alignment.Center) { icon() }
+            Box(modifier = Modifier.size(DesignTokens.IconSize), contentAlignment = Alignment.Center) { icon() }
             Column(
                 modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(2.dp),
+                verticalArrangement = Arrangement.spacedBy(DesignTokens.TextColumnSpacing),
             ) {
                 Text(
                     text = title,
                     style = titleStyle,
-                    color = MaterialTheme.colorScheme.onSurface,
+                    color = titleColor,
                     maxLines = titleMaxLines,
                     overflow = TextOverflow.Ellipsis,
                 )
@@ -148,9 +158,9 @@ internal fun GlanceStatusRow(
                 Box(
                     modifier =
                         Modifier
-                            .clip(CircleShape)
+                            .clip(AppShapes.full)
                             .background(pillColors.container)
-                            .padding(horizontal = 10.dp, vertical = 4.dp),
+                            .padding(horizontal = DesignTokens.SpacingMedium, vertical = DesignTokens.SpacingXSmall),
                     contentAlignment = Alignment.Center,
                 ) {
                     if (pillWidthText != null) {
@@ -176,12 +186,11 @@ internal fun GlanceStatusRow(
             Box(modifier = Modifier.padding(start = DesignTokens.SpacingSmall)) { trailing() }
         }
         if (onDismiss != null) {
-            IconButton(
+            AppIconButton(
                 onClick = onDismiss,
-                modifier =
-                    Modifier
-                        .then(if (dismissAtTop) Modifier.align(Alignment.Top) else Modifier)
-                        .size(GlanceDismissButtonSize),
+                tooltip = stringResource(R.string.common_close),
+                modifier = Modifier.size(GlanceDismissButtonSize),
+                anchorModifier = if (dismissAtTop) Modifier.align(Alignment.Top) else Modifier,
             ) {
                 Icon(
                     imageVector = MaterialSymbols.Close,
@@ -205,26 +214,24 @@ internal fun GlanceActionChip(
     icon: ImageVector? = null,
     colors: GlancePillColors? = null,
 ) {
-    Surface(
-        onClick = onClick,
-        shape = CircleShape,
-        color = colors?.container ?: Color.Transparent,
-        contentColor = colors?.content ?: MaterialTheme.colorScheme.onSurface,
-        border = if (colors == null) BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant) else null,
-    ) {
-        Row(
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-            horizontalArrangement = Arrangement.spacedBy(6.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            if (icon != null) Icon(imageVector = icon, contentDescription = null, modifier = Modifier.size(16.dp))
-            Text(
-                text = label,
-                style = MaterialTheme.typography.labelMedium,
-                fontWeight = FontWeight.SemiBold,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
-        }
+    val content: @Composable RowScope.() -> Unit = {
+        Text(text = label, maxLines = 1, overflow = TextOverflow.Ellipsis)
+    }
+    if (colors != null) {
+        AppButton(
+            onClick = onClick,
+            tone = AppButtonTone.Custom(colors.container, colors.content),
+            size = AppButtonSize.ExtraSmall,
+            icon = icon,
+            content = content,
+        )
+    } else {
+        AppOutlinedButton(
+            onClick = onClick,
+            tone = AppButtonTone.Custom(MaterialTheme.colorScheme.onSurface),
+            size = AppButtonSize.ExtraSmall,
+            icon = icon,
+            content = content,
+        )
     }
 }

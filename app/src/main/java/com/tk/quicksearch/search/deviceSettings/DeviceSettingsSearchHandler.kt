@@ -4,7 +4,6 @@ import android.content.Context
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.data.userAppPreferences.UserAppPreferences
 import com.tk.quicksearch.search.searchHistory.RecentSearchEntry
-import com.tk.quicksearch.search.utils.RecentResultRankingUtils
 import com.tk.quicksearch.search.utils.CachedSearchMatcher
 import com.tk.quicksearch.search.utils.SearchQueryContext
 import com.tk.quicksearch.search.utils.SearchTextCache
@@ -25,21 +24,35 @@ class DeviceSettingsSearchHandler(
     private val showToastCallback: (Int) -> Unit,
     private val isLowRamDevice: Boolean = false,
 ) {
-    private var availableSettings: List<DeviceSetting> = emptyList()
+    @Volatile private var availableSettings: List<DeviceSetting> = emptyList()
+    private val loadLock = Any()
     private val searchTextCache = SearchTextCache()
     private val searchMatcher = CachedSearchMatcher(searchTextCache)
 
     suspend fun loadShortcuts() {
-        availableSettings = repository.loadShortcuts()
-        searchTextCache.clear()
+        synchronized(loadLock) {
+            availableSettings = repository.loadShortcuts()
+            searchTextCache.clear()
+        }
+    }
+
+    /**
+     * Loads the catalog once (one PackageManager lookup per setting); callers racing at startup wait
+     * for the first load instead of repeating it.
+     */
+    private fun ensureLoaded() {
+        if (availableSettings.isNotEmpty()) return
+        synchronized(loadLock) {
+            if (availableSettings.isEmpty()) {
+                availableSettings = repository.loadShortcuts()
+                searchTextCache.clear()
+            }
+        }
     }
 
     suspend fun getSettingsByIds(ids: Set<String>): Map<String, DeviceSetting> {
         if (ids.isEmpty()) return emptyMap()
-        if (availableSettings.isEmpty()) {
-            availableSettings = repository.loadShortcuts()
-            searchTextCache.clear()
-        }
+        ensureLoaded()
         return availableSettings
             .filter { ids.contains(it.id) }
             .associateBy { it.id }
@@ -49,13 +62,13 @@ class DeviceSettingsSearchHandler(
         availableSettings.sortedBy { it.title.lowercase(Locale.getDefault()) }
 
     suspend fun getPinnedAndExcludedOnly(): DeviceSettingsSearchResults {
-        if (availableSettings.isEmpty()) {
-            availableSettings = repository.loadShortcuts()
-            searchTextCache.clear()
-        }
-
         val pinnedIds = userPreferences.getPinnedSettingIds()
         val excludedIds = userPreferences.getExcludedSettingIds()
+        // Nothing to look up: leave the catalog for the first settings query.
+        if (pinnedIds.isEmpty() && excludedIds.isEmpty()) {
+            return DeviceSettingsSearchResults(emptyList(), emptyList(), emptyList())
+        }
+        ensureLoaded()
 
         val pinned =
             availableSettings
@@ -119,10 +132,7 @@ class DeviceSettingsSearchHandler(
     ): List<DeviceSetting> {
         // Unified secondary search invokes this on its IO worker. Resolve the catalog on first
         // relevant query rather than during generic app startup.
-        if (availableSettings.isEmpty()) {
-            availableSettings = repository.loadShortcuts()
-            searchTextCache.clear()
-        }
+        ensureLoaded()
         return searchSettingsInternal(
             queryContext = queryContext,
             excludedIds = userPreferences.getExcludedSettingIds(),
@@ -180,14 +190,10 @@ class DeviceSettingsSearchHandler(
     }
 
     private fun getRecentSettingScores(): Map<String, Int> =
-        RecentResultRankingUtils
-            .buildRecencyIndex(userPreferences.getRecentResultOpens())
-            .settingScores
+        userPreferences.getRecentResultRecencyIndex().settingScores
 
     private fun getSettingOpenCounts(): Map<String, Int> =
-        RecentResultRankingUtils
-            .buildRecencyIndex(emptyList(), userPreferences.getRecentResultOpenCounts())
-            .settingOpenCounts
+        userPreferences.getRecentResultRecencyIndex().settingOpenCounts
 }
 
 private fun <T, K> List<T>.sortedByPinnedOrder(

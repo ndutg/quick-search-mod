@@ -1,9 +1,7 @@
 package com.tk.quicksearch.settings
 
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.tk.quicksearch.R
@@ -26,19 +24,13 @@ fun NoteDeleteConfirmationDialog(
             Text(
                 text = stringResource(R.string.notes_delete_confirm_message),
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurface,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         },
-        confirmButton = {
-            Button(onClick = onConfirm) {
-                Text(text = stringResource(R.string.dialog_delete))
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text(text = stringResource(R.string.dialog_cancel))
-            }
-        },
+        confirmLabel = stringResource(R.string.dialog_delete),
+        onConfirm = onConfirm,
+        dismissLabel = stringResource(R.string.dialog_cancel),
+        destructive = true,
     )
 }
 
@@ -60,18 +52,12 @@ fun NotesBulkDeleteConfirmationDialog(
             Text(
                 text = stringResource(R.string.notes_delete_selected_confirm_message),
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurface,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         },
-        confirmButton = {
-            Button(onClick = onConfirm) {
-                Text(text = stringResource(R.string.dialog_delete))
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text(text = stringResource(R.string.dialog_cancel))
-            }
-        },
+        confirmLabel = stringResource(R.string.dialog_delete),
+        onConfirm = onConfirm,
+        dismissLabel = stringResource(R.string.dialog_cancel),
+        destructive = true,
     )
 }

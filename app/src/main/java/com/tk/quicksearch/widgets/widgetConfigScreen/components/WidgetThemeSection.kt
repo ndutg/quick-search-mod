@@ -1,5 +1,12 @@
 package com.tk.quicksearch.widgets.widgetConfigScreen.components
 
+import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.Role
+import androidx.compose.foundation.selection.selectable
+import com.tk.quicksearch.shared.ui.theme.AppShapes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -7,12 +14,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -34,11 +39,12 @@ import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.core.AppTheme
 import com.tk.quicksearch.search.searchScreen.AppThemeColors
+import com.tk.quicksearch.shared.ui.components.SegmentedGroup
 import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
+import com.tk.quicksearch.shared.ui.theme.AppColors
+import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.widgets.utils.BorderColorOption
-import com.tk.quicksearch.widgets.utils.WidgetConfigConstants
 import com.tk.quicksearch.widgets.utils.WidgetPreferences
-import com.tk.quicksearch.widgets.utils.WidgetTheme
 
 @Composable
 fun WidgetThemeSection(
@@ -119,118 +125,107 @@ fun WidgetThemeSection(
     val customBorderColor: Color? =
         if (state.borderColorOption == BorderColorOption.CUSTOM) Color(state.borderColor) else null
 
-    Column(
-        verticalArrangement =
-            Arrangement.spacedBy(WidgetConfigConstants.COLOR_SECTION_SPACING),
-    ) {
-        Text(
-            text = stringResource(R.string.settings_app_theme_title),
-            style = MaterialTheme.typography.titleSmall,
-        )
-        ThemeChoiceSegmentedButtonRow(
-            selectedTheme = if (state.backgroundColor == null) state.theme else null,
-            onSelectionChange = {
-                onStateChange(
-                    state.copy(
-                        theme = it,
-                        backgroundColor = null,
-                        useDeviceThemeBackground = false,
-                        borderColorOption =
-                            if (state.borderColorOption == BorderColorOption.DEVICE_THEME) {
-                                BorderColorOption.BLACK
+    SegmentedGroup {
+        WidgetSettingTile(title = stringResource(R.string.settings_app_theme_title), index = 0, count = 2) {
+            ThemeChoiceSegmentedButtonRow(
+                selectedTheme = if (state.backgroundColor == null) state.theme else null,
+                onSelectionChange = {
+                    onStateChange(
+                        state.copy(
+                            theme = it,
+                            backgroundColor = null,
+                            useDeviceThemeBackground = false,
+                            borderColorOption =
+                                if (state.borderColorOption == BorderColorOption.DEVICE_THEME) {
+                                    BorderColorOption.BLACK
+                                } else {
+                                    state.borderColorOption
+                                },
+                        ),
+                    )
+                },
+            )
+            Row(
+                modifier = Modifier.fillMaxWidth().selectableGroup(),
+                horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
+            ) {
+                themeOptions.forEach { option ->
+                    ThemeColorOptionChip(
+                        modifier = Modifier.weight(1f),
+                        brush = option.brush,
+                        selected =
+                            if (option.isDeviceTheme) {
+                                state.useDeviceThemeBackground
                             } else {
-                                state.borderColorOption
+                                !state.useDeviceThemeBackground &&
+                                    state.backgroundColor == option.backgroundColorArgb
                             },
-                    ),
-                )
-            },
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            themeOptions.forEach { option ->
+                        label = stringResource(option.labelRes),
+                        onClick = {
+                            onStateChange(
+                                state.copy(
+                                    backgroundColor = option.backgroundColorArgb,
+                                    useDeviceThemeBackground = option.isDeviceTheme,
+                                    borderColorOption =
+                                        when {
+                                            option.isDeviceTheme && state.borderColorOption != BorderColorOption.CUSTOM ->
+                                                BorderColorOption.DEVICE_THEME
+                                            !option.isDeviceTheme && state.borderColorOption == BorderColorOption.DEVICE_THEME ->
+                                                BorderColorOption.BLACK
+                                            else -> state.borderColorOption
+                                        },
+                                ),
+                            )
+                        },
+                    )
+                }
+                val isCustomSelected =
+                    !state.useDeviceThemeBackground &&
+                    state.backgroundColor != null &&
+                        themeOptions.none { option -> option.backgroundColorArgb == state.backgroundColor }
                 ThemeColorOptionChip(
                     modifier = Modifier.weight(1f),
-                    brush = option.brush,
-                    selected =
-                        if (option.isDeviceTheme) {
-                            state.useDeviceThemeBackground
+                    color =
+                        if (isCustomSelected) {
+                            Color(state.backgroundColor)
                         } else {
-                            !state.useDeviceThemeBackground &&
-                                state.backgroundColor == option.backgroundColorArgb
+                            null
                         },
-                    label = stringResource(option.labelRes),
+                    selected = isCustomSelected,
                     onClick = {
-                        onStateChange(
-                            state.copy(
-                                backgroundColor = option.backgroundColorArgb,
-                                useDeviceThemeBackground = option.isDeviceTheme,
-                                borderColorOption =
-                                    when {
-                                        option.isDeviceTheme && state.borderColorOption != BorderColorOption.CUSTOM ->
-                                            BorderColorOption.DEVICE_THEME
-                                        !option.isDeviceTheme && state.borderColorOption == BorderColorOption.DEVICE_THEME ->
-                                            BorderColorOption.BLACK
-                                        else -> state.borderColorOption
-                                    },
-                            ),
+                        showCustomBgColorDialog = true
+                    },
+                    label = stringResource(R.string.common_custom),
+                    icon = {
+                        Icon(
+                            imageVector = MaterialSymbols.PaletteOutlined,
+                            contentDescription = null,
+                            tint = AppColors.Accent,
+                            modifier = Modifier.size(DesignTokens.IconSizeSmall),
                         )
                     },
                 )
             }
-            val isCustomSelected =
-                !state.useDeviceThemeBackground &&
-                state.backgroundColor != null &&
-                    themeOptions.none { option -> option.backgroundColorArgb == state.backgroundColor }
-            ThemeColorOptionChip(
-                modifier = Modifier.weight(1f),
-                color =
-                    if (isCustomSelected) {
-                        Color(state.backgroundColor)
-                    } else {
-                        Color.Transparent
-                    },
-                selected = isCustomSelected,
-                onClick = {
-                    showCustomBgColorDialog = true
+        }
+        WidgetSettingTile(title = stringResource(R.string.widget_border_color), index = 1, count = 2) {
+            BorderColorChoiceSegmentedButtonRow(
+                selectedOption = state.borderColorOption,
+                customColor = customBorderColor,
+                useDeviceTheme = state.useDeviceThemeBackground,
+                onDeviceThemeClick = {
+                    onStateChange(state.copy(borderColorOption = BorderColorOption.DEVICE_THEME))
                 },
-                label = stringResource(R.string.common_custom),
-                icon = {
-                    Icon(
-                        imageVector = MaterialSymbols.Edit,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.size(16.dp),
-                    )
+                onWhiteClick = {
+                    onStateChange(state.copy(borderColorOption = BorderColorOption.WHITE))
+                },
+                onBlackClick = {
+                    onStateChange(state.copy(borderColorOption = BorderColorOption.BLACK))
+                },
+                onCustomClick = {
+                    showCustomBorderColorDialog = true
                 },
             )
         }
-
-        // Border color section
-        Spacer(modifier = Modifier.height(4.dp))
-        Text(
-            text = stringResource(R.string.widget_border_color),
-            style = MaterialTheme.typography.titleSmall,
-        )
-        BorderColorChoiceSegmentedButtonRow(
-            selectedOption = state.borderColorOption,
-            customColor = customBorderColor,
-            useDeviceTheme = state.useDeviceThemeBackground,
-            onDeviceThemeClick = {
-                onStateChange(state.copy(borderColorOption = BorderColorOption.DEVICE_THEME))
-            },
-            onWhiteClick = {
-                onStateChange(state.copy(borderColorOption = BorderColorOption.WHITE))
-            },
-            onBlackClick = {
-                onStateChange(state.copy(borderColorOption = BorderColorOption.BLACK))
-            },
-            onCustomClick = {
-                showCustomBorderColorDialog = true
-            },
-        )
     }
 
     if (showCustomBgColorDialog) {
@@ -285,42 +280,43 @@ private fun ThemeColorOptionChip(
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(6.dp),
+        verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
     ) {
         Box(
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .height(42.dp)
-                    .clip(MaterialTheme.shapes.medium)
+                    .height(48.dp)
+                    .clip(AppShapes.large)
                     .then(
                         if (brush != null) {
                             Modifier.background(brush = brush)
                         } else {
-                            Modifier.background(color ?: Color.Transparent)
+                            Modifier.background(color ?: AppColors.AccentTintTonal)
                         },
                     )
                     .border(
-                        width = 1.dp,
-                        color = MaterialTheme.colorScheme.outlineVariant,
-                        shape = MaterialTheme.shapes.medium,
-                    ).clickable(onClick = onClick),
+                        width = if (selected) 2.dp else 1.dp,
+                        color = if (selected) AppColors.Accent else MaterialTheme.colorScheme.outlineVariant,
+                        shape = AppShapes.large,
+                    ).selectable(selected = selected, role = Role.RadioButton, onClick = onClick)
+                    .semantics { contentDescription = label },
             contentAlignment = Alignment.Center,
         ) {
             if (selected) {
                 Box(
                     modifier =
                         Modifier
-                            .size(22.dp)
-                            .clip(CircleShape)
-                            .background(MaterialTheme.colorScheme.primary),
+                            .size(DesignTokens.IconSize)
+                            .clip(AppShapes.full)
+                            .background(AppColors.Accent),
                     contentAlignment = Alignment.Center,
                 ) {
                     Icon(
                         imageVector = MaterialSymbols.Check,
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onPrimary,
-                        modifier = Modifier.size(14.dp),
+                        tint = AppColors.OnAccent,
+                        modifier = Modifier.size(16.dp),
                     )
                 }
             } else {
@@ -331,6 +327,7 @@ private fun ThemeColorOptionChip(
             text = label,
             style = MaterialTheme.typography.labelSmall,
             color = if (selected) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.clearAndSetSemantics {},
         )
     }
 }

@@ -1,9 +1,16 @@
 package com.tk.quicksearch.search.searchScreen.searchScreenLayout
 
+import androidx.compose.ui.semantics.Role
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.PaddingValues
+import com.tk.quicksearch.shared.ui.components.AppButtonSize
+import com.tk.quicksearch.shared.ui.components.AppButtonTone
+import com.tk.quicksearch.shared.ui.components.AppOutlinedButton
+import com.tk.quicksearch.shared.ui.components.AppIconButton
 import android.content.Context
 import android.content.Intent
 import android.provider.CallLog
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,24 +20,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.apps.appLock.AppLockGate
@@ -67,15 +66,15 @@ internal fun MissedCallsRow(
     // GlanceStatusRow's layout, but with app chips the dismiss button stays beside the title rather than centered.
     Row(
         modifier =
-            Modifier.fillMaxWidth().heightIn(min = 52.dp).padding(
-                start = 7.dp,
+            Modifier.fillMaxWidth().heightIn(min = DesignTokens.GlanceRowMinHeight).padding(
+                start = DesignTokens.GlanceRowHorizontalPadding,
                 top = DesignTokens.SpacingMedium,
                 bottom = DesignTokens.SpacingMedium,
             ),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Column(
-            modifier = Modifier.weight(1f).clickable { openCallHistory(context, calls.first()) },
+            modifier = Modifier.weight(1f).clickable(role = Role.Button) { openCallHistory(context, calls.first()) },
             verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingXSmall),
         ) {
             Row(
@@ -92,7 +91,7 @@ internal fun MissedCallsRow(
                 Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                     Text(
                         text = title,
-                        style = MaterialTheme.typography.bodyMedium,
+                        style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.onSurface,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
@@ -100,7 +99,7 @@ internal fun MissedCallsRow(
                     if (subtitle != null) {
                         Text(
                             text = subtitle,
-                            style = MaterialTheme.typography.bodySmall,
+                            style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             maxLines = GlanceTextMaxLines,
                             overflow = TextOverflow.Ellipsis,
@@ -110,14 +109,11 @@ internal fun MissedCallsRow(
             }
             if (hasAppChips) {
                 Row(
-                    modifier = Modifier.padding(start = 24.dp + DesignTokens.SpacingMedium, top = DesignTokens.SpacingXSmall),
+                    modifier = Modifier.padding(start = DesignTokens.SpacingXXLarge + DesignTokens.SpacingMedium, top = DesignTokens.SpacingXSmall),
                     horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
                 ) {
-                    // Without the 48dp minimum touch target, which pads the chips with empty space above and below.
-                    CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides Dp.Unspecified) {
-                        appCalls.forEach { call ->
-                            MissedCallAppChip(call = call, onClick = { openCallHistory(context, call) })
-                        }
+                    appCalls.forEach { call ->
+                        MissedCallAppChip(call = call, onClick = { openCallHistory(context, call) })
                     }
                 }
             }
@@ -138,13 +134,14 @@ internal fun MissedCallsRow(
                 )
             }
         }
-        IconButton(
+        AppIconButton(
             onClick = onDismiss,
-            modifier =
+            tooltip = stringResource(R.string.common_close),
+            modifier = Modifier.size(GlanceDismissButtonSize),
+            anchorModifier =
                 Modifier
                     .align(if (hasAppChips) Alignment.Top else Alignment.CenterVertically)
-                    .padding(start = DesignTokens.SpacingSmall)
-                    .size(GlanceDismissButtonSize),
+                    .padding(start = DesignTokens.SpacingSmall),
         ) {
             Icon(
                 imageVector = MaterialSymbols.Close,
@@ -169,29 +166,21 @@ private fun MissedCallAppChip(
     call: MissedCallNotification,
     onClick: () -> Unit,
 ) {
-    Surface(
+    AppOutlinedButton(
         onClick = onClick,
-        shape = CircleShape,
-        color = Color.Transparent,
-        contentColor = MaterialTheme.colorScheme.onSurface,
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+        tone = AppButtonTone.Custom(MaterialTheme.colorScheme.onSurface),
+        size = AppButtonSize.ExtraSmall,
+        contentPadding = PaddingValues(start = DesignTokens.SpacingSmall, end = DesignTokens.SpacingMedium),
     ) {
-        Row(
-            modifier = Modifier.padding(start = 8.dp, end = 12.dp, top = 5.dp, bottom = 5.dp),
-            horizontalArrangement = Arrangement.spacedBy(6.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Box(modifier = Modifier.size(16.dp), contentAlignment = Alignment.Center) {
-                NotificationAppIcon(call.packageName)
-            }
-            Text(
-                text = rememberAppLabel(call.packageName),
-                style = MaterialTheme.typography.labelMedium,
-                fontWeight = FontWeight.SemiBold,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
+        Box(modifier = Modifier.size(DesignTokens.ButtonIconSizeExtraSmall), contentAlignment = Alignment.Center) {
+            NotificationAppIcon(call.packageName)
         }
+        Spacer(Modifier.width(DesignTokens.SpacingSmall))
+        Text(
+            text = rememberAppLabel(call.packageName),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
     }
 }
 

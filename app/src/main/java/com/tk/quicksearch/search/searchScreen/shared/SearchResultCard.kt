@@ -1,5 +1,6 @@
 package com.tk.quicksearch.search.searchScreen.shared
 
+import com.tk.quicksearch.shared.ui.theme.AppShapes
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -10,35 +11,33 @@ import androidx.compose.material3.CardColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
-import androidx.compose.runtime.State
 import androidx.compose.runtime.compositionLocalOf
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.layout.LayoutCoordinates
+import androidx.compose.ui.graphics.compositeOver
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.layout.findRootCoordinates
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.offset
-import kotlin.math.abs
 import kotlin.math.roundToInt
+import com.tk.quicksearch.search.searchScreen.LocalFrostedCardSource
 import com.tk.quicksearch.search.searchScreen.LocalOverlayDividerColor
 import com.tk.quicksearch.search.searchScreen.LocalOverlayResultCardColor
 import com.tk.quicksearch.shared.ui.theme.AppColors
+import com.tk.quicksearch.search.searchScreen.frostedCardBackground
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
+import com.tk.quicksearch.shared.ui.theme.FrostedResultCardScrimFactor
 import com.tk.quicksearch.shared.ui.theme.LocalAppIsDarkTheme
-
-private const val RESULT_CARD_FADE_DURATION_MS = 140
 
 /**
  * False when the user turned on Compact Layout: result and home cards drop their container
@@ -58,6 +57,7 @@ data class SearchResultCardStyleOverrides(
     val border: BorderStroke? = null,
     val colors: CardColors? = null,
     val containerColor: Color? = null,
+    val showBorder: Boolean = true,
 )
 
 /**
@@ -74,14 +74,14 @@ object SearchResultCardDefaults {
         @Composable
         get() =
             if (LocalSearchCardLayoutEnabled.current) {
-                DesignTokens.SearchResultCardShape
+                AppShapes.resultCard
             } else {
-                DesignTokens.ShapeMedium
+                AppShapes.medium
             }
 
     /** Subtle border shown when wallpaper/custom image is active in dark mode. */
     private val wallpaperDarkBorder =
-        BorderStroke(DesignTokens.BorderWidth, Color.White.copy(alpha = 0.12f))
+        BorderStroke(DesignTokens.BorderWidth, AppColors.WallpaperDarkCardBorder)
 
     @Composable
     fun border(showWallpaperBackground: Boolean): BorderStroke? {
@@ -94,14 +94,78 @@ object SearchResultCardDefaults {
         showWallpaperBackground: Boolean,
         overlayContainerColor: Color?,
         containerColorOverride: Color? = null,
-    ): CardColors = AppColors.getSearchResultCardColors(
-        showWallpaperBackground = showWallpaperBackground,
-        overlayContainerColor = containerColorOverride ?: overlayContainerColor,
-    )
+    ): CardColors =
+        CardDefaults.cardColors(
+            containerColor =
+                containerColor(
+                    showWallpaperBackground = showWallpaperBackground,
+                    overlayContainerColor = containerColorOverride ?: overlayContainerColor,
+                ),
+        )
+
+    /** Resolved container color for result cards, segment tiles and other home/search cards. */
+    @Composable
+    fun containerColor(
+        showWallpaperBackground: Boolean,
+        overlayContainerColor: Color? = LocalOverlayResultCardColor.current,
+    ): Color {
+        val base =
+            AppColors.getSearchResultCardContainerColor(
+                showWallpaperBackground = showWallpaperBackground,
+                overlayContainerColor = overlayContainerColor,
+            )
+        val frost = LocalFrostedCardSource.current
+        if (!showWallpaperBackground || overlayContainerColor != null || frost?.isActive != true) {
+            return base
+        }
+        val tint = frost.tint
+        val foreground = MaterialTheme.colorScheme.onSurfaceVariant
+        val isDarkTheme = LocalAppIsDarkTheme.current
+        return remember(base, tint, foreground, isDarkTheme) {
+            val worstWallpaper = tint.compositeOver(if (isDarkTheme) Color.White else Color.Black)
+            readableFrostedScrim(base, foreground, worstWallpaper, isDarkTheme)
+        }
+    }
+
+    /**
+     * Hairline color for dividers between result rows, sections and flat (cardless) cards:
+     * overlay theme tint first, then the wallpaper divider, then Material outlineVariant.
+     */
+    @Composable
+    fun dividerColor(
+        showWallpaperBackground: Boolean,
+        overlayDividerColor: Color? = LocalOverlayDividerColor.current,
+    ): Color =
+        overlayDividerColor
+            ?: if (showWallpaperBackground) AppColors.WallpaperDivider else MaterialTheme.colorScheme.outlineVariant
+}
+
+/** Keeps the lightest usable scrim even over a fully white or black custom image. */
+private fun readableFrostedScrim(
+    scrim: Color,
+    foreground: Color,
+    wallpaper: Color,
+    isDarkTheme: Boolean,
+): Color {
+    val foregroundLuminance = foreground.luminance() + 0.05f
+    fun hasContrast(alpha: Float): Boolean {
+        val backgroundLuminance = scrim.copy(alpha = alpha).compositeOver(wallpaper).luminance() + 0.05f
+        val contrast = if (isDarkTheme) foregroundLuminance / backgroundLuminance else backgroundLuminance / foregroundLuminance
+        return contrast >= 4.5f
+    }
+
+    var low = scrim.alpha * FrostedResultCardScrimFactor
+    if (hasContrast(low)) return scrim.copy(alpha = low)
+    var high = 1f
+    repeat(8) {
+        val mid = (low + high) / 2f
+        if (hasContrast(mid)) high = mid else low = mid
+    }
+    return scrim.copy(alpha = high)
 }
 
 /**
- * Search-screen card wrapper (counterpart to [com.tk.quicksearch.settings.shared.SettingsCard]).
+ * Search-screen card wrapper.
  * Used only on the search result surface: sections, suggestions, engine cards, AI search, etc.
  * Styling is centralized via [SearchResultCardDefaults].
  */
@@ -116,7 +180,7 @@ fun SearchResultCard(
     val cardLayoutEnabled = LocalSearchCardLayoutEnabled.current
     val shape = styleOverrides.shape ?: SearchResultCardDefaults.shape
     val border =
-        if (cardLayoutEnabled) {
+        if (cardLayoutEnabled && styleOverrides.showBorder) {
             styleOverrides.border ?: SearchResultCardDefaults.border(showWallpaperBackground)
         } else {
             null
@@ -133,30 +197,27 @@ fun SearchResultCard(
         }
 
     val cardlessVerticalBleed = LocalCardlessStackSpacing.current / 2
-    val trailingEdge = LocalCardlessTrailingEdge.current
-    val cardBottomInRoot = remember { mutableFloatStateOf(Float.NaN) }
-    val isTrailingCard =
-        remember(trailingEdge) {
-            derivedStateOf {
-                trailingEdge != null && abs(cardBottomInRoot.floatValue - trailingEdge.bottomInRoot) < 1f
-            }
-        }
     if (cardLayoutEnabled) {
-        Card(modifier = modifier, colors = colors, shape = shape, border = border, content = content)
+        Card(
+            modifier = modifier.frostedCardBackground(shape),
+            colors = colors,
+            shape = shape,
+            border = border,
+            content = content,
+        )
         return
     }
     // A flat card is a plain column spanning the screen width, so nothing on it (animateContentSize,
     // the predicted highlight) clips its row dividers short of the edges. Its content is padded back
     // to the usual flat-card bleed.
-    val cardlessDividerColor = cardlessDividerColor(showWallpaperBackground)
+    val cardlessDividerColor = SearchResultCardDefaults.dividerColor(showWallpaperBackground)
     val slotEdges = remember { EdgeDistances() }
     val rowBleed = DesignTokens.SpacingSmall
     Column(
         modifier =
-            Modifier.onGloballyPositioned { cardBottomInRoot.floatValue = it.bottomInRoot() }
-                .trackEdgeDistances(slotEdges)
+            Modifier.trackEdgeDistances(slotEdges)
                 .cardlessBleed(slotEdges, rowBleed, cardlessVerticalBleed)
-                .cardlessSectionDivider(cardlessDividerColor, isTrailingCard)
+                .cardlessSectionDivider(cardlessDividerColor)
                 .then(modifier)
                 .cardlessContentInset(slotEdges, rowBleed),
         content = content,
@@ -246,38 +307,13 @@ private fun Modifier.cardlessContentInset(slotEdges: EdgeDistances, rowBleed: Dp
     }
 
 /**
- * Bottom edge of the search results column in root coordinates. The flat card whose bottom lands
- * on it is the last result, so it skips its section divider.
- */
-@Stable
-internal class CardlessTrailingEdge {
-    var bottomInRoot by mutableFloatStateOf(Float.NaN)
-}
-
-internal val LocalCardlessTrailingEdge = staticCompositionLocalOf<CardlessTrailingEdge?> { null }
-
-/** Reports this node's bottom edge as the results column's [CardlessTrailingEdge]. */
-@Composable
-internal fun Modifier.reportCardlessTrailingEdge(): Modifier {
-    val trailingEdge = LocalCardlessTrailingEdge.current ?: return this
-    return onGloballyPositioned { trailingEdge.bottomInRoot = it.bottomInRoot() }
-}
-
-private fun LayoutCoordinates.bottomInRoot(): Float = localToRoot(Offset(0f, size.height.toFloat())).y
-
-@Composable
-internal fun cardlessDividerColor(showWallpaperBackground: Boolean): Color =
-    LocalOverlayDividerColor.current
-        ?: if (showWallpaperBackground) AppColors.WallpaperDivider else MaterialTheme.colorScheme.outlineVariant
-
-/**
  * Flat cards have no edges, so each one draws a hairline along its bottom edge (where it meets the
- * next card), across the full screen width like the row dividers inside sections.
+ * next card, or closes the list after the last one), across the full screen width like the row
+ * dividers inside sections.
  */
-private fun Modifier.cardlessSectionDivider(color: Color, isTrailing: State<Boolean>): Modifier =
+private fun Modifier.cardlessSectionDivider(color: Color): Modifier =
     drawWithContent {
         drawContent()
-        if (isTrailing.value) return@drawWithContent
         val stroke = DesignTokens.BorderWidth.toPx()
         val y = size.height - stroke / 2
         drawLine(color, Offset(0f, y), Offset(size.width, y), strokeWidth = stroke)

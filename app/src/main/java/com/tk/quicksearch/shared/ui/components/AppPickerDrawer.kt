@@ -1,8 +1,13 @@
 package com.tk.quicksearch.shared.ui.components
 
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import com.tk.quicksearch.shared.ui.theme.AppShapes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -14,11 +19,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -51,7 +54,7 @@ import com.tk.quicksearch.shared.ui.theme.DesignTokens
  * @param autoFocus Focuses the field and opens the keyboard once the drawer has opened. Use it
  *   when the list is empty until the user types.
  * @param onSubmit Turns the field into an entry field: it shows an add icon instead of the search
- *   icon, uses [DesignTokens.ShapeLarge] corners instead of a pill, and the keyboard's Done key
+ *   icon, uses [AppShapes.large] corners instead of a pill, and the keyboard's Done key
  *   submits the typed text.
  */
 class AppPickerDrawerSearch(
@@ -132,30 +135,14 @@ fun AppPickerDrawer(
                     ),
             verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium),
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
+            AppDrawerHeader(
+                onClose = {
+                    keyboardController?.hide()
+                    dismiss()
+                },
+                leadingContent = titleIcon,
             ) {
-                titleIcon?.invoke()
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.titleLarge,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.weight(1f),
-                )
-                IconButton(
-                    onClick = {
-                        keyboardController?.hide()
-                        dismiss()
-                    },
-                ) {
-                    Icon(
-                        imageVector = MaterialSymbols.Close,
-                        contentDescription = stringResource(R.string.common_close),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
+                Text(text = title)
             }
 
             search?.let { AppPickerDrawerSearchField(search = it, focusRequester = focusRequester) }
@@ -176,24 +163,23 @@ private fun AppPickerDrawerSearchField(
     search: AppPickerDrawerSearch,
     focusRequester: FocusRequester,
 ) {
+    val searchLabel = search.placeholder ?: stringResource(R.string.common_search)
     OutlinedTextField(
         value = search.query,
         onValueChange = search.onQueryChange,
-        modifier = Modifier.fillMaxWidth().focusRequester(focusRequester),
-        shape = if (search.onSubmit != null) DesignTokens.ShapeLarge else RoundedCornerShape(50.dp),
+        modifier = Modifier.fillMaxWidth().focusRequester(focusRequester).semantics {
+            contentDescription = searchLabel
+        },
+        shape = if (search.onSubmit != null) AppShapes.large else AppShapes.full,
         leadingIcon = {
-            if (search.onSubmit != null) {
-                Icon(imageVector = MaterialSymbols.Add, contentDescription = null)
-            } else {
-                Icon(
-                    imageVector = MaterialSymbols.Search,
-                    contentDescription = stringResource(R.string.common_search),
-                )
-            }
+            Icon(
+                imageVector = if (search.onSubmit != null) MaterialSymbols.Add else MaterialSymbols.Search,
+                contentDescription = null,
+            )
         },
         trailingIcon = {
             if (search.query.text.isNotBlank()) {
-                IconButton(onClick = { search.onQueryChange(TextFieldValue("")) }) {
+                AppIconButton(onClick = { search.onQueryChange(TextFieldValue("")) }, tooltip = stringResource(R.string.desc_clear_search)) {
                     Icon(
                         imageVector = MaterialSymbols.Close,
                         contentDescription = stringResource(R.string.desc_clear_search),
@@ -218,18 +204,14 @@ private fun AppPickerDrawerSearchField(
         keyboardActions =
             search.onSubmit?.let { submit -> KeyboardActions(onDone = { submit(search.query.text) }) }
                 ?: KeyboardActions.Default,
-        colors =
-            dialogTextFieldColors().copy(
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-                disabledIndicatorColor = Color.Transparent,
-            ),
+        colors = dialogTextFieldColors(unfocusedIndicatorColor = Color.Transparent),
     )
 }
 
 /**
  * One option in an [AppPickerDrawer]. When [selected], the row is tinted with the accent color
- * and shows a filled check, unless a [trailing] slot replaces it.
+ * and shows a filled check, unless a [trailing] slot replaces it. A null [selected] means the row
+ * is an action without selection state.
  */
 @Composable
 fun AppPickerDrawerRow(
@@ -239,7 +221,7 @@ fun AppPickerDrawerRow(
     subtitle: String? = null,
     supportingContent: (@Composable () -> Unit)? = null,
     leading: (@Composable () -> Unit)? = null,
-    selected: Boolean = false,
+    selected: Boolean? = null,
     trailing: (@Composable () -> Unit)? = null,
     enabled: Boolean = true,
     titleMaxLines: Int = Int.MAX_VALUE,
@@ -250,8 +232,14 @@ fun AppPickerDrawerRow(
                 .fillMaxWidth()
                 .heightIn(min = AppPickerDrawerRowMinHeight)
                 .clip(AppPickerDrawerRowShape)
-                .background(appPickerDrawerItemBackground(selected))
-                .clickable(enabled = enabled, onClick = onClick)
+                .background(appPickerDrawerItemBackground(selected == true))
+                .then(
+                    if (selected == null) {
+                        Modifier.clickable(enabled = enabled, role = Role.Button, onClick = onClick)
+                    } else {
+                        Modifier.selectable(selected = selected, enabled = enabled, role = Role.RadioButton, onClick = onClick)
+                    },
+                )
                 .padding(
                     vertical = DesignTokens.SpacingMedium,
                     horizontal = DesignTokens.SpacingMedium,
@@ -262,7 +250,7 @@ fun AppPickerDrawerRow(
         leading?.invoke()
         Column(
             modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingXXSmall),
+            verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingXSmall),
         ) {
             Text(
                 text = title,
@@ -274,7 +262,7 @@ fun AppPickerDrawerRow(
             subtitle?.let {
                 Text(
                     text = it,
-                    style = MaterialTheme.typography.bodySmall,
+                    style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
@@ -284,7 +272,7 @@ fun AppPickerDrawerRow(
         }
         when {
             trailing != null -> trailing()
-            selected -> AppPickerDrawerSelectedCheck()
+            selected == true -> AppPickerDrawerSelectedCheck(contentDescription = null)
         }
     }
 }
@@ -294,14 +282,14 @@ fun AppPickerDrawerRow(
 fun appPickerDrawerItemBackground(
     selected: Boolean,
     unselected: Color = Color.Transparent,
-): Color = if (selected) AppColors.Accent.copy(alpha = SELECTED_ROW_ALPHA) else unselected
+): Color = if (selected) AppColors.AccentTintTonal else unselected
 
 /** Accent check that marks the selected option in an [AppPickerDrawer]. */
 @Composable
-fun AppPickerDrawerSelectedCheck() {
+fun AppPickerDrawerSelectedCheck(contentDescription: String? = stringResource(R.string.desc_selected)) {
     Icon(
         imageVector = MaterialSymbols.Check,
-        contentDescription = stringResource(R.string.desc_selected),
+        contentDescription = contentDescription,
         tint = AppColors.Accent,
         modifier = Modifier.size(SELECTED_CHECK_SIZE),
     )
@@ -310,14 +298,7 @@ fun AppPickerDrawerSelectedCheck() {
 /** Leading icon for an [AppPickerDrawerRow] option that has no app icon of its own. */
 @Composable
 fun AppPickerDrawerIconBadge(icon: ImageVector) {
-    Box(
-        modifier =
-            Modifier
-                .size(AppPickerDrawerLeadingSize)
-                .clip(DesignTokens.ShapeSmall)
-                .background(AppColors.Accent.copy(alpha = ICON_BADGE_ALPHA)),
-        contentAlignment = Alignment.Center,
-    ) {
+    TonalIconBadgeContainer(size = AppPickerDrawerLeadingSize, shape = AppShapes.small) {
         Icon(
             imageVector = icon,
             contentDescription = null,
@@ -371,10 +352,8 @@ val AppPickerDrawerLeadingSize = 32.dp
 /** Space between rows of an [AppPickerDrawer] list: `Arrangement.spacedBy(AppPickerDrawerRowSpacing)`. */
 val AppPickerDrawerRowSpacing = 2.dp
 
-val AppPickerDrawerRowShape = RoundedCornerShape(16.dp)
+val AppPickerDrawerRowShape = AppShapes.large
 private val SELECTED_CHECK_SIZE = 24.dp
 private val ICON_BADGE_ICON_SIZE = 18.dp
-private const val SELECTED_ROW_ALPHA = 0.14f
-private const val ICON_BADGE_ALPHA = 0.14f
 
 private const val DRAWER_HEIGHT_FRACTION = 0.85f

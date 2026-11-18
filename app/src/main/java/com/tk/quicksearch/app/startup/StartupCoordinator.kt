@@ -2,12 +2,14 @@ package com.tk.quicksearch.app.startup
 
 import android.app.Activity
 import android.content.Context
+import android.os.Handler
+import android.os.Looper
 import android.os.Trace
 import android.view.Window
 import android.view.ViewTreeObserver
 import androidx.lifecycle.LifecycleCoroutineScope
 import com.tk.quicksearch.app.UpdateHelper
-import com.tk.quicksearch.app.MainActivity
+import com.tk.quicksearch.app.HomeActivity
 import com.tk.quicksearch.search.core.BackgroundSource
 import com.tk.quicksearch.search.core.SearchViewModel
 import com.tk.quicksearch.search.data.userAppPreferences.UserAppPreferences
@@ -61,7 +63,9 @@ class StartupCoordinator(
 
                     Trace.beginSection(TRACE_FIRST_DRAW)
                     Trace.endSection()
-                    decorView.post {
+                    // Front of the queue: run right after this frame instead of behind every frame
+                    // the first composition's effects schedule next (measured 100-250 ms later).
+                    Handler(Looper.getMainLooper()).postAtFrontOfQueue {
                         if (decorView.viewTreeObserver.isAlive) {
                             decorView.viewTreeObserver.removeOnDrawListener(this)
                         }
@@ -173,7 +177,8 @@ class StartupCoordinator(
     private fun preloadWallpaperDivisor(): Int {
         val lightBlur = userPreferences.getWallpaperBlurRadius(isDarkMode = false)
         val darkBlur = userPreferences.getWallpaperBlurRadius(isDarkMode = true)
-        val showsSystemBackdrop = (activity as? MainActivity)?.canShowSystemWallpaperBackdrop == true
+        // Only Home's window leaves the unblurred wallpaper to Android; MainActivity draws it.
+        val showsSystemBackdrop = (activity as? HomeActivity)?.canShowSystemWallpaperBackdrop == true
         if (showsSystemBackdrop && lightBlur <= 0f && darkBlur <= 0f) {
             return WallpaperUtils.WALLPAPER_THUMBNAIL_DIVISOR
         }

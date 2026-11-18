@@ -7,7 +7,7 @@ Repository playbook for coding agents. When prose and code disagree, trust the c
 - Keep changes narrow; preserve unrelated work in the tree. Don't mix feature work with speculative refactors or cleanup.
 - Don't `git add`, commit, tag, push, or publish without explicit permission.
 - Don't edit `app/src/main/assets/FEATURES.md` or `RELEASE_NOTES.md` as part of feature work; the user updates them before a release. Touch them only when asked.
-- `scripts/verify.sh` installs and launches the debug build when one device is connected; that is expected. Beyond that, don't drive the device (taps, gestures, settings changes) unless asked. Bug reports are often from other users' devices, so a local run doesn't prove their bug is fixed.
+- `scripts/verify.sh` installs and launches the debug build on all connected USB devices, or all wireless devices when none use USB (`ANDROID_SERIAL` overrides this); that is expected. Beyond that, don't drive the device (taps, gestures, settings changes) unless asked. Bug reports are often from other users' devices, so a local run doesn't prove their bug is fixed.
 - Don't run instrumented/Compose UI tests unless asked; the user does manual UI testing.
 - A successful build proves only that it builds. Don't claim a visual state, gesture, keyboard interaction, provider response, or intermittent issue is fixed without reproducing it.
 - In app action menus, never leave placeholder gaps between options; reflow so any gap is only at the end of the last row.
@@ -35,8 +35,8 @@ Repository playbook for coding agents. When prose and code disagree, trust the c
 ### Data and preferences
 
 - Repositories: `search/data/`; feature-specific policies/handlers stay in their feature package.
-- New preference: add to the relevant class in `search/data/preferences/`, expose via `search/data/userAppPreferences/UserAppPreferences.kt`.
-- Startup-critical reads go through `search/data/userAppPreferences/StartupPreferencesFacade.kt`. No one-off blocking reads in startup paths or composables.
+- Plain searchable boolean settings use `search/appSettings/BooleanSetting.kt`. For other preferences, use the relevant class in `search/data/preferences/` and expose it through `UserAppPreferences`.
+- Startup-critical reads go through `search/data/userAppPreferences/StartupPreferencesFacade.kt`. No one-off blocking reads in startup paths or composables. Add new typed snapshot fields to `StartupPreferences` and decode them once in `StartupPreferenceDecoder.kt`.
 - Search history: `search/searchHistory/SearchHistoryPreferences.kt`.
 - Searchable settings catalog: `search/appSettings/AppSettingsRepository.kt`. New user-facing settings must be wired here as well as in the Settings UI.
 
@@ -44,7 +44,9 @@ Repository playbook for coding agents. When prose and code disagree, trust the c
 
 - Search route: `search/searchScreen/searchRoute/SearchRoute.kt`. Composition: `search/searchScreen/SearchScreen.kt`, `SearchScreenContent.kt`, `SectionRenderingComposables.kt`, `searchScreenLayout/` (includes Home sections and At a Glance).
 - Settings: `settings/settingsScreen/` (main screen, backup/export), `settings/settingsDetailScreen/` (detail pages, `SettingsDetailType`, routing), `settings/shared/`, plus feature-specific settings packages.
-- Reuse `shared/ui/components/`, `shared/ui/theme/DesignTokens.kt`, `shared/ui/theme/AppColors.kt`. Read `DESIGN_SYSTEM.md` (repo root) before adding UI or tokens; update it when you add or rename tokens, theme modes, or shared components. For shared paths, account for wallpaper, custom background, one-handed/bottom search bar, tablet, and overlay modes.
+- **Material 3 first.** All new UI follows the Material 3 guidelines (m3.material.io), including Material 3 Expressive. Before designing a screen or component, read `DESIGN_SYSTEM.md` (repo root), name the Material 3 pattern it follows, and build it from the shared wrappers in `shared/ui/components/` and `settings/shared/`, plus the tokens in `shared/ui/theme/` (`DesignTokens`, `AppColors`, `AppShapes`, `AppMotion`, the type scale, `MaterialSymbols`). Don't use raw Material buttons or `DropdownMenu`, hex colors, ad hoc radii, inline springs, or one-off `TextStyle`s. Keep 48dp touch targets, 4.5:1 text contrast, and content descriptions.
+- Work through the "Checklist for new UI" in `DESIGN_SYSTEM.md`. It covers every background and layout mode: theme gradient, wallpaper, custom image, AMOLED, Material You, light and dark, overlay, one-handed/bottom search bar, Compact Layout, and tablet.
+- If no Material 3 pattern fits, or you must deviate from one, say so when proposing the design and record the decision in `DESIGN_SYSTEM.md`. Update `DESIGN_SYSTEM.md` in the same change when you add, rename, or remove a token, theme mode, or shared component.
 - Other feature packages: `widgetsPanel/` (Home widget grid), `widgets/` (app widgets), `reminders/`, `customInfo/` (At a Glance Custom Info), `appNotifications/` (At a Glance app notifications), `media/`, `edgeGesture/`, `notchGesture/`, `floatingButton/`, `pinnedNotifications/`, `tile/`, `onboarding/`.
 
 ### Strings
@@ -57,6 +59,19 @@ Repository playbook for coding agents. When prose and code disagree, trust the c
 - Startup is phased: `app/startup/StartupCoordinator.kt`, `search/core/SearchStartupCoordinator.kt`, `SearchStartupLifecycleDelegate.kt`. Keep expensive work off the main thread and out of the first visible phase.
 - `MainActivity` and `OverlayActivity` share process-wide icon caches. Route cleanup through `app/UiSurfaceMemoryManager.kt`; don't clear caches while another surface is active.
 - In `search/apps/AppIconManager.kt`: `clearAppIconMemoryCache()` evicts memory without refreshing displayed icons; `invalidateAppIconCache()` is only for explicit icon changes that must refresh the UI.
+
+### Performance and lifecycle
+
+Build new features this way from the start rather than fixing them in a later "performance and lifecycle" pass. When planning one, state which of these apply.
+
+- **Threads:** Run provider queries, `ContentResolver`, `PackageManager`, `AppWidgetManager`, disk, and bitmap decoding on `Dispatchers.IO`. Run CPU work such as parsing, ranking, and fuzzy matching on `Dispatchers.Default`. Never do either in a composable body or on the first frame.
+- **Cancellation:** Per-query work must be cancellable and must drop stale results (follow `SearchToolCoordinator` and `WebSuggestionHandler`). Call `ensureActive()` in long loops. Open network calls inside `withCancellableHttp { ... }` with `.trackCancellation()` (`tools/aiSearch/CancellableHttp.kt`) so cancellation actually disconnects them. When starting a new refresh, cancel the previous `Job` instead of stacking another one.
+- **Queries:** Request only the columns you need, push filters into the selection, and apply a `limit`. Reuse snapshots or caches you already have before querying again (for example, `CalendarRepository` checks the cached search rows first, then fetches only the missing IDs).
+- **Caches:** Bound memory caches with `LruCache` (by bytes for bitmaps), decode images at the size they're drawn, and key them by everything that changes their output. Invalidate them with a `ContentObserver` or change tracker (`ContactsChangeTracker`), not on a timer. Free memory through `UiSurfaceMemoryManager` or an `onSurfaceVisibilityChanged` / `releaseMemoryCaches()` hook, following `CalendarSearchRowsCache`, `FileNameIndex`, and `ContactRepository`.
+- **Lifecycle:** Register observers, listeners, and widget hosts in a `DisposableEffect`, or in the start/stop hooks, and unregister them on dispose. Re-check permissions and settings that can change in the background when the screen resumes (`rememberResumeRefreshKey()`), not on every recomposition. Remember that `OverlayActivity` and `MainActivity` can both be alive at once.
+- **Compose:** Hoist and `remember` formatters, parsed values, and lookups by their real inputs. Read state as late as possible, and use `derivedStateOf` for values computed from scroll or animation state. Give lazy list items stable `key`s. For long first renders, reveal rows progressively (`rememberProgressiveRowCount` in contacts) instead of composing everything in one frame.
+- **Startup:** New startup work joins a later `StartupPhase`, not the first visible one. Preference reads go through the startup snapshot, not one-off reads.
+- **Measuring:** Use the existing perf loggers (`AppSearchPerformanceLogger`, `FuzzySearchPerformanceLogger`) or the `:benchmark` module when a change claims a speedup. Don't report a performance gain you haven't measured.
 
 ## Feature guides
 
@@ -80,7 +95,7 @@ Read the matching guide before implementing. Claude Code loads the skill of the 
 
 ## Validation
 
-- **Definition of done:** `scripts/verify.sh` prints `VERIFY PASSED`. It runs whitespace, string parity, and file-size checks, the standard flavor compile, all unit tests, and `assembleStandardDebug`, and prints only the errors on failure (full log in `build/verify-gradle.log`). When one device is connected it also installs and launches `com.tk.quicksearch.debug` there (this revokes the accessibility grant; the script says when it is off). Use `--no-assemble` for intermediate checks and `--no-device` to skip the install. Report the APK path (`app/build/outputs/apk/standard/debug/app-standard-debug.apk`) and whether it was installed.
+- **Definition of done:** `scripts/verify.sh` prints `VERIFY PASSED`. It runs whitespace, string parity, and file-size checks, the standard flavor compile, and `assembleStandardDebug`. It also runs the full standard unit suite when the `versionCode` in `app/build.gradle.kts` differs from `HEAD`, so verify a version bump before committing it. The full Gradle log is in `build/verify-gradle.log`. It installs and launches `com.tk.quicksearch.debug` on all USB devices when any are connected, otherwise all wireless devices (`ANDROID_SERIAL` overrides this) (this revokes the accessibility grant; the script says when it is off). Use `--no-assemble` for intermediate checks and `--no-device` to skip the install. Report the APK path (`app/build/outputs/apk/standard/debug/app-standard-debug.apk`) and whether it was installed.
 - Faster iteration: `./gradlew -q :app:compileStandardDebugKotlin` (plus `:app:compileFdroidDebugKotlin` for flavor code; plain `compileDebugKotlin` doesn't exist), `./gradlew -q :app:testStandardDebugUnitTest --tests '<pattern>'`, and `python3 scripts/check_strings.py` after resource XML changes.
 - On-device verification only when asked: use the `device-verify` skill (`.claude/skills/device-verify/SKILL.md`).
 - Formatting: follow `.editorconfig` and the surrounding code. The codebase is not ktlint-clean, so don't run ktlint or any formatter over whole files.

@@ -21,45 +21,13 @@ import com.tk.quicksearch.tools.aiSearch.GeminiModelCatalog
 import com.tk.quicksearch.tools.aiTools.DictionarySense
 import com.tk.quicksearch.tools.aiSearch.LlmTextModel
 import com.tk.quicksearch.tools.tasker.TaskerIntentTool
+import com.tk.quicksearch.tools.inlineSearch.InlineToolData
+import com.tk.quicksearch.tools.inlineSearch.SearchToolType
 
 data class IconPackInfo(
         val packageName: String,
         val label: String,
 )
-
-enum class SearchEngine {
-        DIRECT_SEARCH,
-        GOOGLE,
-        CHATGPT,
-        GEMINI,
-        PERPLEXITY,
-        GOOGLE_PLAY,
-        FDROID,
-        YOUTUBE,
-        GOOGLE_MAPS,
-        WAZE,
-        GROK,
-        REDDIT,
-        AMAZON,
-        X,
-        YOUTUBE_MUSIC,
-        SPOTIFY,
-        CLAUDE,
-        GOOGLE_DRIVE,
-        GOOGLE_PHOTOS,
-        AI_MODE,
-        DUCKDUCKGO,
-        BRAVE,
-        FACEBOOK_MARKETPLACE,
-        YOU_COM,
-        WIKIPEDIA,
-        BING,
-        STARTPAGE,
-        GOOGLE_TRANSLATE,
-        KAGI,
-        KAGI_ASSISTANT,
-        MUSE,
-}
 
 data class BrowserApp(
         val packageName: String,
@@ -131,12 +99,41 @@ enum class CallingApp {
         SIGNAL,
 }
 
+/**
+ * Persisted app theme. [MONOCHROME] is the "Default" theme; every other value is a palette
+ * offered under "Custom" (see [CUSTOM_APP_THEME_PALETTES]).
+ */
 enum class AppTheme {
         FOREST,
         AURORA,
         SUNSET,
         MONOCHROME,
+        LAVENDER,
+        TEAL,
+        AMBER,
+        INDIGO,
+        SLATE,
+        ROSE,
+        MOCHA,
 }
+
+/**
+ * Preset palettes shown in the Colorful theme picker, in display order: one or two per popular
+ * color family (roughly by hue, then brown and grey).
+ */
+val CUSTOM_APP_THEME_PALETTES: List<AppTheme> =
+        listOf(
+                AppTheme.ROSE,
+                AppTheme.SUNSET,
+                AppTheme.AMBER,
+                AppTheme.FOREST,
+                AppTheme.TEAL,
+                AppTheme.AURORA,
+                AppTheme.INDIGO,
+                AppTheme.LAVENDER,
+                AppTheme.MOCHA,
+                AppTheme.SLATE,
+        )
 
 enum class BackgroundSource {
         THEME,
@@ -213,13 +210,6 @@ data class ScreenTimeAppUsage(
         val durationMillis: Long,
 )
 
-enum class SearchToolType {
-        CALCULATOR,
-        UNIT_CONVERTER,
-        DATE_CALCULATOR,
-        COLOR_VISUALIZER,
-}
-
 data class AiSearchState(
         val status: AiSearchStatus = AiSearchStatus.Idle,
         val answer: String? = null,
@@ -280,13 +270,8 @@ data class WeatherState(
 
 data class CalculatorState(
         val result: String? = null,
-        val expression: String? = null,
-        val isCalculatorMode: Boolean = false,
-        val isUnitConverterMode: Boolean = false,
-        val isDateCalculatorMode: Boolean = false,
-        val isColorVisualizerMode: Boolean = false,
-        /** Parsed opaque ARGB color for the Color Visualizer tool. */
-        val colorArgb: Int? = null,
+        val isToolMode: Boolean = false,
+        val toolData: InlineToolData? = null,
         val toolType: SearchToolType = SearchToolType.CALCULATOR,
         val showInvalidExpression: Boolean = false,
         /** Epoch millis for the date parsed by the date calculator tool. */
@@ -304,8 +289,21 @@ data class CalculatorState(
         /** Secondary time result shown alongside the primary (used for absolute time queries: past + future). */
         val timeResultLabel2: String? = null,
 ) {
-        val isToolMode: Boolean
-                get() = isCalculatorMode || isUnitConverterMode || isDateCalculatorMode || isColorVisualizerMode
+        val isCalculatorMode: Boolean
+                get() = isToolMode && toolType == SearchToolType.CALCULATOR
+
+        val isUnitConverterMode: Boolean
+                get() = isToolMode && toolType == SearchToolType.UNIT_CONVERTER
+
+        val hasResult: Boolean
+                get() = result != null || toolData != null || parsedDateMillis != null ||
+                        dateDiffLabel != null || timeResultLabel != null
+
+        val hasExclusiveResult: Boolean
+                get() = toolType.replacesSearchResults && hasResult
+
+        val isVisible: Boolean
+                get() = isToolMode || hasResult
 }
 
 data class PhoneNumberSelection(

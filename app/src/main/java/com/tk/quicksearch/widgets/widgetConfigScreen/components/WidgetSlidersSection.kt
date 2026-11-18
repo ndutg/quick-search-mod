@@ -1,9 +1,7 @@
 package com.tk.quicksearch.widgets.widgetConfigScreen.components
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
@@ -11,101 +9,119 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.graphics.Color
 import com.tk.quicksearch.R
-import com.tk.quicksearch.widgets.utils.WidgetConfigConstants
+import com.tk.quicksearch.shared.ui.components.SliderWithValue
+import com.tk.quicksearch.shared.ui.components.SegmentedGroup
+import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.widgets.utils.WidgetPreferences
 import com.tk.quicksearch.widgets.utils.WidgetRanges
 import com.tk.quicksearch.shared.util.hapticToggle
 import kotlin.math.roundToInt
 import java.util.Locale
 
+/**
+ * Corner radius, border width and transparency as one group of tiles. [leadingTile] adds a tile of
+ * the caller's own sliders (a widget's font size) at the top of the group.
+ */
 @Composable
 fun WidgetSlidersSection(
     state: WidgetPreferences,
     showBorderControls: Boolean = true,
+    leadingTile: (@Composable ColumnScope.() -> Unit)? = null,
     onStateChange: (WidgetPreferences) -> Unit,
 ) {
-    Column(
-        verticalArrangement = Arrangement.spacedBy(WidgetConfigConstants.SLIDER_ROW_SPACING),
-    ) {
-        SliderRow(
-            label = stringResource(R.string.widget_slider_radius),
-            value = state.borderRadiusDp,
-            valueRange = 0f..40f,
-            steps = 40,
-            valueFormatter = { "${it.roundToInt()} dp" },
-            onValueChange = { onStateChange(state.copy(borderRadiusDp = it)) },
-        )
-        if (showBorderControls) {
+    val offset = if (leadingTile != null) 1 else 0
+    val count = offset + if (showBorderControls) 3 else 2
+    SegmentedGroup {
+        if (leadingTile != null) {
+            WidgetSettingTile(index = 0, count = count, content = leadingTile)
+        }
+        WidgetSettingTile(index = offset, count = count) {
             SliderRow(
-                label = stringResource(R.string.widget_slider_border),
-                value = state.borderWidthDp,
-                valueRange = 0f..4f,
-                steps = 8,
-                valueFormatter = { formatBorderWidth(it) },
-                onValueChange = { onStateChange(state.copy(borderWidthDp = it)) },
+                label = stringResource(R.string.widget_slider_radius),
+                value = state.borderRadiusDp,
+                valueRange = 0f..40f,
+                steps = 40,
+                valueFormatter = { "${it.roundToInt()} dp" },
+                onValueChange = { onStateChange(state.copy(borderRadiusDp = it)) },
             )
         }
         if (showBorderControls) {
-            Text(
-                text = stringResource(R.string.settings_wallpaper_transparency_label),
-                style = MaterialTheme.typography.titleSmall,
-            )
-            SliderRow(
-                label = stringResource(R.string.widget_slider_transparency_background),
-                value = state.backgroundAlpha,
-                valueRange = 0f..1f,
-                steps = 10,
-                valueFormatter = { "${(it * 100).roundToInt()}%" },
-                labelTextStyle = MaterialTheme.typography.bodySmall,
-                labelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                onValueChange = { onStateChange(state.copy(backgroundAlpha = it)) },
-            )
+            WidgetSettingTile(index = offset + 1, count = count) {
+                SliderRow(
+                    label = stringResource(R.string.widget_slider_border),
+                    value = state.borderWidthDp,
+                    valueRange = 0f..4f,
+                    steps = 8,
+                    valueFormatter = { formatBorderWidth(it) },
+                    onValueChange = { onStateChange(state.copy(borderWidthDp = it)) },
+                )
+            }
+            WidgetSettingTile(
+                title = stringResource(R.string.settings_wallpaper_transparency_label),
+                index = offset + 2,
+                count = count,
+            ) {
+                SliderRow(
+                    label = stringResource(R.string.widget_slider_transparency_background),
+                    value = state.backgroundAlpha,
+                    valueRange = 0f..1f,
+                    steps = 10,
+                    valueFormatter = { "${(it * 100).roundToInt()}%" },
+                    labelTextStyle = MaterialTheme.typography.bodyMedium,
+                    labelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    onValueChange = { onStateChange(state.copy(backgroundAlpha = it)) },
+                )
+                SliderRow(
+                    label = stringResource(R.string.widget_slider_transparency_border),
+                    value = state.borderAlpha,
+                    valueRange = 0f..1f,
+                    steps = 10,
+                    valueFormatter = { "${(it * 100).roundToInt()}%" },
+                    labelTextStyle = MaterialTheme.typography.bodyMedium,
+                    labelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    onValueChange = { onStateChange(state.copy(borderAlpha = it)) },
+                )
+            }
         } else {
             // Background is the only transparency here, so it needs no sub-label.
-            SliderRow(
-                label = stringResource(R.string.settings_wallpaper_transparency_label),
-                value = state.backgroundAlpha,
-                valueRange = 0f..1f,
-                steps = 10,
-                valueFormatter = { "${(it * 100).roundToInt()}%" },
-                onValueChange = { onStateChange(state.copy(backgroundAlpha = it)) },
-            )
-        }
-        if (showBorderControls) {
-            SliderRow(
-                label = stringResource(R.string.widget_slider_transparency_border),
-                value = state.borderAlpha,
-                valueRange = 0f..1f,
-                steps = 10,
-                valueFormatter = { "${(it * 100).roundToInt()}%" },
-                labelTextStyle = MaterialTheme.typography.bodySmall,
-                labelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                onValueChange = { onStateChange(state.copy(borderAlpha = it)) },
-            )
+            WidgetSettingTile(index = offset + 1, count = count) {
+                SliderRow(
+                    label = stringResource(R.string.settings_wallpaper_transparency_label),
+                    value = state.backgroundAlpha,
+                    valueRange = 0f..1f,
+                    steps = 10,
+                    valueFormatter = { "${(it * 100).roundToInt()}%" },
+                    onValueChange = { onStateChange(state.copy(backgroundAlpha = it)) },
+                )
+            }
         }
     }
 }
 
+/** Icon size slider; a tile at [index] of [count] in the caller's group. */
 @Composable
 fun WidgetIconSizeSection(
     state: WidgetPreferences,
+    index: Int = 0,
+    count: Int = 1,
     onStateChange: (WidgetPreferences) -> Unit,
 ) {
-    SliderRow(
-        label = stringResource(R.string.widget_slider_icon_size),
-        value = state.iconSizeScale,
-        valueRange = 1f..1.4f,
-        steps = 8,
-        valueFormatter = { "${(it * 100).roundToInt()}%" },
-        onValueChange = { onStateChange(state.copy(iconSizeScale = it)) },
-    )
+    WidgetSettingTile(index = index, count = count) {
+        SliderRow(
+            label = stringResource(R.string.widget_slider_icon_size),
+            value = state.iconSizeScale,
+            valueRange = 1f..1.4f,
+            steps = 8,
+            valueFormatter = { "${(it * 100).roundToInt()}%" },
+            onValueChange = { onStateChange(state.copy(iconSizeScale = it)) },
+        )
+    }
 }
 
 @Composable
@@ -113,15 +129,17 @@ fun WidgetTextSizeSection(
     state: WidgetPreferences,
     onStateChange: (WidgetPreferences) -> Unit,
 ) {
-    SliderRow(
-        label = stringResource(R.string.settings_font_size_title),
-        value = state.textScale,
-        valueRange = WidgetRanges.TEXT_SCALE_MIN..WidgetRanges.TEXT_SCALE_MAX,
-        steps = 14,
-        valueFormatter = { "${(it * 100).roundToInt()}%" },
-        showTicks = false,
-        onValueChange = { onStateChange(state.copy(textScale = it)) },
-    )
+    WidgetSettingTile {
+        SliderRow(
+            label = stringResource(R.string.settings_font_size_title),
+            value = state.textScale,
+            valueRange = WidgetRanges.TEXT_SCALE_MIN..WidgetRanges.TEXT_SCALE_MAX,
+            steps = 14,
+            valueFormatter = { "${(it * 100).roundToInt()}%" },
+            showTicks = false,
+            onValueChange = { onStateChange(state.copy(textScale = it)) },
+        )
+    }
 }
 
 private fun formatBorderWidth(value: Float): String =
@@ -138,7 +156,7 @@ internal fun SliderRow(
     valueRange: ClosedFloatingPointRange<Float>,
     steps: Int,
     valueFormatter: (Float) -> String,
-    labelTextStyle: TextStyle = MaterialTheme.typography.bodyLarge,
+    labelTextStyle: TextStyle = MaterialTheme.typography.titleMedium,
     labelColor: Color = MaterialTheme.colorScheme.onSurface,
     showTicks: Boolean = true,
     onValueChange: (Float) -> Unit,
@@ -155,23 +173,23 @@ internal fun SliderRow(
             },
         )
     }
-    Column {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
+    SliderWithValue(
+        headerModifier = Modifier.padding(horizontal = WidgetTileTextInset),
+        headerLabel = {
             Text(
                 text = label,
                 style = labelTextStyle,
                 color = labelColor,
             )
+        },
+        valueLabel = {
             Text(
                 text = valueFormatter(value),
                 style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.primary,
+                color = AppColors.Accent,
             )
-        }
+        },
+    ) { sliderModifier ->
         Slider(
             value = value,
             onValueChange = { rawValue ->
@@ -198,6 +216,7 @@ internal fun SliderRow(
             },
             valueRange = valueRange,
             steps = if (showTicks) (steps - 1).coerceAtLeast(0) else 0,
+            modifier = sliderModifier,
         )
     }
 }

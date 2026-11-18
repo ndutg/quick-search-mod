@@ -130,14 +130,9 @@ fun rememberWidgetButtonIcon(
             WidgetButtonIcon(drawableResId = R.drawable.ic_widget_note, shouldTint = true)
         }
 
-        is CustomWidgetButtonAction.Media -> {
-            val iconResId =
-                if (action.command == MediaCommand.PLAY_PAUSE) {
-                    playPauseIconRes(context)
-                } else {
-                    action.command.iconRes
-                }
-            WidgetButtonIcon(drawableResId = iconResId, shouldTint = true)
+        is CustomWidgetButtonAction.Command -> {
+            val choice = action.choice() ?: return WidgetButtonIcon(drawableResId = R.drawable.ic_widget_settings, shouldTint = true)
+            WidgetButtonIcon(drawableResId = choice.currentIcon?.invoke(context) ?: choice.iconRes, shouldTint = true)
         }
     }
 }
@@ -367,7 +362,6 @@ private fun createCircularBitmap(sourceBitmap: Bitmap): Bitmap {
 
     val paint = Paint(Paint.ANTI_ALIAS_FLAG)
     val rect = android.graphics.Rect(0, 0, size, size)
-    val rectF = android.graphics.RectF(rect)
 
     // Draw circular mask
     paint.style = Paint.Style.FILL

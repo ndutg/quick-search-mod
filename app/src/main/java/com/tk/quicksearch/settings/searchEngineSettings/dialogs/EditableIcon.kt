@@ -1,17 +1,16 @@
 package com.tk.quicksearch.settings.searchEngineSettings.dialogs
 
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.semantics.Role
+import com.tk.quicksearch.shared.ui.theme.AppShapes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -21,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import com.tk.quicksearch.shared.ui.theme.DesignTokens
 
 @Composable
 fun EditableIcon(
@@ -32,17 +32,18 @@ fun EditableIcon(
     Box(
         modifier =
             modifier
-                .size(52.dp)
+                .size(DesignTokens.IconSizeXLarge)
                 .border(
-                    width = 1.25.dp,
+                    width = DesignTokens.BorderWidth,
                     color = AppColors.SettingsDivider,
-                    shape = RoundedCornerShape(14.dp),
-                ).clickable { onClick() },
+                    shape = AppShapes.iconFrame,
+                ).clip(AppShapes.iconFrame)
+                .clickable(role = Role.Button, onClick = onClick),
     ) {
         Box(
             modifier =
                 Modifier
-                    .size(26.dp)
+                    .size(DesignTokens.IconSize)
                     .align(androidx.compose.ui.Alignment.Center),
         ) {
             if (iconBitmap != null) {
@@ -51,7 +52,7 @@ fun EditableIcon(
                     contentDescription = contentDescription,
                     modifier =
                         Modifier
-                            .size(26.dp)
+                            .size(DesignTokens.IconSize)
                             .align(androidx.compose.ui.Alignment.Center),
                     contentScale = ContentScale.Fit,
                 )
@@ -61,7 +62,7 @@ fun EditableIcon(
                     contentDescription = contentDescription,
                     modifier =
                         Modifier
-                            .size(24.dp)
+                            .size(DesignTokens.IconSize)
                             .align(androidx.compose.ui.Alignment.Center),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -75,7 +76,7 @@ fun EditableIcon(
                     .size(16.dp)
                     .background(
                         color = MaterialTheme.colorScheme.primary,
-                        shape = CircleShape,
+                        shape = AppShapes.full,
                     ),
             contentAlignment = androidx.compose.ui.Alignment.Center,
         ) {

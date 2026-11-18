@@ -1,5 +1,7 @@
 package com.tk.quicksearch.search.apps
 
+import com.tk.quicksearch.shared.ui.components.AppFilterChip
+import com.tk.quicksearch.shared.ui.theme.AppShapes
 import android.app.Application
 import android.content.pm.PackageManager
 import android.os.Build
@@ -17,7 +19,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Icon
@@ -33,10 +34,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.Alignment
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -50,6 +52,7 @@ import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import com.tk.quicksearch.shared.ui.components.AppButton
 
 @Composable
 fun AppIconOverrideDrawer(
@@ -95,15 +98,14 @@ fun AppIconOverrideDrawer(
         }
     }
     val selectedPack = iconPacks.firstOrNull { it.packageName == selectedPackPackage }
+    val searchLabel = stringResource(R.string.icon_picker_search)
 
     AppBottomPopup(
         onDismiss = onDismiss,
-        containerColor = AppColors.DialogBackground,
         contentCardColor = AppColors.DialogBackground,
         title = {
             Text(
                 text = stringResource(R.string.icon_picker_title, appName),
-                style = MaterialTheme.typography.titleLarge,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
             )
@@ -120,17 +122,17 @@ fun AppIconOverrideDrawer(
                     OutlinedTextField(
                         value = query,
                         onValueChange = { query = it },
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth().semantics { contentDescription = searchLabel },
                         singleLine = true,
                         leadingIcon = { Icon(MaterialSymbols.Search, contentDescription = null) },
-                        placeholder = { Text(stringResource(R.string.icon_picker_search)) },
-                        shape = RoundedCornerShape(32.dp),
+                        placeholder = { Text(searchLabel) },
+                        shape = AppShapes.full,
                         colors =
                             TextFieldDefaults.colors(
                                 focusedContainerColor = iconContainerColor,
                                 unfocusedContainerColor = iconContainerColor,
                                 disabledContainerColor = iconContainerColor,
-                                focusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
+                                focusedIndicatorColor = AppColors.Accent,
                                 unfocusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
                                 disabledIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
                             ),
@@ -140,24 +142,10 @@ fun AppIconOverrideDrawer(
                         horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
                     ) {
                         iconPacks.forEach { iconPack ->
-                            val selected = iconPack.packageName == selectedPackPackage
-                            Text(
-                                text = iconPack.label,
-                                modifier =
-                                    Modifier
-                                        .clickable { selectedPackPackage = iconPack.packageName }
-                                        .padding(
-                                            horizontal = DesignTokens.SpacingMedium,
-                                            vertical = DesignTokens.SpacingXSmall,
-                                        ),
-                                color =
-                                    MaterialTheme.colorScheme.onSurface.copy(
-                                        alpha = if (selected) 1f else 0.34f,
-                                    ),
-                                style =
-                                    if (selected) MaterialTheme.typography.labelMedium
-                                    else MaterialTheme.typography.labelSmall,
-                                maxLines = 1,
+                            AppFilterChip(
+                                selected = iconPack.packageName == selectedPackPackage,
+                                onClick = { selectedPackPackage = iconPack.packageName },
+                                label = iconPack.label,
                             )
                         }
                     }
@@ -186,7 +174,7 @@ fun AppIconOverrideDrawer(
                             color = MaterialTheme.colorScheme.onSurface,
                             textAlign = TextAlign.Center,
                         )
-                        Button(
+                        AppButton(
                             onClick = {
                                 onDismiss()
                                 IntentHelpers.openSearchUrl(
@@ -268,7 +256,7 @@ fun AppIconOverrideDrawer(
             }
 
             if (canResetToDefault) {
-                Button(
+                AppButton(
                     onClick = {
                         UserAppPreferences(context).setAppIconToSystemDefault(packageName)
                         invalidateAppIconCache()

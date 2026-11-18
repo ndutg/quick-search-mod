@@ -72,6 +72,12 @@ open class UiPreferencesFeatures(context: Context) : UiPreferencesCore(context) 
         setBooleanPref(UiPreferences.KEY_AMOLED_THEME_ENABLED, enabled)
     }
 
+    fun isSearchChromeBlurEnabled(): Boolean = getBooleanPref(UiPreferences.KEY_SEARCH_CHROME_BLUR_ENABLED, false)
+
+    fun setSearchChromeBlurEnabled(enabled: Boolean) {
+        setBooleanPref(UiPreferences.KEY_SEARCH_CHROME_BLUR_ENABLED, enabled)
+    }
+
     fun isWallpaperAccentEnabled(): Boolean =
             getAccentColorMode() == AccentColorMode.FROM_WALLPAPER
 
@@ -99,6 +105,14 @@ open class UiPreferencesFeatures(context: Context) : UiPreferencesCore(context) 
 
     fun setCustomAccentColorArgb(argb: Int) {
         prefs.edit().putInt(UiPreferences.KEY_CUSTOM_ACCENT_COLOR_ARGB, argb).apply()
+    }
+
+    /** Whether the Appearance settings card [cardKey] is expanded; UI state, so not backed up. */
+    fun isAppearanceCardExpanded(cardKey: String): Boolean =
+            sessionPrefs.getBoolean(UiPreferences.KEY_APPEARANCE_CARD_EXPANDED_PREFIX + cardKey, true)
+
+    fun setAppearanceCardExpanded(cardKey: String, expanded: Boolean) {
+        sessionPrefs.edit().putBoolean(UiPreferences.KEY_APPEARANCE_CARD_EXPANDED_PREFIX + cardKey, expanded).apply()
     }
 
     fun shouldShowAppLabels(): Boolean = getBooleanPref(UiPreferences.KEY_SHOW_APP_LABELS, true)
@@ -284,43 +298,6 @@ open class UiPreferencesFeatures(context: Context) : UiPreferencesCore(context) 
             .edit()
             .putBoolean(UiPreferences.KEY_HAS_SEEN_ACCESSIBILITY_PERMISSION_DISCLAIMER, seen)
             .apply()
-    }
-
-    fun getUsagePermissionBannerDismissCount(): Int =
-            firstLaunchPrefs.getInt(UiPreferences.KEY_USAGE_PERMISSION_BANNER_DISMISS_COUNT, 0)
-
-    fun incrementUsagePermissionBannerDismissCount() {
-        val currentCount = getUsagePermissionBannerDismissCount()
-        firstLaunchPrefs
-                .edit()
-                .putInt(UiPreferences.KEY_USAGE_PERMISSION_BANNER_DISMISS_COUNT, currentCount + 1)
-                .apply()
-    }
-
-    fun isUsagePermissionBannerSessionDismissed(): Boolean =
-            firstLaunchPrefs.getBoolean(
-                    UiPreferences.KEY_USAGE_PERMISSION_BANNER_SESSION_DISMISSED,
-                    false,
-            )
-
-    fun setUsagePermissionBannerSessionDismissed(dismissed: Boolean) {
-        firstLaunchPrefs
-                .edit()
-                .putBoolean(UiPreferences.KEY_USAGE_PERMISSION_BANNER_SESSION_DISMISSED, dismissed)
-                .apply()
-    }
-
-    fun resetUsagePermissionBannerSessionDismissed() {
-        firstLaunchPrefs
-                .edit()
-                .putBoolean(UiPreferences.KEY_USAGE_PERMISSION_BANNER_SESSION_DISMISSED, false)
-                .apply()
-    }
-
-    fun shouldShowUsagePermissionBanner(): Boolean {
-        // Show banner if: total dismiss count < 2 AND session not dismissed
-        return getUsagePermissionBannerDismissCount() < 2 &&
-                !isUsagePermissionBannerSessionDismissed()
     }
 
     // ============================================================================

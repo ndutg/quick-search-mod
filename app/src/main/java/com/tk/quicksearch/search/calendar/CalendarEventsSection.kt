@@ -1,5 +1,6 @@
 package com.tk.quicksearch.search.calendar
 
+import androidx.compose.ui.semantics.Role
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
@@ -15,8 +16,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -40,16 +39,19 @@ import com.tk.quicksearch.search.searchScreen.LocalOverlayDividerColor
 import com.tk.quicksearch.search.searchScreen.LocalOverlayResultCardColor
 import com.tk.quicksearch.search.searchScreen.PredictedSubmitTarget
 import com.tk.quicksearch.search.searchScreen.SearchScreenConstants
-import com.tk.quicksearch.search.searchScreen.components.ExpandButton
+import com.tk.quicksearch.search.searchScreen.components.ExpandButtonSegment
+import com.tk.quicksearch.search.searchScreen.shared.ResultSegment
+import com.tk.quicksearch.search.searchScreen.shared.ResultRowDivider
+import com.tk.quicksearch.search.searchScreen.shared.resultRowsContainerPadding
 import com.tk.quicksearch.search.searchScreen.components.ExpandButtonDivider
 import com.tk.quicksearch.search.searchScreen.components.ExpandableResultsCard
 import com.tk.quicksearch.search.searchScreen.components.topPredictedRowContainer
-import com.tk.quicksearch.search.searchScreen.components.topPredictedRowContentPadding
 import com.tk.quicksearch.search.searchScreen.components.resultRowVerticalPadding
 import com.tk.quicksearch.search.searchScreen.components.rememberQueryHighlightedText
 import com.tk.quicksearch.shared.ui.components.AppDropdownMenu
+import com.tk.quicksearch.shared.ui.components.AppDropdownMenuDivider
+import com.tk.quicksearch.shared.ui.components.AppDropdownMenuItem
 import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
-import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import kotlinx.coroutines.delay
 import com.tk.quicksearch.shared.util.hapticConfirm
@@ -123,7 +125,9 @@ fun CalendarEventsSection(
             ?: events
     }
     val lifecycleOwner = LocalLifecycleOwner.current
-    val nowMillis by produceState(initialValue = System.currentTimeMillis()) {
+    // Only the Home card filters by the current time; search results don't need the ticker.
+    val nowMillis by produceState(initialValue = System.currentTimeMillis(), isHomeScreenMode) {
+        if (!isHomeScreenMode) return@produceState
         lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
             while (true) {
                 value = System.currentTimeMillis()
@@ -166,6 +170,7 @@ fun CalendarEventsSection(
         fillExpandedHeight = fillExpandedHeight,
         showWallpaperBackground = showWallpaperBackground,
         overlayCardColor = overlayCardColor,
+        segmented = isHomeScreenMode,
     ) { contentModifier, cardState ->
         val displayEvents =
             if (cardState.displayAsExpanded) {
@@ -184,10 +189,17 @@ fun CalendarEventsSection(
                 ),
         ) {
             val showGlanceContent = glanceContent != null && !cardState.displayAsExpanded
+            // Glance rows form one contiguous run; only their group's outer edges affect shape.
+            val leadingGlanceSegment = if (showGlanceContent && glanceContentFirst) 1 else 0
+            val segmentCount = displayEvents.size + (if (showGlanceContent) 1 else 0) +
+                (if (cardState.shouldShowExpandButton) 1 else 0)
             Column(
                 modifier =
                     Modifier.fillMaxWidth()
-                        .padding(horizontal = DesignTokens.SpacingMedium, vertical = 4.dp)
+                        .padding(
+                            horizontal = resultRowsContainerPadding(DesignTokens.SpacingMedium),
+                            vertical = resultRowsContainerPadding(DesignTokens.SpacingXSmall),
+                        )
                         .padding(
                             bottom =
                                 if (cardState.shouldFillExpandedHeight) {
@@ -205,42 +217,42 @@ fun CalendarEventsSection(
                         val isPredicted = predictedEventId != null && event.eventId == predictedEventId
                         val showPredictedOnRow = isPredicted && !useCardLevelPrediction
                         val isPinned = pinnedEventIds.contains(event.eventId)
-                        CalendarEventRow(
-                            event = event,
-                            isPinned = isPinned,
-                            isExcluded = excludedEventIds.contains(event.eventId),
-                            hasNickname = !getEventNickname(event.eventId).isNullOrBlank(),
-                            onClick = onEventClick,
-                            onTogglePin = onTogglePin,
-                            onMovePinned = onMovePinned,
-                            onExclude = onExclude,
-                            onInclude = onInclude,
-                            onNicknameClick = onNicknameClick,
-                            isPredicted = showPredictedOnRow,
-                            isHomescreenTodayEvent =
-                                isHomeScreenMode && !isPinned && !cardState.displayAsExpanded,
-                            onArchive = onArchiveTodayEvent,
-                            showDoneOnlyMenu = isHomeScreenMode && !isPinned,
-                            showPinnedItemMenu = showPinnedItemMenu,
-                        )
-                        if (index < displayEvents.lastIndex && !showPredictedOnRow) {
-                            HorizontalDivider(
-                                modifier = Modifier.compactEdgeToEdge().fillMaxWidth(),
-                                color = overlayDividerColor ?: if (showWallpaperBackground) AppColors.WallpaperDivider else MaterialTheme.colorScheme.outlineVariant,
+                        ResultSegment(index = index + leadingGlanceSegment, count = segmentCount) {
+                            CalendarEventRow(
+                                event = event,
+                                isPinned = isPinned,
+                                isExcluded = excludedEventIds.contains(event.eventId),
+                                hasNickname = !getEventNickname(event.eventId).isNullOrBlank(),
+                                onClick = onEventClick,
+                                onTogglePin = onTogglePin,
+                                onMovePinned = onMovePinned,
+                                onExclude = onExclude,
+                                onInclude = onInclude,
+                                onNicknameClick = onNicknameClick,
+                                isPredicted = showPredictedOnRow,
+                                isHomescreenTodayEvent =
+                                    isHomeScreenMode && !isPinned && !cardState.displayAsExpanded,
+                                onArchive = onArchiveTodayEvent,
+                                showDoneOnlyMenu = isHomeScreenMode && !isPinned,
+                                showPinnedItemMenu = showPinnedItemMenu,
                             )
+                        }
+                        if (index < displayEvents.lastIndex && !showPredictedOnRow) {
+                            ResultRowDivider(showWallpaperBackground = showWallpaperBackground, color = overlayDividerColor)
                         }
                     }
                 }
 
                 if (showGlanceContent && !glanceContentFirst) {
-                    glanceContent.invoke(true, false)
+                    glanceContent.invoke(true, cardState.shouldShowExpandButton)
                 }
 
                 if (cardState.shouldShowExpandButton) {
                     ExpandButtonDivider(showWallpaperBackground)
-                    ExpandButton(
+                    ExpandButtonSegment(
+                        index = segmentCount - 1,
+                        count = segmentCount,
                         onClick = onExpandClick,
-                        modifier = Modifier.align(Alignment.CenterHorizontally),
                         textResId = R.string.action_expand_more_events,
                     )
                 }
@@ -277,15 +289,15 @@ internal fun CalendarEventRow(
                 .heightIn(min = ROW_MIN_HEIGHT_DP.dp)
                 .topPredictedRowContainer(isTopPredicted = isPredicted)
                 .combinedClickable(
+                    role = Role.Button,
                     onClick = {
                         hapticConfirm(rowView)()
                         onClick(event)
                     },
                     onLongClick = { showMenu = true },
                 )
-                .topPredictedRowContentPadding()
-                .padding(vertical = resultRowVerticalPadding(12.dp)),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                .padding(vertical = resultRowVerticalPadding(DesignTokens.SpacingMedium)),
+        horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(
@@ -298,16 +310,16 @@ internal fun CalendarEventRow(
                 } else {
                     MaterialTheme.colorScheme.onSurfaceVariant
                 },
-            modifier = Modifier.padding(start = 7.dp).size(24.dp),
+            modifier = Modifier.padding(start = DesignTokens.ResultIconStartInset).size(24.dp),
         )
         Column(
             modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(2.dp),
+            verticalArrangement = Arrangement.spacedBy(DesignTokens.TextColumnSpacing),
         ) {
             val recurrenceLabel = calendarRecurrenceLabel(recurrenceRule = event.recurrenceRule)
             Text(
                 text = rememberQueryHighlightedText(event.title),
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
@@ -321,7 +333,7 @@ internal fun CalendarEventRow(
                         recurrenceLabel,
                     ).joinToString(" \u00b7 ")
                 },
-                style = MaterialTheme.typography.bodySmall,
+                style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
@@ -329,7 +341,7 @@ internal fun CalendarEventRow(
             if (!isHomescreenTodayEvent) {
                 Text(
                     text = calendarRelativeDateLabel(event),
-                    style = MaterialTheme.typography.bodySmall,
+                    style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
@@ -459,11 +471,11 @@ internal fun CalendarEventRow(
 
             menuItems.forEachIndexed { index, item ->
                 if (index > 0) {
-                    HorizontalDivider()
+                    AppDropdownMenuDivider()
                 }
-                DropdownMenuItem(
-                    text = { Text(text = stringResource(item.textResId)) },
-                    leadingIcon = { item.icon() },
+                AppDropdownMenuItem(
+                    text = stringResource(item.textResId),
+                    leadingIcon = item.icon,
                     onClick = item.onClick,
                 )
             }

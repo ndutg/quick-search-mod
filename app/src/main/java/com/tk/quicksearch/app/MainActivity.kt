@@ -1,7 +1,7 @@
 package com.tk.quicksearch.app
 
+import com.tk.quicksearch.search.searchScreen.setContentWithFrostedCards
 import com.tk.quicksearch.search.apps.appLock.AppLockGate
-import android.app.SearchManager
 import android.content.ComponentCallbacks2
 import android.content.Context
 import android.content.Intent
@@ -13,9 +13,10 @@ import android.view.WindowManager
 import android.graphics.PixelFormat
 import android.os.Trace
 import android.view.KeyEvent
+import android.view.KeyboardShortcutGroup
+import android.view.Menu
 import androidx.fragment.app.FragmentActivity
 import androidx.activity.SystemBarStyle
-import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
@@ -26,6 +27,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -128,6 +130,8 @@ open class MainActivity : FragmentActivity() {
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             voiceSearchHandler.processVoiceInputResult(result, searchViewModel::onQueryChange)
         }
+    private val pageBackdropTrimState = mutableIntStateOf(0)
+    internal val pageBackdropTrimVersion: Int get() = pageBackdropTrimState.intValue
     private val navigationRequest = mutableStateOf<NavigationRequest?>(null)
     // True when the overlay handed off to this activity, so leaving goes back to the overlay.
     private val returnToOverlay = mutableStateOf(false)
@@ -164,6 +168,13 @@ open class MainActivity : FragmentActivity() {
             UiSurfaceMemoryManager.onSurfaceCreated()
             isActivityInstanceTracked = true
             window.setBackgroundDrawable(null)
+            if (this !is HomeActivity) {
+                // Clearing the background leaves the window OPAQUE, and the renderer fixes its
+                // opacity when the window attaches, ignoring later setFormat calls. Choose
+                // TRANSLUCENT now so frames are cleared once the System wallpaper backdrop makes
+                // the root transparent; otherwise moving content leaves ghosted copies behind.
+                window.setFormat(PixelFormat.TRANSLUCENT)
+            }
 
             // Disable activity opening animation for instant appearance
             @Suppress("DEPRECATION")
@@ -180,6 +191,12 @@ open class MainActivity : FragmentActivity() {
             isFirstLaunchAtActivityStart =
                 !skipOnboardingForBaselineProfile && BootstrapPreferences.isFirstLaunch(this)
 
+            // Before the window attaches, so the first frame already has the wallpaper behind it.
+            updateSystemWallpaperWindowFlag(
+                canShowSystemWallpaperBackdrop &&
+                    searchViewModel.uiState.value.backgroundSource ==
+                    com.tk.quicksearch.search.core.BackgroundSource.SYSTEM_WALLPAPER,
+            )
             Trace.beginSection(TRACE_SET_CONTENT)
             try {
                 setupContent()
@@ -240,10 +257,17 @@ open class MainActivity : FragmentActivity() {
     override fun onPause() {
         super.onPause()
         LockScreenAccessibilityService.onAppSurfacePaused()
+        com.tk.quicksearch.shared.util.expireDefaultHomeAppStatusReuse()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        UiSurfaceMemoryManager.onSurfaceStarted()
     }
 
     override fun onStop() {
         super.onStop()
+        UiSurfaceMemoryManager.onSurfaceStopped()
         searchViewModel.handleOnStop()
     }
 
@@ -258,15 +282,18 @@ open class MainActivity : FragmentActivity() {
     override fun onTrimMemory(level: Int) {
         super.onTrimMemory(level)
         // UI_HIDDEN only means the user left the app; keep icons cached so they reappear instantly.
-        if (level >= ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW &&
-            level != ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN
-        ) {
-            UiSurfaceMemoryManager.clearMemoryCaches()
+        // As the Home app, BACKGROUND too: every Home press would otherwise redecode icons and wallpaper.
+        val isHomeInBackground =
+            level == ComponentCallbacks2.TRIM_MEMORY_BACKGROUND && this is HomeActivity && canShowSystemWallpaperBackdrop
+        if (level >= ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW && level != ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN) {
+            pageBackdropTrimState.intValue++
+            if (!isHomeInBackground) UiSurfaceMemoryManager.clearMemoryCaches()
         }
     }
 
     override fun onLowMemory() {
         super.onLowMemory()
+        pageBackdropTrimState.intValue++
         UiSurfaceMemoryManager.clearMemoryCaches()
     }
 
@@ -275,7 +302,20 @@ open class MainActivity : FragmentActivity() {
             finish()
             return true
         }
+        if (event.isOpenSettingsShortcut()) {
+            navigationRequest.value = NavigationRequest(destination = RootDestination.Settings)
+            return true
+        }
         return super.dispatchKeyEvent(event)
+    }
+
+    override fun onProvideKeyboardShortcuts(
+        data: MutableList<KeyboardShortcutGroup>,
+        menu: Menu?,
+        deviceId: Int,
+    ) {
+        super.onProvideKeyboardShortcuts(data, menu, deviceId)
+        data.add(quickSearchKeyboardShortcuts(this, includeOpenSettings = true))
     }
 
     private fun initializePreferences() {
@@ -317,7 +357,7 @@ open class MainActivity : FragmentActivity() {
                 startVoiceSearch =
                     startVoiceForAssistant || startVoiceFromShortcut || startVoiceFromWidget,
                 micAction = micAction,
-                initialQuery = extractTextFromIntent(intent),
+                initialQuery = extractQueryFromIntent(intent),
             )
             finish()
             return true
@@ -330,7 +370,7 @@ open class MainActivity : FragmentActivity() {
     }
 
     private fun setupContent() {
-        setContent {
+        setContentWithFrostedCards {
             val rootStateFlow =
                 remember {
                     searchViewModel.uiState.map(MainRootState::from).distinctUntilChanged()
@@ -345,9 +385,6 @@ open class MainActivity : FragmentActivity() {
                 updateStatusBarVisibility(showStatusBar = uiState.showStatusBar)
             }
             val isSystemDarkTheme = isSystemInDarkTheme()
-            LaunchedEffect(isSystemDarkTheme, uiState.appThemeMode, uiState.launcherAppIcon) {
-                searchViewModel.onSystemDarkModeChanged(isDarkMode = isSystemDarkTheme)
-            }
             val useDarkSystemBars =
                 when (uiState.appThemeMode) {
                     AppThemeMode.LIGHT -> false
@@ -487,14 +524,17 @@ open class MainActivity : FragmentActivity() {
         val isShowingWallpaper = window.attributes.flags and flag != 0
         if (showWallpaper == isShowingWallpaper) return
         if (showWallpaper) {
-            // onCreate clears the window background, which leaves the surface OPAQUE. An opaque
-            // surface is never cleared between frames, so the transparent root would keep stale
-            // frames on screen (ghosted copies of moving content) and hide the wallpaper.
+            // onCreate already picked TRANSLUCENT so the renderer clears frames; keep the
+            // surface format in step in case anything reset it.
             window.setFormat(PixelFormat.TRANSLUCENT)
             window.addFlags(flag)
         } else {
             window.clearFlags(flag)
         }
+        // The translucent theme would otherwise leave the activity underneath (another launcher)
+        // visible through the transparent root. Android only infers occlusion from the wallpaper
+        // flag at some visibility updates, so state it: opaque while the wallpaper is the backdrop.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) setTranslucent(!showWallpaper)
     }
 
     private fun updateRecentsVisibility(showInRecents: Boolean) {
@@ -514,42 +554,6 @@ open class MainActivity : FragmentActivity() {
                     appTaskId == taskId
                 }
         appTask?.setExcludeFromRecents(!showInRecents)
-    }
-
-    private fun extractTextFromIntent(intent: Intent?): String? {
-        if (intent == null) return null
-
-        val queryFromCommonExtras =
-            listOf(
-                    SearchManager.QUERY,
-                    Intent.EXTRA_TEXT,
-                    "query",
-                    "q",
-                    "text",
-                )
-                .asSequence()
-                // Callers put the query under any of these keys with any type, so read it untyped.
-                .mapNotNull { key ->
-                    @Suppress("DEPRECATION")
-                    intent.extras?.get(key)?.toString()?.trim()
-                }
-                .firstOrNull { it.isNotBlank() }
-
-        return when (intent.action) {
-            Intent.ACTION_PROCESS_TEXT ->
-                intent.getCharSequenceExtra(Intent.EXTRA_PROCESS_TEXT)?.toString()?.trim()
-                    ?.takeIf { it.isNotBlank() }
-            Intent.ACTION_SEND ->
-                if (intent.type == "text/plain")
-                    intent.getStringExtra(Intent.EXTRA_TEXT)?.trim()?.takeIf { it.isNotBlank() }
-                else null
-            Intent.ACTION_SEARCH,
-            Intent.ACTION_WEB_SEARCH,
-            Intent.ACTION_VIEW,
-            Intent.ACTION_MAIN,
-            -> queryFromCommonExtras
-            else -> null
-        }
     }
 
     private fun handleIntent(intent: Intent?) {
@@ -579,6 +583,10 @@ open class MainActivity : FragmentActivity() {
     }
 
     private fun handleIntentAfterImportClassification(intent: Intent?) {
+        if (intent?.action == ACTION_OPEN_FULL_SCREEN) {
+            searchViewModel.clearQuery()
+            navigationRequest.value = NavigationRequest(destination = RootDestination.Search)
+        }
 
         if (isHomeOrLauncherLaunch(intent)) {
             val activeSettingsDetail = SettingsNavigationMemory.getLastOpenedSettingsDetail()
@@ -595,7 +603,7 @@ open class MainActivity : FragmentActivity() {
             }
         }
 
-        val incomingText = extractTextFromIntent(intent)
+        val incomingText = extractQueryFromIntent(intent)
         if (incomingText != null) {
             searchViewModel.onQueryChange(incomingText)
         }

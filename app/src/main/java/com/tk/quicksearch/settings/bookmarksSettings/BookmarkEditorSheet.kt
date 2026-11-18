@@ -1,5 +1,8 @@
 package com.tk.quicksearch.settings.bookmarksSettings
 
+import androidx.compose.ui.semantics.Role
+import com.tk.quicksearch.shared.ui.theme.AppMotion
+import com.tk.quicksearch.shared.ui.theme.AppShapes
 import android.graphics.BitmapFactory
 import android.util.Base64
 import androidx.activity.compose.BackHandler
@@ -22,11 +25,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -61,14 +62,15 @@ import com.tk.quicksearch.search.core.BrowserApp
 import com.tk.quicksearch.search.data.bookmarks.BookmarkUrls
 import com.tk.quicksearch.search.models.BookmarkInfo
 import com.tk.quicksearch.searchEngines.loadCustomIconAsBase64
+import com.tk.quicksearch.shared.ui.components.AppOutlinedTextField
 import com.tk.quicksearch.shared.ui.components.AppBottomSheet
-import com.tk.quicksearch.shared.ui.components.dialogTextFieldColors
 import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import com.tk.quicksearch.shared.ui.components.AppButton
 
 private const val CUSTOM_ICON_MAX_SIZE_PX = 256
 
@@ -151,11 +153,11 @@ internal fun BookmarkEditorSheet(
             targetState = page,
             transitionSpec = {
                 val forward = targetState == BookmarkEditorPage.Browsers
-                val duration = DesignTokens.AnimationDurationShort
-                (slideInHorizontally(tween(duration)) { if (forward) it / 4 else -it / 4 } + fadeIn(tween(duration)))
+                val duration = AppMotion.DurationShort
+                (slideInHorizontally(tween(duration, easing = AppMotion.EmphasizedDecelerateEasing)) { if (forward) it / 4 else -it / 4 } + fadeIn(tween(duration, easing = AppMotion.EmphasizedDecelerateEasing)))
                     .togetherWith(
-                        slideOutHorizontally(tween(duration)) { if (forward) -it / 4 else it / 4 } +
-                            fadeOut(tween(duration)),
+                        slideOutHorizontally(tween(duration, easing = AppMotion.EmphasizedAccelerateEasing)) { if (forward) -it / 4 else it / 4 } +
+                            fadeOut(tween(duration, easing = AppMotion.EmphasizedAccelerateEasing)),
                     )
             },
             label = "bookmarkEditorPage",
@@ -242,7 +244,7 @@ private fun BookmarkEditorForm(
                     .weight(1f, fill = false)
                     .verticalScroll(rememberScrollState())
                     .padding(horizontal = DesignTokens.ContentHorizontalPadding),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+            verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium),
         ) {
             BookmarkIconPicker(
                 bookmark = bookmark,
@@ -251,22 +253,21 @@ private fun BookmarkEditorForm(
                 onClick = onPickIcon,
                 modifier = Modifier.align(Alignment.CenterHorizontally),
             )
-            OutlinedTextField(
+            AppOutlinedTextField(
                 value = name,
                 onValueChange = onNameChange,
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
-                label = { Text(stringResource(R.string.settings_app_sort_name)) },
+                label = stringResource(R.string.settings_app_sort_name),
                 keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
-                colors = dialogTextFieldColors(),
             )
             // Not single-line, so a long link wraps and stays fully visible. Whitespace
             // (including the Enter key's newline) is filtered out.
-            OutlinedTextField(
+            AppOutlinedTextField(
                 value = url,
                 onValueChange = { onUrlChange(it.filterNot(Char::isWhitespace)) },
                 modifier = Modifier.fillMaxWidth().focusRequester(urlFocusRequester),
-                label = { Text(stringResource(R.string.bookmarks_link_label)) },
+                label = stringResource(R.string.bookmarks_link_label),
                 isError = showUrlError,
                 supportingText =
                     if (showUrlError) {
@@ -275,7 +276,6 @@ private fun BookmarkEditorForm(
                         null
                     },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri),
-                colors = dialogTextFieldColors(),
             )
             BookmarkBrowserField(
                 availableBrowsers = availableBrowsers,
@@ -286,7 +286,7 @@ private fun BookmarkEditorForm(
                 modifier = Modifier.padding(top = OutlinedTextFieldLabelInset),
             )
         }
-        Button(
+        AppButton(
             onClick = onSave,
             enabled = isUrlValid,
             modifier =
@@ -294,11 +294,6 @@ private fun BookmarkEditorForm(
                     .fillMaxWidth()
                     .padding(horizontal = DesignTokens.ContentHorizontalPadding)
                     .padding(top = DesignTokens.SpacingSmall),
-            colors =
-                ButtonDefaults.buttonColors(
-                    containerColor = AppColors.Accent,
-                    contentColor = AppColors.OnAccent,
-                ),
         ) {
             Text(
                 text =
@@ -325,24 +320,32 @@ private fun BookmarkIconPicker(
             val bytes = runCatching { Base64.decode(encoded, Base64.DEFAULT) }.getOrNull() ?: return@remember null
             BitmapFactory.decodeByteArray(bytes, 0, bytes.size)?.asImageBitmap()
         }
-    // The edit badge sits in an unclipped outer box so it isn't cut off by the icon's circle.
+    // The edit badge (decorative) sits in an unclipped outer box so it isn't cut off by the icon's circle.
     Box(modifier = modifier.size(68.dp)) {
         Box(
             modifier =
                 Modifier
                     .size(64.dp)
                     .align(Alignment.Center)
-                    .clip(CircleShape)
-                    .clickable(enabled = !isLoading, onClick = onClick),
+                    .clip(AppShapes.full)
+                    .clickable(
+                        enabled = !isLoading,
+                        onClickLabel = stringResource(R.string.settings_edit_label),
+                        role = Role.Button,
+                        onClick = onClick,
+                    ),
             contentAlignment = Alignment.Center,
         ) {
             when {
-                isLoading -> CircularProgressIndicator(modifier = Modifier.size(24.dp), strokeWidth = 2.dp)
+                isLoading -> CircularProgressIndicator(
+                    modifier = Modifier.size(DesignTokens.InlineProgressSize),
+                    strokeWidth = DesignTokens.InlineProgressStrokeWidth,
+                )
                 pickedBitmap != null ->
                     Image(
                         bitmap = pickedBitmap,
                         contentDescription = null,
-                        modifier = Modifier.size(48.dp).clip(RoundedCornerShape(10.dp)),
+                        modifier = Modifier.size(48.dp).clip(AppShapes.iconTile),
                         contentScale = ContentScale.Fit,
                     )
                 bookmark != null -> BookmarkFavicon(bookmark = bookmark, size = 48.dp)
@@ -360,16 +363,16 @@ private fun BookmarkIconPicker(
                 modifier =
                     Modifier
                         .align(Alignment.BottomEnd)
-                        .size(22.dp)
-                        .clip(CircleShape)
-                        .background(AppColors.Accent.copy(alpha = 0.3f).compositeOver(AppColors.DialogBackground))
-                        .clickable(onClick = onClick),
+                        .size(DesignTokens.IconSize)
+                        .clip(AppShapes.full)
+                        .background(AppColors.AccentTintEmphasis.compositeOver(AppColors.DialogBackground)),
                 contentAlignment = Alignment.Center,
             ) {
+                // Decorative: the 64dp icon button above is the touch target and carries the label.
                 Icon(
                     imageVector = MaterialSymbols.Edit,
-                    contentDescription = stringResource(R.string.settings_edit_label),
-                    modifier = Modifier.size(13.dp),
+                    contentDescription = null,
+                    modifier = Modifier.size(DesignTokens.EditBadgeIconSize),
                     tint = MaterialTheme.colorScheme.primary,
                 )
             }

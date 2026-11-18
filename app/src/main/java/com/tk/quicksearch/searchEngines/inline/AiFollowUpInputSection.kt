@@ -1,9 +1,11 @@
 package com.tk.quicksearch.searchEngines.inline
 
+import com.tk.quicksearch.shared.ui.components.AppIconButton
+import com.tk.quicksearch.shared.ui.theme.AppMotion
+import com.tk.quicksearch.shared.ui.theme.AppShapes
 import com.tk.quicksearch.search.searchScreen.insetCardBackdrop
 import com.tk.quicksearch.search.searchScreen.insetCardBackground
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -17,6 +19,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -36,10 +39,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -49,7 +49,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -63,7 +62,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
 import com.tk.quicksearch.R
+import com.tk.quicksearch.shared.ui.components.AppOutlinedTextField
 import com.tk.quicksearch.search.core.AppIconShape
+import com.tk.quicksearch.search.core.SearchBarStyle
 import com.tk.quicksearch.search.core.SearchTarget
 import com.tk.quicksearch.searchEngines.getId
 import com.tk.quicksearch.searchEngines.compact.SearchEngineCard
@@ -87,7 +88,8 @@ internal fun AiFollowUpInputSection(
     modifier: Modifier = Modifier,
     useInsetContainer: Boolean = false,
     insetOverlap: Dp = SearchEngineSectionConstants.INSET_CONTAINER_OVERLAP,
-    insetFullBleedFraction: Float = 0f,
+    insetFullBleedFraction: () -> Float = { 0f },
+    insetCardStyle: InsetCardStyle? = null,
 ) {
     val focusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -102,87 +104,61 @@ internal fun AiFollowUpInputSection(
         keyboardController?.show()
     }
 
-    val dividerColor =
-        if (showWallpaperBackground) {
-            AppColors.WallpaperDivider
-        } else {
-            AppColors.Accent.copy(alpha = 0.22f)
-        }
-    val containerShape =
-        if (useInsetContainer) {
-            SearchEngineSectionConstants.insetContainerShape(insetFullBleedFraction)
-        } else {
-            RectangleShape
-        }
-    Surface(
-        modifier =
-            modifier.then(
-                if (useInsetContainer) {
-                    Modifier.attachToBottomSearchBar(
-                        overlap = insetOverlap,
-                        horizontalExtension =
-                            InsetSearchBarGeometry.containerHorizontalExtension(
-                                insetFullBleedFraction,
-                            ),
-                    )
-                } else {
-                    Modifier.extendToScreenEdges()
-                },
-            ).insetCardBackdrop(true, containerShape),
-        color =
-            if (useInsetContainer) {
-                insetCardBackground(true, AppColors.getSearchBarBackground(showWallpaperBackground))
-            } else {
-                insetCardBackground(true, AppColors.getSearchEngineSectionBackground(showWallpaperBackground))
-            },
-        shape = containerShape,
-    ) {
-        Column(
+    val dividerColor = compactTopDividerColor(showWallpaperBackground)
+    val inputContent: @Composable ColumnScope.() -> Unit = {
+        AppOutlinedTextField(
+            value = value,
+            onValueChange = onValueChange,
             modifier =
                 Modifier
                     .fillMaxWidth()
                     .padding(
-                        bottom =
-                            if (useInsetContainer) insetOverlap else 0.dp,
-                    ),
+                        horizontal = SearchEngineSectionConstants.HORIZONTAL_PADDING,
+                        vertical = SearchEngineSectionConstants.VERTICAL_PADDING,
+                    )
+                    .focusRequester(focusRequester),
+            label = stringResource(R.string.direct_search_follow_up_hint),
+            trailingIcon = {
+                AppIconButton(
+                    onClick = submit,
+                    enabled = value.isNotBlank(),
+                    tooltip = stringResource(R.string.dialog_send),
+                ) {
+                    Icon(
+                        imageVector = MaterialSymbols.Send,
+                        contentDescription = stringResource(R.string.dialog_send),
+                    )
+                }
+            },
+            singleLine = true,
+            shape = AppShapes.inlineInput,
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
+            keyboardActions = KeyboardActions(onSend = { submit() }),
+        )
+    }
+    if (useInsetContainer) {
+        InsetSearchCard(
+            style = insetCardStyle ?: rememberInsetCardStyle(SearchBarStyle(), showWallpaperBackground),
+            overlap = insetOverlap,
+            fullBleedFraction = insetFullBleedFraction,
+            modifier = modifier,
+            content = inputContent,
+        )
+    } else {
+        Surface(
+            modifier = modifier.extendToScreenEdges().insetCardBackdrop(true, RectangleShape),
+            color =
+                insetCardBackground(true, AppColors.getSearchEngineSectionBackground(showWallpaperBackground)),
+            shape = RectangleShape,
         ) {
-            if (!useInsetContainer) {
+            Column(modifier = Modifier.fillMaxWidth()) {
                 HorizontalDivider(
                     color = dividerColor,
                     thickness = SearchEngineSectionConstants.COMPACT_TOP_DIVIDER_THICKNESS,
                 )
+                inputContent()
+                LocalSearchEngineAreaFooter.current?.invoke(this)
             }
-            OutlinedTextField(
-                value = value,
-                onValueChange = onValueChange,
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(
-                            horizontal = SearchEngineSectionConstants.HORIZONTAL_PADDING,
-                            vertical = SearchEngineSectionConstants.VERTICAL_PADDING,
-                        )
-                        .focusRequester(focusRequester),
-                placeholder = { Text(stringResource(R.string.direct_search_follow_up_hint)) },
-                trailingIcon = {
-                    IconButton(
-                        onClick = submit,
-                        enabled = value.isNotBlank(),
-                    ) {
-                        Icon(
-                            imageVector = MaterialSymbols.Send,
-                            contentDescription = stringResource(R.string.dialog_send),
-                        )
-                    }
-                },
-                singleLine = true,
-                shape = androidx.compose.foundation.shape.RoundedCornerShape(
-                    SearchEngineSectionConstants.TOOL_BUTTON_CORNER_RADIUS,
-                ),
-                colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = Color.Transparent),
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
-                keyboardActions = KeyboardActions(onSend = { submit() }),
-            )
         }
     }
 }

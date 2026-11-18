@@ -1,5 +1,6 @@
 package com.tk.quicksearch.widgetsPanel
 
+import com.tk.quicksearch.shared.ui.theme.AppMotion
 import android.appwidget.AppWidgetHost
 import android.appwidget.AppWidgetManager
 import android.content.Context
@@ -7,10 +8,8 @@ import android.content.Intent
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animate
 import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
@@ -58,10 +57,13 @@ import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import com.tk.quicksearch.app.navigation.LocalRootPageSettled
 import com.tk.quicksearch.search.core.ItemPriorityConfig
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -124,10 +126,8 @@ private class HomeReorderShift(
 
 // Home motion is snappier than the widgets panel's: entries shift out of the way while a widget
 // is dragged, and resizes should track the finger closely.
-private val HomeReorderMotion =
-    spring<Float>(dampingRatio = Spring.DampingRatioNoBouncy, stiffness = Spring.StiffnessMedium)
-internal val HomeWidgetLayoutMotion =
-    spring<Dp>(dampingRatio = Spring.DampingRatioNoBouncy, stiffness = Spring.StiffnessMedium)
+private val HomeReorderMotion = AppMotion.placement<Float>()
+internal val HomeWidgetLayoutMotion = AppMotion.placement<Dp>()
 
 private data class HomeWidgetDrag(
     val appWidgetId: Int,
@@ -159,6 +159,7 @@ internal fun HomeWidgetStack(
 ) {
     val context = LocalContext.current
     val density = LocalDensity.current
+    val horizontalSign = if (LocalLayoutDirection.current == LayoutDirection.Rtl) -1 else 1
     val appWidgetManager = remember(context) { AppWidgetManager.getInstance(context.applicationContext) }
 
     var editingWidgetId by remember { mutableStateOf<Int?>(null) }
@@ -183,7 +184,8 @@ internal fun HomeWidgetStack(
     var settleJob by remember { mutableStateOf<Job?>(null) }
     // Written during measure and read only from gesture callbacks, so it isn't snapshot state.
     val gridUnitWidthPx = remember { floatArrayOf(0f) }
-    // Let Home draw before third-party RemoteViews are inflated.
+    // Let Home finish sliding in before third-party RemoteViews are inflated.
+    val pageSettled = LocalRootPageSettled.current
     var showHostedWidgets by remember { mutableStateOf(false) }
     val bounds = remember { mutableMapOf<Any, HomeEntryBounds>() }
     // Each widget's on-screen bounds, for the screen-level edit tap guard.
@@ -197,7 +199,8 @@ internal fun HomeWidgetStack(
     val currentLayoutOrder by rememberUpdatedState(layoutOrder)
     val currentIsReversed by rememberUpdatedState(isReversed)
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(pageSettled) {
+        if (!pageSettled || showHostedWidgets) return@LaunchedEffect
         withFrameNanos { }
         showHostedWidgets = true
     }
@@ -209,6 +212,16 @@ internal fun HomeWidgetStack(
 
     LaunchedEffect(showWidgets) {
         if (!showWidgets) editingWidgetId = null
+    }
+
+    // Wait for the incoming page to settle, and suspend updates while a query hides the widgets.
+    DisposableEffect(host, showWidgets, showHostedWidgets) {
+        host.setSuspended(!showWidgets || !showHostedWidgets)
+        onDispose { }
+    }
+
+    LaunchedEffect(host, widgets) {
+        host.retainViews(widgets.mapTo(HashSet()) { it.appWidgetId })
     }
 
     // Home scrolls under the widgets: a touch that stops a fling, or one the scroll takes over,
@@ -397,7 +410,7 @@ internal fun HomeWidgetStack(
                         if (unitWidth <= 0f) {
                             home.column
                         } else {
-                            (active.startColumn + (totalDx / unitWidth).roundToInt())
+                            (active.startColumn + (totalDx * horizontalSign / unitWidth).roundToInt())
                                 .coerceIn(0, WIDGET_PANEL_GRID_COLUMNS - home.columnSpan)
                         }
                     widget.copy(home = home.copy(column = column, gapSteps = gapSteps))
@@ -464,7 +477,7 @@ internal fun HomeWidgetStack(
                             },
                 ) { leadingContent() }
             }
-            entries.forEach { entry ->
+            entries.forEachIndexed { entryIndex, entry ->
                 key(entry.key) {
                     when (entry) {
                         is HomeLayoutEntry.Item -> {
@@ -531,8 +544,28 @@ internal fun HomeWidgetStack(
                                                     else -> reorderShift.shift
                                                 }
                                         },
+                                onEdit = { editingWidgetId = appWidgetId },
                                 onMoveStart = { startDrag(appWidgetId) },
                                 onMove = { dx, dy -> dragTo(dx, dy) },
+                                canMoveUp = entryIndex > 0,
+                                canMoveDown = entryIndex < entries.lastIndex,
+                                onMoveBy = { columnDelta, rowDelta ->
+                                    liveWidgets =
+                                        if (rowDelta != 0) {
+                                            moveHomeWidget(entries, appWidgetId, entryIndex + rowDelta, isReversed)
+                                        } else {
+                                            displayWidgets.map { item ->
+                                                val home = item.home
+                                                if (item.appWidgetId == appWidgetId && home != null) {
+                                                    item.copy(home = home.copy(column = home.column + columnDelta))
+                                                } else {
+                                                    item
+                                                }
+                                            }
+                                        }
+                                    commit()
+                                    true
+                                },
                                 onInteractionEnd = { commit() },
                                 onResizePreview = { resize -> resizePreview(appWidgetId, resize) },
                                 onRemove = {

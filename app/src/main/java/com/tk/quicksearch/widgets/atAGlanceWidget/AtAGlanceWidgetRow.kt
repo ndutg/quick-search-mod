@@ -104,7 +104,8 @@ internal enum class AtAGlanceWidgetTapType {
 
     /** Not tappable; only names the row. */
     CHARGING,
-    LOW_STORAGE,
+    LOW_STORAGE, // Kept for already rendered widgets.
+    STATUS_ITEM,
     DO_NOT_DISTURB,
     AIRPLANE_MODE,
     HOTSPOT,
@@ -150,7 +151,8 @@ internal enum class AtAGlanceWidgetDismissType {
     CUSTOM_INFO,
     WIFI_SIGN_IN,
     CHARGING,
-    LOW_STORAGE,
+    LOW_STORAGE, // Kept for already rendered widgets.
+    STATUS_ITEM,
 }
 
 internal data class AtAGlanceWidgetTap(
@@ -186,6 +188,8 @@ internal data class AtAGlanceWidgetRow(
     val footer: String? = null,
     /** Draws a progress bar below the text, from 0 to 1. */
     val progress: Float? = null,
+    /** Ends the progress bar with a destination flag, like a navigation's trip. */
+    val progressFlag: Boolean = false,
     /** Buttons below the text, like a missed call's app chips. */
     val chips: List<AtAGlanceWidgetButton> = emptyList(),
     /** Buttons between the text and the close button. */

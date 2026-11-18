@@ -360,29 +360,11 @@ abstract class BasePreferences(
             null
         }
 
-    protected fun getFirstLaunchFlag(): Boolean {
-        // Prefer the dedicated non-backed-up prefs. If missing, infer a safe value.
-        if (!firstLaunchPrefs.contains(KEY_FIRST_LAUNCH)) {
-            val currentInstallTime = getCurrentInstallTime()
-            val isFreshInstall =
-                currentInstallTime != null &&
-                    System.currentTimeMillis() - currentInstallTime <
-                    FRESH_INSTALL_THRESHOLD_MS
-
-            // A fresh install defaults to true even if legacy prefs say otherwise.
-            val legacyValue = prefs.getBoolean(KEY_FIRST_LAUNCH, true)
-            val initialValue = if (isFreshInstall) true else legacyValue
-            setFirstLaunchFlag(initialValue)
-            return initialValue
-        }
-
-        return firstLaunchPrefs.getBoolean(KEY_FIRST_LAUNCH, true)
-    }
+    protected fun getFirstLaunchFlag(): Boolean =
+        firstLaunchPrefs.getBoolean(KEY_FIRST_LAUNCH, true)
 
     protected fun setFirstLaunchFlag(value: Boolean) {
         firstLaunchPrefs.edit().putBoolean(KEY_FIRST_LAUNCH, value).apply()
-        // Keep legacy location in sync for backward compatibility
-        prefs.edit().putBoolean(KEY_FIRST_LAUNCH, value).apply()
     }
 
     protected fun syncInstallTimeWithBackup() {
@@ -447,7 +429,6 @@ abstract class BasePreferences(
         const val KEY_EXCLUDED_FILE_EXTENSIONS = "excluded_file_extensions"
         const val KEY_ENABLED_FILE_TYPES = "enabled_file_types"
         const val KEY_SHOW_FOLDERS_IN_RESULTS = "show_folders_in_results"
-        const val KEY_FILE_PREVIEWS_ENABLED = "file_previews_enabled"
         const val KEY_SHOW_SYSTEM_FILES = "show_system_files"
         const val KEY_FOLDER_WHITELIST_PATTERNS = "folder_whitelist_patterns"
         const val KEY_FOLDER_BLACKLIST_PATTERNS = "folder_blacklist_patterns"
@@ -465,8 +446,6 @@ abstract class BasePreferences(
         const val KEY_CALENDAR_INCLUDE_PAST_EVENTS = "calendar_include_past_events"
         const val KEY_CALENDAR_SHOW_TODAY_EVENTS = "calendar_show_today_events"
         const val KEY_DEFAULT_CALENDAR_PACKAGE = "default_calendar_package"
-        const val KEY_CUSTOM_CALENDAR_EVENTS_DATA = "custom_calendar_events_data"
-        const val KEY_CUSTOM_CALENDAR_EVENT_ID_COUNTER = "custom_calendar_event_id_counter"
         const val KEY_GLANCE_HIDDEN_CALENDAR_EVENTS = "glance_hidden_calendar_events"
 
         // Notes preferences keys
@@ -488,36 +467,7 @@ abstract class BasePreferences(
         const val KEY_PINNED_REMINDER_ORDER = "pinned_reminder_order"
         const val KEY_INCLUDE_PAST_REMINDERS = "include_past_reminders"
         const val KEY_REMINDER_PERMISSIONS_REQUESTED = "reminder_permissions_requested"
-        const val KEY_SWIPE_RIGHT_ACTION = "swipe_right_action"
-        const val KEY_SWIPE_LEFT_ACTION = "swipe_left_action"
-        const val KEY_SWIPE_UP_ACTION = "swipe_up_action"
-        const val KEY_SWIPE_DOWN_ACTION = "swipe_down_action"
-        const val KEY_SWIPE_RIGHT_CUSTOM_ACTION = "swipe_right_custom_action"
-        const val KEY_SWIPE_RIGHT_ALIAS_TARGET = "swipe_right_alias_target"
         const val KEY_LAUNCHER_SWIPE_RIGHT_ENABLED = "launcher_swipe_right_enabled"
-        const val KEY_SWIPE_LEFT_CUSTOM_ACTION = "swipe_left_custom_action"
-        const val KEY_SWIPE_LEFT_ALIAS_TARGET = "swipe_left_alias_target"
-        const val KEY_SWIPE_UP_CUSTOM_ACTION = "swipe_up_custom_action"
-        const val KEY_SWIPE_UP_ALIAS_TARGET = "swipe_up_alias_target"
-        const val KEY_SWIPE_DOWN_CUSTOM_ACTION = "swipe_down_custom_action"
-        const val KEY_SWIPE_DOWN_ALIAS_TARGET = "swipe_down_alias_target"
-        const val KEY_HOME_SWIPE_UP_NOTIFICATION_ENABLED = "home_swipe_up_notification_enabled"
-        const val KEY_HOME_SWIPE_DOWN_NOTIFICATION_ENABLED = "home_swipe_down_notification_enabled"
-        const val KEY_HOME_SWIPE_UP_ACTION = "home_swipe_up_action"
-        const val KEY_HOME_SWIPE_DOWN_ACTION = "home_swipe_down_action"
-        const val KEY_HOME_SWIPE_UP_CUSTOM_ACTION = "home_swipe_up_custom_action"
-        const val KEY_HOME_SWIPE_UP_ALIAS_TARGET = "home_swipe_up_alias_target"
-        const val KEY_HOME_SWIPE_DOWN_CUSTOM_ACTION = "home_swipe_down_custom_action"
-        const val KEY_HOME_SWIPE_DOWN_ALIAS_TARGET = "home_swipe_down_alias_target"
-        const val KEY_HOME_DOUBLE_TAP_ACTION = "home_double_tap_action"
-        const val KEY_HOME_DOUBLE_TAP_CUSTOM_ACTION = "home_double_tap_custom_action"
-        const val KEY_HOME_DOUBLE_TAP_ALIAS_TARGET = "home_double_tap_alias_target"
-        const val KEY_HOME_TWO_FINGER_SWIPE_UP_ACTION = "home_two_finger_swipe_up_action"
-        const val KEY_HOME_TWO_FINGER_SWIPE_UP_CUSTOM_ACTION = "home_two_finger_swipe_up_custom_action"
-        const val KEY_HOME_TWO_FINGER_SWIPE_UP_ALIAS_TARGET = "home_two_finger_swipe_up_alias_target"
-        const val KEY_HOME_TWO_FINGER_SWIPE_DOWN_ACTION = "home_two_finger_swipe_down_action"
-        const val KEY_HOME_TWO_FINGER_SWIPE_DOWN_CUSTOM_ACTION = "home_two_finger_swipe_down_custom_action"
-        const val KEY_HOME_TWO_FINGER_SWIPE_DOWN_ALIAS_TARGET = "home_two_finger_swipe_down_alias_target"
 
         // App shortcut preferences keys
         const val KEY_PINNED_APP_SHORTCUTS = "pinned_app_shortcuts"
@@ -533,7 +483,6 @@ abstract class BasePreferences(
         const val KEY_SEARCH_ENGINE_COMPACT_ROW_COUNT = "search_engine_compact_row_count"
         const val KEY_SEARCH_ENGINE_ALIAS_SUFFIX_ENABLED = "search_engine_alias_suffix_enabled"
         const val KEY_ALIAS_TRIGGER_AFTER_SPACE = "alias_trigger_after_space"
-        const val KEY_SEARCH_ENGINE_ONBOARDING_SEEN = "search_engine_onboarding_seen"
         const val KEY_CUSTOM_SEARCH_ENGINES = "custom_search_engines"
         const val KEY_CUSTOM_TOOLS = "custom_tools"
         const val KEY_DISABLED_CUSTOM_TOOLS = "disabled_custom_tools"
@@ -546,8 +495,6 @@ abstract class BasePreferences(
 
         // UI preferences keys
         const val KEY_ONE_HANDED_MODE = "one_handed_mode"
-        const val KEY_MESSAGING_APP = "messaging_app"
-        const val KEY_CALLING_APP = "calling_app"
         const val KEY_FIRST_LAUNCH = "first_launch"
         const val KEY_INSTALL_TIME = "install_time"
         const val KEY_SELECTED_ICON_PACK = "selected_icon_pack"
@@ -561,7 +508,6 @@ abstract class BasePreferences(
         const val KEY_HAS_SEEN_OVERLAY_ASSISTANT_TIP = "has_seen_overlay_assistant_tip"
 
         // Fresh install detection window (10 minutes)
-        const val FRESH_INSTALL_THRESHOLD_MS = 10 * 60 * 1000L
 
         // Section preferences keys
         const val KEY_DISABLED_SECTIONS = "disabled_sections"
@@ -570,43 +516,6 @@ abstract class BasePreferences(
         const val KEY_AMAZON_DOMAIN = "amazon_domain"
         const val KEY_AMAZON_DOMAIN_REGION_DETECTED = "amazon_domain_region_detected"
         const val KEY_AI_SEARCH_LLM_PROVIDER = "direct_search_llm_provider"
-        const val KEY_GEMINI_API_KEY = "gemini_api_key"
-        const val KEY_GEMINI_PERSONAL_CONTEXT = "gemini_personal_context"
-        const val KEY_GEMINI_MODEL = "gemini_model"
-        const val KEY_GEMINI_GROUNDING_ENABLED = "gemini_grounding_enabled"
-        const val KEY_GEMINI_THINKING_ENABLED = "gemini_thinking_enabled"
-
-        // OpenAI preferences keys
-        const val KEY_OPENAI_API_KEY = "openai_api_key"
-        const val KEY_OPENAI_PERSONAL_CONTEXT = "openai_personal_context"
-        const val KEY_OPENAI_MODEL = "openai_model"
-        const val KEY_OPENAI_GROUNDING_ENABLED = "openai_grounding_enabled"
-        // Anthropic preferences keys
-        const val KEY_ANTHROPIC_API_KEY = "anthropic_api_key"
-        const val KEY_ANTHROPIC_PERSONAL_CONTEXT = "anthropic_personal_context"
-        const val KEY_ANTHROPIC_MODEL = "anthropic_model"
-        const val KEY_ANTHROPIC_GROUNDING_ENABLED = "anthropic_grounding_enabled"
-        const val KEY_ANTHROPIC_THINKING_ENABLED = "anthropic_thinking_enabled"
-
-        // Groq preferences keys
-        const val KEY_GROQ_API_KEY = "groq_api_key"
-        const val KEY_GROQ_PERSONAL_CONTEXT = "groq_personal_context"
-        const val KEY_GROQ_MODEL = "groq_model"
-        const val KEY_GROQ_GROUNDING_ENABLED = "groq_grounding_enabled"
-        const val KEY_GROQ_THINKING_ENABLED = "groq_thinking_enabled"
-
-        // Meta AI preferences keys
-        const val KEY_META_API_KEY = "meta_api_key"
-        const val KEY_META_PERSONAL_CONTEXT = "meta_personal_context"
-        const val KEY_META_MODEL = "meta_model"
-        const val KEY_META_GROUNDING_ENABLED = "meta_grounding_enabled"
-        const val KEY_META_THINKING_ENABLED = "meta_thinking_enabled"
-
-        // OpenCode preferences keys
-        const val KEY_OPENCODE_API_KEY = "opencode_api_key"
-        const val KEY_OPENCODE_PERSONAL_CONTEXT = "opencode_personal_context"
-        const val KEY_OPENCODE_MODEL = "opencode_model"
-        const val KEY_OPENCODE_GROUNDING_ENABLED = "opencode_grounding_enabled"
         const val KEY_CUSTOM_LLM_PROVIDERS = "custom_llm_providers"
 
         // Tavily web search preferences keys
@@ -614,10 +523,6 @@ abstract class BasePreferences(
         const val KEY_TAVILY_WEB_SEARCH_MODE = "tavily_web_search_mode"
 
         // Usage permission banner preferences keys
-        const val KEY_USAGE_PERMISSION_BANNER_DISMISS_COUNT =
-            "usage_permission_banner_dismiss_count"
-        const val KEY_USAGE_PERMISSION_BANNER_SESSION_DISMISSED =
-            "usage_permission_banner_session_dismissed"
 
         // Web search suggestions preferences keys
         const val KEY_WEB_SUGGESTIONS_ENABLED = "web_suggestions_enabled"

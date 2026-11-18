@@ -25,6 +25,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import com.tk.quicksearch.app.PinnedShortcutRequests
@@ -64,6 +65,7 @@ internal data class SearchStartupPreferencesSnapshot(
     val themedIconsEnabled: Boolean,
     val deviceThemeEnabled: Boolean,
     val amoledThemeEnabled: Boolean,
+    val searchChromeBlurEnabled: Boolean,
     val maskUnsupportedIconPackIcons: Boolean,
     val customImageUri: String?,
 )
@@ -95,6 +97,7 @@ internal data class SearchLoadedPreferencesSnapshot(
     val themedIconsEnabled: Boolean,
     val deviceThemeEnabled: Boolean,
     val amoledThemeEnabled: Boolean,
+    val searchChromeBlurEnabled: Boolean,
     val maskUnsupportedIconPackIcons: Boolean,
     val backgroundSource: BackgroundSource,
     val wallpaperBackgroundAlpha: Float,
@@ -105,7 +108,6 @@ internal data class SearchLoadedPreferencesSnapshot(
     val useSystemFont: Boolean,
     val customImageUri: String?,
     val showFolders: Boolean,
-    val filePreviewsEnabled: Boolean,
     val showSystemFiles: Boolean,
     val folderWhitelistPatterns: Set<String>,
     val folderBlacklistPatterns: Set<String>,
@@ -163,11 +165,15 @@ internal class SearchStartupLifecycleDelegate(
     internal val loadPinnedAndExcludedCalendarEvents: () -> Unit,
     internal val setDirectDialEnabled: (Boolean, Boolean) -> Unit,
     internal val isQueryActive: () -> Boolean,
+    internal val rerunCurrentQuery: () -> Unit,
+    internal val startupSnapshotProvider: () -> com.tk.quicksearch.search.startup.StartupSurfaceSnapshot?,
 ) {
     internal var optionalStartupJob: Job? = null
     internal var packageRefreshJob: Job? = null
     internal var appUsageRefreshJob: Job? = null
     internal var resumeCalendarRefreshJob: Job? = null
+    private var resumePermissionJob: Job? = null
+    internal var pendingSnapshotSuggestions: SnapshotSuggestions? = null
     internal val pinningHandler get() = handlersProvider().pinningHandler
     internal val searchEngineManager get() = handlersProvider().searchEngineManager
     internal val secondarySearchOrchestrator get() = handlersProvider().secondarySearchOrchestrator
@@ -212,34 +218,8 @@ internal class SearchStartupLifecycleDelegate(
     }
 
     fun handleOnResume() {
-        disableOverlayModeForDefaultLauncher()
         val startupComplete = stateAccess.isStartupComplete
-
-        val shouldRefreshLaunchPermissions = shouldRefreshPermissionSnapshot()
-        var optionalPermissionsChanged = false
-        if (shouldRefreshLaunchPermissions) {
-            val previousUsage = permissionStateProvider().hasUsagePermission
-            val latestUsage = repository.hasUsageAccess()
-            val usageChanged = previousUsage != latestUsage
-            if (usageChanged) {
-                updatePermissionState { it.copy(hasUsagePermission = latestUsage) }
-                if (startupComplete) {
-                    if (latestUsage) refreshApps() else refreshAppSuggestions()
-                }
-            }
-
-            optionalPermissionsChanged = run {
-                val before = permissionStateProvider()
-                handleOptionalPermissionChangeInternal(allowAppRefresh = startupComplete)
-                permissionStateProvider() != before
-            }
-            markPermissionSnapshotRefreshed()
-        }
-
-        if (startupComplete && optionalPermissionsChanged) {
-            pinningHandler.loadPinnedContactsAndFiles()
-            pinningHandler.loadExcludedContactsAndFiles()
-        }
+        refreshPermissionSnapshotForVisiblePage()
 
         if (startupComplete && PinnedShortcutRequests.consumeRefreshNeeded()) {
             scope.launch(Dispatchers.IO) { loadAppShortcuts() }
@@ -258,7 +238,11 @@ internal class SearchStartupLifecycleDelegate(
                     loadPinnedAndExcludedCalendarEvents()
                 }
             refreshAppUsageMetadata()
+            // Tasker can be uninstalled while the app is in the background.
+            scope.launch(Dispatchers.IO) { aliasHandler.refreshTaskerInstalled() }
         }
+
+        scope.launch(Dispatchers.IO) { searchEngineManager.refreshDefaultBrowserPackage() }
 
         val now = System.currentTimeMillis()
         if (startupComplete && now - stateAccess.lastBrowserTargetRefreshMs >= BROWSER_REFRESH_INTERVAL_MS) {
@@ -267,6 +251,33 @@ internal class SearchStartupLifecycleDelegate(
                 searchEngineManager.ensureInitialized()
                 searchEngineManager.refreshBrowserTargets()
             }
+        }
+    }
+
+    fun refreshPermissionSnapshotForVisiblePage() {
+        if (resumePermissionJob?.isActive == true) return
+        val startupComplete = stateAccess.isStartupComplete
+        resumePermissionJob = scope.launch(Dispatchers.Default) { refreshPermissionsOnResume(startupComplete) }
+    }
+
+    private suspend fun refreshPermissionsOnResume(startupComplete: Boolean) {
+        disableOverlayModeForDefaultLauncher()
+        if (!shouldRefreshPermissionSnapshot()) return
+        val previousUsage = permissionStateProvider().hasUsagePermission
+        val latestUsage = repository.hasUsageAccess()
+        if (previousUsage != latestUsage) {
+            updatePermissionState { it.copy(hasUsagePermission = latestUsage) }
+            if (startupComplete) {
+                if (latestUsage) refreshApps() else refreshAppSuggestions()
+            }
+        }
+        val before = permissionStateProvider()
+        handleOptionalPermissionChangeInternal(allowAppRefresh = startupComplete)
+        val optionalPermissionsChanged = permissionStateProvider() != before
+        markPermissionSnapshotRefreshed()
+        if (startupComplete && optionalPermissionsChanged) {
+            pinningHandler.loadPinnedContactsAndFiles()
+            pinningHandler.loadExcludedContactsAndFiles()
         }
     }
 
@@ -316,14 +327,16 @@ internal class SearchStartupLifecycleDelegate(
         saveStartupSurfaceSnapshotAsync(true, false)
     }
 
-    private fun disableOverlayModeForDefaultLauncher() {
+    private suspend fun disableOverlayModeForDefaultLauncher() {
         if (!applicationProvider().isDefaultHomeApp() || !userPreferences.isOverlayModeEnabled()) {
             return
         }
 
-        userPreferences.setOverlayModeEnabled(false)
-        updateUiState { it.copy(overlayModeEnabled = false) }
-        OverlayModeController.stopOverlay(applicationProvider())
+        withContext(Dispatchers.Main) {
+            userPreferences.setOverlayModeEnabled(false)
+            updateUiState { it.copy(overlayModeEnabled = false) }
+            OverlayModeController.stopOverlay()
+        }
     }
 
     fun refreshOptionalPermissions(
@@ -375,7 +388,8 @@ internal class SearchStartupLifecycleDelegate(
             }
 
             if (hasCalendar && refreshCalendarData) {
-                loadPinnedAndExcludedCalendarEvents()
+                // This can run on main from onResume; the load reads the calendar provider.
+                scope.launch(Dispatchers.IO) { loadPinnedAndExcludedCalendarEvents() }
             }
 
             sectionManager.refreshDisabledSections()
@@ -424,6 +438,8 @@ internal class SearchStartupLifecycleDelegate(
                 }
                 StartupTrace.mark("QS.Home.PinnedSettingsAvailable")
                 StartupTrace.mark("QS.Home.EnabledSectionsAvailable")
+                // After Home content is ready, so the first contact query skips the full load.
+                handlersProvider().prewarmContactSearch()
             }
 
             // Pinned shortcuts are part of the empty-query home surface. Restore the bounded
@@ -462,6 +478,10 @@ internal class SearchStartupLifecycleDelegate(
             if (hasCachedApps) {
                 publishCurrentStartupAppSuggestions()
             }
+            val hasApiKey = userPreferences.hasAnyLlmApiKey()
+            val enginesInitialization = async(Dispatchers.IO) {
+                searchEngineManager.ensureInitialized(hasApiKey)
+            }
             if (reconcileAppsInBackground) {
                 packageRefreshJob?.cancel()
                 packageRefreshJob = launch(startupDispatcher) { loadApps() }
@@ -483,16 +503,17 @@ internal class SearchStartupLifecycleDelegate(
             val packageNames = appSearchManager.cachedApps.map { it.packageName }.toSet()
             val messagingInfo = getMessagingAppInfo(packageNames)
 
-            searchEngineManager.ensureInitialized()
+            enginesInitialization.await()
+            aiSearchHandler.initializeForStartup(hasApiKey)
             val shortcutsState = aliasHandler.getInitialState()
             val customTools = normalizeCustomToolModels(userPreferences.getCustomTools())
-            val hasApiKey = userPreferences.hasAnyLlmApiKey()
             val activeProviderId = aiSearchHandler.getAiSearchProviderId()
             val availableAiModels = aiSearchHandler.getAvailableModels()
 
             updateFeatureState { state ->
                 state.copy(
                     searchTargetsOrder = searchEngineManager.searchTargetsOrder,
+                    defaultBrowserPackage = searchEngineManager.defaultBrowserPackage,
                     disabledSearchTargetIds = searchEngineManager.disabledSearchTargetIds,
                     shortcutsEnabled = shortcutsState.shortcutsEnabled,
                     shortcutCodes = shortcutsState.shortcutCodes,
@@ -503,10 +524,6 @@ internal class SearchStartupLifecycleDelegate(
                     isSearchEngineAliasSuffixEnabled = userPreferences.isSearchEngineAliasSuffixEnabled(),
                     isAliasTriggerAfterSpaceEnabled = userPreferences.isAliasTriggerAfterSpaceEnabled(),
                     webSuggestionsEnabled = webSuggestionHandler.isEnabled,
-                    calculatorEnabled = userPreferences.isCalculatorEnabled(),
-                    unitConverterEnabled = userPreferences.isUnitConverterEnabled(),
-                    dateCalculatorEnabled = userPreferences.isDateCalculatorEnabled(),
-                    colorVisualizerEnabled = userPreferences.isColorVisualizerEnabled(),
                     currencyConverterEnabled = userPreferences.isCurrencyConverterEnabled(),
                     worldClockEnabled = userPreferences.isWorldClockEnabled(),
                     dictionaryEnabled = userPreferences.isDictionaryEnabled(),
@@ -567,9 +584,6 @@ internal class SearchStartupLifecycleDelegate(
             )
             updateConfigState { state ->
                 state.copy(
-                    showSearchEngineOnboarding =
-                        searchEngineManager.isSearchEngineCompactMode &&
-                            !userPreferences.hasSeenSearchEngineOnboarding(),
                     showSearchBarWelcomeAnimation = shouldShowSearchBarWelcome(),
                     appSuggestionsEnabled = userPreferences.areAppSuggestionsEnabled(),
                     showAllAppsButton = userPreferences.shouldShowAllAppsButton(),
@@ -594,11 +608,7 @@ internal class SearchStartupLifecycleDelegate(
                 state.copy(
                     primaryContactButton = messagingInfo.primaryContactButton,
                     secondaryContactButton = messagingInfo.secondaryContactButton,
-                    isWhatsAppInstalled = messagingInfo.isWhatsAppInstalled,
-                    isWhatsAppBusinessInstalled = messagingInfo.isWhatsAppBusinessInstalled,
-                    isTelegramInstalled = messagingInfo.isTelegramInstalled,
-                    isSignalInstalled = messagingInfo.isSignalInstalled,
-                    isGoogleMeetInstalled = messagingInfo.isGoogleMeetInstalled,
+                    installedContactProviders = messagingInfo.installedContactProviders,
                 )
             }
             updateFeatureState { state ->

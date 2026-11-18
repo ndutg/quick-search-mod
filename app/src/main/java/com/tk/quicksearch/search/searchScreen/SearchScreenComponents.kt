@@ -1,5 +1,6 @@
 package com.tk.quicksearch.search.searchScreen
 
+import com.tk.quicksearch.shared.ui.theme.AppShapes
 // Re-export all components from their respective files for backward compatibility
 
 import androidx.compose.animation.AnimatedVisibility
@@ -14,24 +15,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
-import com.tk.quicksearch.search.core.SearchToolType
+import com.tk.quicksearch.tools.inlineSearch.SearchToolType
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 
 // Import the modifier functions
 import com.tk.quicksearch.search.searchScreen.components.predictedSubmitHighlight as componentsPredictedSubmitHighlight
-import com.tk.quicksearch.search.searchScreen.components.predictedSubmitCardBorder as componentsPredictedSubmitCardBorder
 
 // Modifiers
 internal fun Modifier.predictedSubmitHighlight(
     isPredicted: Boolean,
-    shape: Shape = DesignTokens.CardShape,
+    shape: Shape = AppShapes.card,
     opaqueCardTopResultBorder: Boolean = false,
 ): Modifier = componentsPredictedSubmitHighlight(isPredicted, shape, opaqueCardTopResultBorder)
-
-internal fun Modifier.predictedSubmitCardBorder(
-    isPredicted: Boolean,
-    shape: Shape = DesignTokens.CardShape,
-): Modifier = componentsPredictedSubmitCardBorder(isPredicted, shape)
 
 // Cards
 @Composable
@@ -40,11 +35,13 @@ internal fun PermissionDisabledCard(
     message: String,
     actionLabel: String,
     onActionClick: () -> Unit,
+    showWallpaperBackground: Boolean,
 ) = com.tk.quicksearch.search.searchScreen.components.PermissionDisabledCard(
     title = title,
     message = message,
     actionLabel = actionLabel,
     onActionClick = onActionClick,
+    showWallpaperBackground = showWallpaperBackground,
 )
 
 @Composable
@@ -52,10 +49,12 @@ internal fun UsagePermissionCard(
     modifier: Modifier = Modifier,
     onRequestPermission: () -> Unit,
     onDismiss: () -> Unit,
+    showWallpaperBackground: Boolean,
 ) = com.tk.quicksearch.search.searchScreen.components.UsagePermissionCard(
     modifier = modifier,
     onRequestPermission = onRequestPermission,
     onDismiss = onDismiss,
+    showWallpaperBackground = showWallpaperBackground,
 )
 
 // Banners
@@ -216,37 +215,45 @@ internal fun KeyboardSwitchPill(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    showIcon: Boolean = true,
 ) = com.tk.quicksearch.search.searchScreen.components.KeyboardSwitchPill(
     text = text,
     onClick = onClick,
     modifier = modifier,
+    showIcon = showIcon,
 )
 
 @Composable
 internal fun PhoneCallPill(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    showIcon: Boolean = true,
 ) = com.tk.quicksearch.search.searchScreen.components.PhoneCallPill(
     onClick = onClick,
     modifier = modifier,
+    showIcon = showIcon,
 )
 
 @Composable
 internal fun SetAlarmPill(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    showIcon: Boolean = true,
 ) = com.tk.quicksearch.search.searchScreen.components.SetAlarmPill(
     onClick = onClick,
     modifier = modifier,
+    showIcon = showIcon,
 )
 
 @Composable
 internal fun StartTimerPill(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    showIcon: Boolean = true,
 ) = com.tk.quicksearch.search.searchScreen.components.StartTimerPill(
     onClick = onClick,
     modifier = modifier,
+    showIcon = showIcon,
 )
 
 @Composable
@@ -254,10 +261,12 @@ internal fun CreateReminderPill(
     onClick: () -> Unit,
     useShortLabel: Boolean = false,
     modifier: Modifier = Modifier,
+    showIcon: Boolean = true,
 ) = com.tk.quicksearch.search.searchScreen.components.CreateReminderPill(
     onClick = onClick,
     useShortLabel = useShortLabel,
     modifier = modifier,
+    showIcon = showIcon,
 )
 
 @Composable
@@ -268,6 +277,8 @@ internal fun OpenKeyboardAction(
     showWallpaperBackground: Boolean,
     modifier: Modifier = Modifier,
     showMic: Boolean = true,
+    extendBehindNavigationBar: Boolean = false,
+    padTop: Boolean = false,
 ) = com.tk.quicksearch.search.searchScreen.components.OpenKeyboardAction(
     text = text,
     onClick = onClick,
@@ -275,6 +286,8 @@ internal fun OpenKeyboardAction(
     showWallpaperBackground = showWallpaperBackground,
     modifier = modifier,
     showMic = showMic,
+    extendBehindNavigationBar = extendBehindNavigationBar,
+    padTop = padTop,
 )
 
 @Composable
@@ -294,16 +307,13 @@ internal fun NumberKeyboardOperatorPills(
     isOverlayPresentation: Boolean = false,
     extendToScreenEdges: Boolean = true,
     showWallpaperBackground: Boolean = false,
+    transparentBackground: Boolean = false,
     modifier: Modifier = Modifier,
 ) = com.tk.quicksearch.search.searchScreen.components.NumberKeyboardOperatorPills(
     onOperatorClick = onOperatorClick,
     isOverlayPresentation = isOverlayPresentation,
     extendToScreenEdges = extendToScreenEdges,
     showWallpaperBackground = showWallpaperBackground,
+    transparentBackground = transparentBackground,
     modifier = modifier,
 )
-
-// Empty State
-@Composable
-internal fun EmptyState() =
-    com.tk.quicksearch.search.searchScreen.components.EmptyState()

@@ -1,8 +1,9 @@
 package com.tk.quicksearch.search.searchHistory
 
+import com.tk.quicksearch.shared.ui.theme.AppShapes
+import com.tk.quicksearch.search.searchScreen.shared.SearchResultCardDefaults
 import com.tk.quicksearch.search.searchScreen.shared.LocalSearchCardLayoutEnabled
 import com.tk.quicksearch.search.searchScreen.shared.compactEdgeToEdge
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -19,17 +20,13 @@ import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ripple
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.PrimaryTabRow
-import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,13 +37,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.appSettings.AppSettingResult
@@ -66,17 +60,10 @@ import com.tk.quicksearch.search.models.DeviceFile
 import com.tk.quicksearch.search.models.NoteInfo
 import com.tk.quicksearch.search.notes.NotesTextUtils
 import com.tk.quicksearch.search.data.appShortcutRepository.SearchTargetShortcutMode
-import com.tk.quicksearch.search.searchScreen.LocalOverlayDividerColor
-import com.tk.quicksearch.search.searchScreen.LocalOverlayResultCardColor
-import com.tk.quicksearch.search.searchScreen.SearchScreenConstants
-import com.tk.quicksearch.search.searchScreen.components.CollapseButton
-import com.tk.quicksearch.search.searchScreen.components.ExpandableResultsCard
-import com.tk.quicksearch.search.searchScreen.components.ExpandButton
 import com.tk.quicksearch.searchEngines.SearchTargetQueryShortcutActivity
-import com.tk.quicksearch.shared.ui.components.AppAlertDialog
 import com.tk.quicksearch.shared.ui.components.AppDropdownMenu
+import com.tk.quicksearch.shared.ui.components.AppDropdownMenuItem
 import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
-import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 
 @Composable
@@ -116,8 +103,7 @@ internal fun RecentSearchItemRow(
 ) {
     var showRemoveMenu by remember { mutableStateOf(false) }
     val dividerColor =
-        overlayDividerColor
-            ?: if (showWallpaperBackground) AppColors.WallpaperDivider else MaterialTheme.colorScheme.outlineVariant
+        SearchResultCardDefaults.dividerColor(showWallpaperBackground, overlayDividerColor)
 
     Box(modifier = Modifier.fillMaxWidth()) {
         when (item) {
@@ -196,7 +182,6 @@ internal fun RecentSearchItemRow(
                     AppShortcutRow(
                         shortcut = item.shortcut,
                         isPinned = false,
-                        isExcluded = false,
                         hasNickname = false,
                         onShortcutClick = onAppShortcutClick,
                         onTogglePin = {},
@@ -249,11 +234,9 @@ internal fun RecentSearchItemRow(
             expanded = showRemoveMenu && canRemoveFromHistory,
             onDismissRequest = { showRemoveMenu = false },
         ) {
-            DropdownMenuItem(
-                text = { Text(text = stringResource(R.string.action_remove_from_history)) },
-                leadingIcon = {
-                    Icon(imageVector = MaterialSymbols.Close, contentDescription = null)
-                },
+            AppDropdownMenuItem(
+                text = stringResource(R.string.action_remove_from_history),
+                icon = MaterialSymbols.Close,
                 onClick = {
                     showRemoveMenu = false
                     onDeleteRecentItem(item.entry)
@@ -275,23 +258,27 @@ internal fun RecentSearchItemRow(
     }
 }
 
+@Composable
 private fun contactRowPadding(): PaddingValues =
     PaddingValues(
-        horizontal = DesignTokens.SpacingMedium,
+        horizontal = historyRowHorizontalPadding(DesignTokens.SpacingMedium),
         vertical = DesignTokens.SpacingXSmall,
     )
 
-private fun fileRowPadding(): PaddingValues = PaddingValues(horizontal = DesignTokens.SpacingMedium)
+@Composable
+private fun fileRowPadding(): PaddingValues = PaddingValues(horizontal = historyRowHorizontalPadding(DesignTokens.SpacingMedium))
 
+@Composable
 private fun appShortcutRowPadding(): PaddingValues =
     PaddingValues(
-        horizontal = DesignTokens.SpacingMedium,
+        horizontal = historyRowHorizontalPadding(DesignTokens.SpacingMedium),
         vertical = SHORTCUT_VERTICAL_PADDING.dp,
     )
 
+@Composable
 private fun settingsRowPadding(): PaddingValues =
     PaddingValues(
-        horizontal = SETTINGS_HORIZONTAL_PADDING.dp,
+        horizontal = historyRowHorizontalPadding(SETTINGS_HORIZONTAL_PADDING.dp),
         vertical = SETTINGS_VERTICAL_PADDING.dp,
     )
 
@@ -326,14 +313,15 @@ private fun RecentNoteRow(
         modifier =
             Modifier
                 .fillMaxWidth()
-                .clip(DesignTokens.CardShape)
+                .clip(AppShapes.card)
                 .combinedClickable(
+                    role = Role.Button,
                     interactionSource = interactionSource,
-                    indication = null,
+                    indication = ripple(),
                     onClick = onClick,
                     onLongClick = onLongPress,
                 ).padding(
-                    horizontal = DesignTokens.SpacingMedium,
+                    horizontal = historyRowHorizontalPadding(DesignTokens.SpacingMedium),
                     vertical = QUERY_ROW_VERTICAL_PADDING.dp,
                 ),
         verticalAlignment = Alignment.CenterVertically,
@@ -354,14 +342,14 @@ private fun RecentNoteRow(
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = title,
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.bodyLarge,
                 color = textColor,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
             Text(
                 text = subtitle,
-                style = MaterialTheme.typography.bodySmall,
+                style = MaterialTheme.typography.bodyMedium,
                 color = iconColor,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,

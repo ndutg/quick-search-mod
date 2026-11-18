@@ -8,7 +8,6 @@ import com.tk.quicksearch.search.data.appShortcutRepository.isUserCreatedShortcu
 import com.tk.quicksearch.search.data.appShortcutRepository.removeSystemShortcutsForPackage
 import com.tk.quicksearch.search.data.appShortcutRepository.shortcutDisplayName
 import com.tk.quicksearch.search.data.appShortcutRepository.shortcutKey
-import com.tk.quicksearch.search.utils.RecentResultRankingUtils
 import com.tk.quicksearch.search.utils.CachedSearchMatcher
 import com.tk.quicksearch.search.utils.SearchQueryContext
 import com.tk.quicksearch.search.utils.SearchTextCache
@@ -31,18 +30,30 @@ class AppShortcutSearchHandler(
     private val isLowRamDevice: Boolean = false,
     private val isDefaultHomeApp: () -> Boolean = { false },
 ) {
+    // Written on IO, read on Main and Default.
+    @Volatile
     private var availableShortcuts: List<StaticShortcut> = emptyList()
+
+    @Volatile
+    private var hasRefreshedFromSystem = false
     private val searchTextCache = SearchTextCache()
     private val searchMatcher = CachedSearchMatcher(searchTextCache)
+    private val combinedFieldsCache = AppShortcutCombinedFieldsCache()
 
     fun getAvailableShortcuts(): List<StaticShortcut> = mergeIconOverrides(availableShortcuts)
+
+    /**
+     * True when a load is still worth starting: nothing is in memory and no system refresh has
+     * finished yet. Cheap enough for every keystroke, unlike [getAvailableShortcuts].
+     */
+    fun needsInitialLoad(): Boolean = availableShortcuts.isEmpty() && !hasRefreshedFromSystem
 
     fun removeUnavailablePackage(packageName: String): Boolean {
         repository.markPackageUnavailable(packageName)
         val updated = removeSystemShortcutsForPackage(availableShortcuts, packageName)
         if (updated == availableShortcuts) return false
         availableShortcuts = updated
-        searchTextCache.clear()
+        clearSearchCaches()
         return true
     }
 
@@ -53,26 +64,23 @@ class AppShortcutSearchHandler(
     suspend fun loadCachedShortcutsOnly(): Boolean {
         val cached = repository.loadCachedShortcuts() ?: return false
         availableShortcuts = normalizeShortcuts(cached)
-        searchTextCache.clear()
+        clearSearchCaches()
         return true
     }
 
     suspend fun refreshShortcutsFromSystem(): Boolean {
         val loaded = runCatching { repository.loadStaticShortcuts() }.getOrNull() ?: return false
         availableShortcuts = normalizeShortcuts(loaded)
-        searchTextCache.clear()
+        clearSearchCaches()
+        hasRefreshedFromSystem = true
         return true
-    }
-
-    suspend fun loadShortcuts() {
-        loadCachedShortcutsOnly()
-        refreshShortcutsFromSystem()
     }
 
     suspend fun getShortcutsByKeys(keys: Set<String>): Map<String, StaticShortcut> {
         if (keys.isEmpty()) return emptyMap()
+        // Only the cache here: a full system scan belongs to the guarded startup/refresh load.
         if (availableShortcuts.isEmpty()) {
-            loadShortcuts()
+            loadCachedShortcutsOnly()
         }
         val disabledIds = userPreferences.getDisabledAppShortcutIds()
         val raw =
@@ -86,7 +94,7 @@ class AppShortcutSearchHandler(
         val cached = repository.loadCachedShortcuts()
         if (cached != null) {
             availableShortcuts = normalizeShortcuts(cached)
-            searchTextCache.clear()
+            clearSearchCaches()
         }
 
         val pinnedIds = userPreferences.getPinnedAppShortcutIds()
@@ -206,8 +214,14 @@ class AppShortcutSearchHandler(
                 isLowRamDevice = isLowRamDevice,
                 matcher = searchMatcher,
                 textCache = searchTextCache,
+                combinedFieldsCache = combinedFieldsCache,
             ),
         )
+
+    private fun clearSearchCaches() {
+        searchTextCache.clear()
+        combinedFieldsCache.clear()
+    }
 
     private fun mergeIconOverrides(shortcuts: List<StaticShortcut>): List<StaticShortcut> {
         val overrides = userPreferences.getAllAppShortcutIconOverrides()
@@ -229,14 +243,10 @@ class AppShortcutSearchHandler(
     }
 
     private fun getRecentShortcutScores(): Map<String, Int> =
-        RecentResultRankingUtils
-            .buildRecencyIndex(userPreferences.getRecentResultOpens())
-            .appShortcutScores
+        userPreferences.getRecentResultRecencyIndex().appShortcutScores
 
     private fun getShortcutOpenCounts(): Map<String, Int> =
-        RecentResultRankingUtils
-            .buildRecencyIndex(emptyList(), userPreferences.getRecentResultOpenCounts())
-            .appShortcutOpenCounts
+        userPreferences.getRecentResultRecencyIndex().appShortcutOpenCounts
 
     private fun normalizeShortcuts(shortcuts: List<StaticShortcut>): List<StaticShortcut> {
         // Chrome/Brave shortcuts are only reliable when served by LauncherApps as the default Home app.

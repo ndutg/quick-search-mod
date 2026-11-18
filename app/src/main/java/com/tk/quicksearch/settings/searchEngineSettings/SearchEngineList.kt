@@ -1,9 +1,22 @@
 package com.tk.quicksearch.settings.searchEngineSettings
 
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.CustomAccessibilityAction
+import androidx.compose.ui.semantics.customActions
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.Role
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.ui.draw.clip
+import com.tk.quicksearch.shared.ui.theme.AppShapes
+import com.tk.quicksearch.shared.ui.components.SegmentedTile
+import com.tk.quicksearch.shared.ui.components.SegmentedGroup
+import com.tk.quicksearch.shared.ui.components.SegmentedTileRow
+import com.tk.quicksearch.shared.ui.components.SegmentedTileContentPadding
+import com.tk.quicksearch.shared.ui.components.AppSwitch
+import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -11,15 +24,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.ripple
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Switch
-import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -29,10 +39,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.core.view.HapticFeedbackConstantsCompat
 import com.tk.quicksearch.R
@@ -48,8 +59,9 @@ import com.tk.quicksearch.searchEngines.shared.SearchTargetIcon
 import com.tk.quicksearch.settings.searchEngineSettings.dialogs.AddSearchEngineCard
 import com.tk.quicksearch.settings.searchEngineSettings.dialogs.EditAmazonDomainDialog
 import com.tk.quicksearch.settings.searchEngineSettings.dialogs.EditCustomSearchEngineDialog
-import com.tk.quicksearch.settings.shared.SettingsCard
 import com.tk.quicksearch.shared.ui.components.AppDropdownMenu
+import com.tk.quicksearch.shared.ui.components.AppDropdownMenuDivider
+import com.tk.quicksearch.shared.ui.components.AppDropdownMenuItem
 import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
@@ -72,8 +84,6 @@ fun SearchEngineListCard(
     shortcutCodes: Map<String, String>,
     setAliasCode: ((SearchTarget, String) -> Unit)?,
     shortcutEnabled: Map<String, Boolean>,
-    setAliasEnabled: ((SearchTarget, Boolean) -> Unit)?,
-    isSearchEngineCompactMode: Boolean,
     isSearchEngineAliasSuffixEnabled: Boolean = true,
     amazonDomain: String? = null,
     onSetAmazonDomain: ((String?) -> Unit)? = null,
@@ -113,7 +123,6 @@ fun SearchEngineListCard(
                     browserPackage,
                 )
                 setAliasCode?.invoke(SearchTarget.Custom(editingEngine), shortcutCode)
-                setAliasEnabled?.invoke(SearchTarget.Custom(editingEngine), true)
                 customEngineToEdit = null
             },
             onDelete = {
@@ -133,126 +142,118 @@ fun SearchEngineListCard(
         if (enabledEngines.isNotEmpty()) {
             val view = LocalView.current
 
-            SettingsCard(
+            ReorderableColumn(
+                list = enabledEngines,
+                onSettle = { fromIndex, toIndex ->
+                    if (fromIndex != toIndex) {
+                        val newOrder =
+                            enabledEngines.toMutableList().apply {
+                                add(toIndex, removeAt(fromIndex))
+                            }
+                        onReorderSearchEngines(newOrder + disabledEngines)
+                    }
+                },
+                onMove = {
+                    performHapticFeedbackSafely(
+                        view,
+                        HapticFeedbackConstantsCompat.SEGMENT_FREQUENT_TICK,
+                    )
+                },
                 modifier = Modifier.fillMaxWidth(),
-            ) {
-                ReorderableColumn(
-                    list = enabledEngines,
-                    onSettle = { fromIndex, toIndex ->
-                        if (fromIndex != toIndex) {
-                            val newOrder =
-                                enabledEngines.toMutableList().apply {
-                                    add(toIndex, removeAt(fromIndex))
-                                }
-                            onReorderSearchEngines(newOrder + disabledEngines)
-                        }
-                    },
-                    onMove = {
-                        performHapticFeedbackSafely(
-                            view,
-                            HapticFeedbackConstantsCompat.SEGMENT_FREQUENT_TICK,
-                        )
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                ) { index, engine, isDragging ->
-                    key(engine.getId()) {
-                        ReorderableItem {
-                            val elevation by animateDpAsState(
-                                targetValue = if (isDragging) 4.dp else 0.dp,
-                                label = "elevation",
-                            )
-
-                            Surface(
-                                shadowElevation = elevation,
-                                color = if (isDragging) MaterialTheme.colorScheme.surface else Color.Transparent,
-                                modifier = Modifier.fillMaxWidth(),
-                            ) {
-                                Column {
-                                    val engineInfo = (engine as? SearchTarget.Engine)?.engine
-                                    val targetId = engine.getId()
-                                    val shortcutCode = shortcutCodes[targetId].orEmpty()
-                                    val isShortcutEnabled =
-                                        shortcutEnabled[targetId] ?: shortcutCode.isNotEmpty()
-                                    SearchEngineRowContent(
-                                        engine = engine,
-                                        isEnabled = true,
-                                        onToggle = { enabled -> onToggleSearchEngine(engine, enabled) },
-                                        dragHandleModifier =
-                                            Modifier.longPressDraggableHandle(
-                                                onDragStarted = {
-                                                    performHapticFeedbackSafely(
-                                                        view,
-                                                        HapticFeedbackConstantsCompat.GESTURE_START,
-                                                    )
-                                                },
-                                                onDragStopped = {
-                                                    performHapticFeedbackSafely(
-                                                        view,
-                                                        HapticFeedbackConstantsCompat.GESTURE_END,
-                                                    )
-                                                },
-                                            ),
-                                        allowDrag = true,
-                                        shortcutCode = shortcutCode,
-                                        shortcutEnabled = isShortcutEnabled,
-                                        onShortcutCodeChange =
-                                            setAliasCode?.let { { code -> it(engine, code) } },
-                                        onShortcutToggle =
-                                            engineInfo?.let {
-                                                setAliasEnabled?.let { { enabled -> it(engine, enabled) } }
+                verticalArrangement = Arrangement.spacedBy(DesignTokens.SegmentedListGap),
+            ) { index, engine, isDragging ->
+                key(engine.getId()) {
+                    ReorderableItem {
+                        // A dragged tile lifts out of the list: fully round, accent-tinted.
+                        SegmentedTile(
+                            index = if (isDragging) 0 else index,
+                            count = if (isDragging) 1 else enabledEngines.size,
+                            containerColor =
+                                if (isDragging) {
+                                    AppColors.AccentTintStrong
+                                        .compositeOver(AppColors.getSettingsCardContainerColor())
+                                } else {
+                                    AppColors.getSettingsCardContainerColor()
+                                },
+                        ) {
+                            Column {
+                                val engineInfo = (engine as? SearchTarget.Engine)?.engine
+                                val targetId = engine.getId()
+                                val shortcutCode = shortcutCodes[targetId].orEmpty()
+                                val isShortcutEnabled =
+                                    shortcutEnabled[targetId] ?: shortcutCode.isNotEmpty()
+                                SearchEngineRowContent(
+                                    engine = engine,
+                                    isEnabled = true,
+                                    onToggle = { enabled -> onToggleSearchEngine(engine, enabled) },
+                                    dragHandleModifier =
+                                        Modifier.longPressDraggableHandle(
+                                            onDragStarted = {
+                                                performHapticFeedbackSafely(
+                                                    view,
+                                                    HapticFeedbackConstantsCompat.GESTURE_START,
+                                                )
                                             },
-                                        showToggle = true,
-                                        switchEnabled = true,
-                                        amazonDomain =
-                                            if (engineInfo == SearchEngine.AMAZON) {
-                                                amazonDomain
-                                            } else {
-                                                null
+                                            onDragStopped = {
+                                                performHapticFeedbackSafely(
+                                                    view,
+                                                    HapticFeedbackConstantsCompat.GESTURE_END,
+                                                )
                                             },
-                                        onSetAmazonDomain =
-                                            if (engineInfo == SearchEngine.AMAZON) {
-                                                onSetAmazonDomain
-                                            } else {
-                                                null
-                                            },
-                                        onMoveToTop =
-                                            if (index > 0) {
-                                                {
-                                                    val newOrder =
-                                                        enabledEngines.toMutableList().apply {
-                                                            add(0, removeAt(index))
-                                                        }
-                                                    onReorderSearchEngines(newOrder + disabledEngines)
-                                                }
-                                            } else {
-                                                null
-                                            },
-                                        onMoveToBottom =
-                                            if (index < enabledEngines.lastIndex) {
-                                                {
-                                                    val newOrder =
-                                                        enabledEngines.toMutableList().apply {
-                                                            add(enabledEngines.lastIndex, removeAt(index))
-                                                        }
-                                                    onReorderSearchEngines(newOrder + disabledEngines)
-                                                }
-                                            } else {
-                                                null
-                                            },
-                                        onCustomEngineClick =
-                                            if (engine is SearchTarget.Custom) {
-                                                { customEngineToEdit = engine.custom }
-                                            } else {
-                                                null
-                                            },
-                                        existingShortcuts = shortcutCodes,
-                                        isSearchEngineAliasSuffixEnabled = isSearchEngineAliasSuffixEnabled,
-                                    )
-
-                                    if (index != enabledEngines.lastIndex) {
-                                        SearchEngineDivider()
-                                    }
-                                }
+                                        ),
+                                    allowDrag = true,
+                                    shortcutCode = shortcutCode,
+                                    shortcutEnabled = isShortcutEnabled,
+                                    onShortcutCodeChange =
+                                        setAliasCode?.let { { code -> it(engine, code) } },
+                                    showToggle = true,
+                                    switchEnabled = true,
+                                    amazonDomain =
+                                        if (engineInfo == SearchEngine.AMAZON) {
+                                            amazonDomain
+                                        } else {
+                                            null
+                                        },
+                                    onSetAmazonDomain =
+                                        if (engineInfo == SearchEngine.AMAZON) {
+                                            onSetAmazonDomain
+                                        } else {
+                                            null
+                                        },
+                                    onMoveToTop =
+                                        if (index > 0) {
+                                            {
+                                                val newOrder =
+                                                    enabledEngines.toMutableList().apply {
+                                                        add(0, removeAt(index))
+                                                    }
+                                                onReorderSearchEngines(newOrder + disabledEngines)
+                                            }
+                                        } else {
+                                            null
+                                        },
+                                    onMoveToBottom =
+                                        if (index < enabledEngines.lastIndex) {
+                                            {
+                                                val newOrder =
+                                                    enabledEngines.toMutableList().apply {
+                                                        add(enabledEngines.lastIndex, removeAt(index))
+                                                    }
+                                                onReorderSearchEngines(newOrder + disabledEngines)
+                                            }
+                                        } else {
+                                            null
+                                        },
+                                    onCustomEngineClick =
+                                        if (engine is SearchTarget.Custom) {
+                                            { customEngineToEdit = engine.custom }
+                                        } else {
+                                            null
+                                        },
+                                    existingShortcuts = shortcutCodes,
+                                    isSearchEngineAliasSuffixEnabled = isSearchEngineAliasSuffixEnabled,
+                                    isDragging = isDragging,
+                                )
                             }
                         }
                     }
@@ -262,9 +263,10 @@ fun SearchEngineListCard(
 
         if (disabledEngines.isNotEmpty()) {
             val disabledHeaderModifier =
-                Modifier.clickable(
+                Modifier.clip(AppShapes.small).clickable(
+                    role = Role.Button,
                     interactionSource = remember { MutableInteractionSource() },
-                    indication = null,
+                    indication = ripple(),
                 ) {
                     if (onToggleDisabledSearchEnginesExpanded != null) {
                         onToggleDisabledSearchEnginesExpanded()
@@ -285,55 +287,54 @@ fun SearchEngineListCard(
                         Modifier
                             .fillMaxWidth()
                             .padding(
-                                start = DesignTokens.CardHorizontalPadding,
+                                start = SegmentedTileContentPadding,
                                 top = if (enabledEngines.isNotEmpty()) 24.dp else 0.dp,
-                                end = DesignTokens.CardHorizontalPadding,
-                                bottom = 8.dp,
+                                end = SegmentedTileContentPadding,
+                                bottom = DesignTokens.SpacingSmall,
                             ).then(disabledHeaderModifier),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
+                    // Section header, as on other segmented settings pages.
                     Text(
                         text = stringResource(collapsedHeaderTextRes),
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onSurface,
+                        style = MaterialTheme.typography.titleSmall,
+                        color = AppColors.Accent,
+                        modifier = Modifier.semantics { heading() },
                     )
                     Icon(
                         imageVector = MaterialSymbols.ExpandLess,
                         contentDescription = stringResource(R.string.desc_collapse),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.size(24.dp),
+                        tint = AppColors.Accent,
+                        modifier = Modifier.size(DesignTokens.IconSize),
                     )
                 }
             } else {
-                SettingsCard(
+                Box(
                     modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(top = if (enabledEngines.isNotEmpty()) 24.dp else 0.dp, bottom = 8.dp)
-                            .then(disabledHeaderModifier),
+                        Modifier.padding(top = if (enabledEngines.isNotEmpty()) DesignTokens.SpacingXXLarge else 0.dp, bottom = DesignTokens.SpacingSmall),
                 ) {
-                    Row(
-                        modifier =
-                            Modifier
-                                .fillMaxWidth()
-                                .padding(
-                                    horizontal = DesignTokens.CardHorizontalPadding,
-                                    vertical = 16.dp,
-                                ),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween,
+                    SegmentedTile(
+                        index = 0,
+                        count = 1,
+                        onClick = {
+                            if (onToggleDisabledSearchEnginesExpanded != null) {
+                                onToggleDisabledSearchEnginesExpanded()
+                            } else {
+                                localDisabledSectionExpanded = true
+                            }
+                        },
                     ) {
-                        Text(
-                            text = stringResource(collapsedHeaderTextRes),
-                            style = MaterialTheme.typography.titleMedium,
-                            color = MaterialTheme.colorScheme.onSurface,
-                        )
-                        Icon(
-                            imageVector = MaterialSymbols.ExpandMore,
-                            contentDescription = stringResource(R.string.desc_expand),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.size(24.dp),
+                        SegmentedTileRow(
+                            title = stringResource(collapsedHeaderTextRes),
+                            trailing = {
+                                Icon(
+                                    imageVector = MaterialSymbols.ExpandMore,
+                                    contentDescription = stringResource(R.string.desc_expand),
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.size(DesignTokens.IconSize),
+                                )
+                            },
                         )
                     }
                 }
@@ -344,16 +345,14 @@ fun SearchEngineListCard(
                 enter = expandVertically(),
                 exit = shrinkVertically(),
             ) {
-                SettingsCard(
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    Column {
-                        disabledEngines.forEachIndexed { index, engine ->
-                            val engineInfo = (engine as? SearchTarget.Engine)?.engine
-                            val targetId = engine.getId()
-                            val shortcutCode = shortcutCodes[targetId].orEmpty()
-                            val isShortcutEnabled =
-                                shortcutEnabled[targetId] ?: shortcutCode.isNotEmpty()
+                SegmentedGroup {
+                    disabledEngines.forEachIndexed { index, engine ->
+                        val engineInfo = (engine as? SearchTarget.Engine)?.engine
+                        val targetId = engine.getId()
+                        val shortcutCode = shortcutCodes[targetId].orEmpty()
+                        val isShortcutEnabled =
+                            shortcutEnabled[targetId] ?: shortcutCode.isNotEmpty()
+                        SegmentedTile(index = index, count = disabledEngines.size) {
                             SearchEngineRowContent(
                                 engine = engine,
                                 isEnabled = false,
@@ -364,10 +363,6 @@ fun SearchEngineListCard(
                                 shortcutEnabled = isShortcutEnabled,
                                 onShortcutCodeChange =
                                     setAliasCode?.let { { code -> it(engine, code) } },
-                                onShortcutToggle =
-                                    engineInfo?.let {
-                                        setAliasEnabled?.let { { enabled -> it(engine, enabled) } }
-                                    },
                                 showToggle = true,
                                 switchEnabled = true,
                                 amazonDomain =
@@ -393,10 +388,6 @@ fun SearchEngineListCard(
                                 existingShortcuts = shortcutCodes,
                                 isSearchEngineAliasSuffixEnabled = isSearchEngineAliasSuffixEnabled,
                             )
-
-                            if (index != disabledEngines.lastIndex) {
-                                SearchEngineDivider()
-                            }
                         }
                     }
                 }
@@ -404,11 +395,10 @@ fun SearchEngineListCard(
         }
 
         if (showAddSearchEngineButton && onAddCustomSearchEngine != null) {
-            SettingsCard(
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(top = 24.dp, bottom = 24.dp),
+            SegmentedTile(
+                index = 0,
+                count = 1,
+                modifier = Modifier.padding(top = DesignTokens.SpacingXXLarge, bottom = DesignTokens.SpacingXXLarge),
             ) {
                 AddSearchEngineCard(
                     availableBrowsers = availableBrowsers,
@@ -433,7 +423,6 @@ private fun SearchEngineRowContent(
     shortcutCode: String = "",
     shortcutEnabled: Boolean = true,
     onShortcutCodeChange: ((String) -> Unit)? = null,
-    onShortcutToggle: ((Boolean) -> Unit)? = null,
     showToggle: Boolean = true,
     switchEnabled: Boolean = true,
     amazonDomain: String? = null,
@@ -443,57 +432,95 @@ private fun SearchEngineRowContent(
     onCustomEngineClick: (() -> Unit)? = null,
     existingShortcuts: Map<String, String> = emptyMap(),
     isSearchEngineAliasSuffixEnabled: Boolean = true,
+    isDragging: Boolean = false,
 ) {
     val view = LocalView.current
     val engineInfo = (engine as? SearchTarget.Engine)?.engine
     val engineName = engine.getDisplayName()
     var showMenu by remember { mutableStateOf(false) }
-
+    val hasMoveMenu = onMoveToTop != null || onMoveToBottom != null
+    val openMoveMenu: (() -> Unit)? = if (hasMoveMenu) ({ showMenu = true }) else null
+    val moveUpLabel = stringResource(R.string.settings_action_move_up)
+    val moveDownLabel = stringResource(R.string.settings_action_move_down)
+    val rowClick = onCustomEngineClick ?: openMoveMenu
+    val dragHandle = dragHandleModifier?.takeIf { showToggle && allowDrag }
+    val rowSpacing = DesignTokens.SpacingSmall
+    // The drag handle and switch occupy their own columns, so their 48dp targets need
+    // not set the gap between the engine name and its actions.
     Row(
         modifier =
             Modifier
                 .fillMaxWidth()
                 .then(
-                    if (onCustomEngineClick != null) {
-                        Modifier.clickable(onClick = onCustomEngineClick)
+                    // Tap edits a custom engine; otherwise it opens the move menu. Long-press always
+                    // opens the move menu, so reordering works without the drag handle.
+                    if (rowClick != null) {
+                        Modifier.combinedClickable(
+                            role = Role.Button,
+                            onClick = rowClick,
+                            onLongClick = if (onCustomEngineClick != null) openMoveMenu else null,
+                        )
                     } else {
                         Modifier
                     },
                 )
+                .semantics {
+                    customActions =
+                        listOfNotNull(
+                            onMoveToTop?.let { move -> CustomAccessibilityAction(moveUpLabel) { move(); true } },
+                            onMoveToBottom?.let { move -> CustomAccessibilityAction(moveDownLabel) { move(); true } },
+                        )
+                }
                 .padding(
-                    horizontal = DesignTokens.CardHorizontalPadding,
-                    vertical = DesignTokens.CardVerticalPadding,
+                    start = if (dragHandle == null) SegmentedTileContentPadding else DesignTokens.SpacingSmall,
+                    end = SegmentedTileContentPadding,
+                    top = DesignTokens.SpacingXSmall,
+                    bottom = DesignTokens.SpacingXSmall,
                 ),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(DesignTokens.ItemRowSpacing),
+        verticalAlignment = Alignment.Top,
+        horizontalArrangement = Arrangement.spacedBy(rowSpacing),
     ) {
-        if (showToggle && allowDrag && dragHandleModifier != null) {
-            Icon(
-                imageVector = MaterialSymbols.DragHandle,
-                contentDescription = stringResource(R.string.settings_action_reorder),
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier =
-                    Modifier
-                        .size(DesignTokens.IconSize)
-                        .then(dragHandleModifier),
-            )
+        if (dragHandle != null) {
+            Box(
+                modifier = Modifier.size(DesignTokens.MinTouchTarget).then(dragHandle),
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(
+                    imageVector = MaterialSymbols.DragHandle,
+                    contentDescription = stringResource(R.string.settings_action_reorder),
+                    tint = if (isDragging) AppColors.Accent else MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.size(DesignTokens.IconSize),
+                )
+            }
         }
 
-        SearchTargetIcon(
-            target = engine,
-            iconSize = DesignTokens.IconSize,
-            style = IconRenderStyle.ADVANCED,
-        )
-
         Column(
-            modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(DesignTokens.TextColumnSpacing),
+            modifier = Modifier
+                .weight(1f)
+                .padding(top = (DesignTokens.MinTouchTarget - DesignTokens.IconSize) / 2),
         ) {
-            Text(
-                text = engineName,
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurface,
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(rowSpacing),
+            ) {
+                Box(
+                    modifier = Modifier.heightIn(min = DesignTokens.IconSize),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    SearchTargetIcon(
+                        target = engine,
+                        iconSize = DesignTokens.IconSize,
+                        style = IconRenderStyle.ADVANCED,
+                    )
+                }
+
+                Text(
+                    text = engineName,
+                    modifier = Modifier.weight(1f),
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+            }
             if (onShortcutCodeChange != null) {
                 val isSearchEngineAlias =
                     engine is SearchTarget.Engine || engine is SearchTarget.Browser
@@ -524,22 +551,17 @@ private fun SearchEngineRowContent(
             }
         }
 
-        if (onMoveToTop != null || onMoveToBottom != null) {
-            Box {
+        Box {
+            if (hasMoveMenu) {
                 AppDropdownMenu(
                     expanded = showMenu,
                     onDismissRequest = { showMenu = false },
                     focusable = true,
                 ) {
                     if (onMoveToTop != null) {
-                        DropdownMenuItem(
-                            text = { Text(stringResource(R.string.settings_action_move_up)) },
-                            leadingIcon = {
-                                Icon(
-                                    imageVector = MaterialSymbols.ArrowUpward,
-                                    contentDescription = null,
-                                )
-                            },
+                        AppDropdownMenuItem(
+                            text = stringResource(R.string.settings_action_move_up),
+                            icon = MaterialSymbols.ArrowUpward,
                             onClick = {
                                 onMoveToTop.invoke()
                                 showMenu = false
@@ -548,18 +570,13 @@ private fun SearchEngineRowContent(
                     }
 
                     if (onMoveToTop != null && onMoveToBottom != null) {
-                        HorizontalDivider()
+                        AppDropdownMenuDivider()
                     }
 
                     if (onMoveToBottom != null) {
-                        DropdownMenuItem(
-                            text = { Text(stringResource(R.string.settings_action_move_down)) },
-                            leadingIcon = {
-                                Icon(
-                                    imageVector = MaterialSymbols.ArrowDownward,
-                                    contentDescription = null,
-                                )
-                            },
+                        AppDropdownMenuItem(
+                            text = stringResource(R.string.settings_action_move_down),
+                            icon = MaterialSymbols.ArrowDownward,
                             onClick = {
                                 onMoveToBottom.invoke()
                                 showMenu = false
@@ -568,21 +585,17 @@ private fun SearchEngineRowContent(
                     }
                 }
             }
-        }
 
-        if (showToggle) {
-            Switch(
-                checked = isEnabled,
-                onCheckedChange = { enabled ->
-                    hapticToggle(view)()
-                    onToggle(enabled)
-                },
-                enabled = switchEnabled,
-                modifier = Modifier.scale(0.85f),
-                colors = SwitchDefaults.colors(
-                    uncheckedTrackColor = Color.Transparent,
-                ),
-            )
+            if (showToggle) {
+                AppSwitch(
+                    checked = isEnabled,
+                    onCheckedChange = { enabled ->
+                        hapticToggle(view)()
+                        onToggle(enabled)
+                    },
+                    enabled = switchEnabled,
+                )
+            }
         }
     }
 }
@@ -605,20 +618,23 @@ private fun AmazonDomainLink(
         )
     }
 
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
+    val label = stringResource(R.string.settings_amazon_domain_label)
+    val domain = amazonDomain ?: stringResource(R.string.settings_amazon_domain_default)
+    val domainColor = AppColors.LinkColor
+    Box(
+        modifier = Modifier
+            .clickable(role = Role.Button) { showDialog = true }
+            .heightIn(min = DesignTokens.MinTouchTarget),
+        contentAlignment = Alignment.CenterStart,
     ) {
         Text(
-            text = stringResource(R.string.settings_amazon_domain_label),
-            style = MaterialTheme.typography.bodySmall,
+            text = buildAnnotatedString {
+                append(label)
+                append(' ')
+                withStyle(SpanStyle(color = domainColor)) { append(domain) }
+            },
+            style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-        Text(
-            text = amazonDomain ?: stringResource(R.string.settings_amazon_domain_default),
-            style = MaterialTheme.typography.bodySmall,
-            color = AppColors.LinkColor,
-            modifier = Modifier.clickable { showDialog = true },
         )
     }
 }

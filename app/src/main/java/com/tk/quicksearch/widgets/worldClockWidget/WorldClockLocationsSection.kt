@@ -1,6 +1,11 @@
 package com.tk.quicksearch.widgets.worldClockWidget
 
-import androidx.compose.foundation.clickable
+import com.tk.quicksearch.shared.ui.components.AppIconButton
+import com.tk.quicksearch.shared.ui.components.AppOutlinedTextField
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -8,14 +13,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.HorizontalDivider
+import com.tk.quicksearch.shared.ui.components.AppAlertDialog
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -33,11 +34,14 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
-import com.tk.quicksearch.settings.shared.SettingsCard
+import com.tk.quicksearch.shared.ui.components.SegmentedTile
+import com.tk.quicksearch.shared.ui.components.SegmentedGroup
 import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
-import com.tk.quicksearch.widgets.utils.WidgetConfigConstants
+import com.tk.quicksearch.shared.ui.components.TonalIconBadge
+import com.tk.quicksearch.shared.ui.components.AppTextButton
+import com.tk.quicksearch.shared.ui.theme.AppShapes
 
 /** The widget's clocks in order, each of which can be renamed, moved left or removed, plus an Add row. */
 @Composable
@@ -49,13 +53,10 @@ internal fun WorldClockLocationsSection(
 ) {
     var renamingIndex by rememberSaveable { mutableStateOf<Int?>(null) }
 
-    Column(verticalArrangement = Arrangement.spacedBy(WidgetConfigConstants.COLOR_SECTION_SPACING)) {
-        Text(
-            text = stringResource(R.string.widget_world_clock_locations),
-            style = MaterialTheme.typography.titleSmall,
-        )
-        SettingsCard(modifier = Modifier.fillMaxWidth()) {
-            locations.forEachIndexed { index, location ->
+    val count = locations.size + 1
+    SegmentedGroup(title = stringResource(R.string.widget_world_clock_locations)) {
+        locations.forEachIndexed { index, location ->
+            SegmentedTile(index = index, count = count, onClick = { renamingIndex = index }) {
                 LocationRow(
                     location = location,
                     canMoveUp = index > 0,
@@ -67,9 +68,10 @@ internal fun WorldClockLocationsSection(
                     },
                     onRemove = { onLocationsChange(locations.filterIndexed { i, _ -> i != index }) },
                 )
-                HorizontalDivider(color = AppColors.SettingsDivider)
             }
-            AddLocationRow(enabled = canAdd, onClick = onAddClick)
+        }
+        SegmentedTile(index = locations.size, count = count, onClick = if (canAdd) onAddClick else null) {
+            AddLocationRow(enabled = canAdd)
         }
     }
 
@@ -104,27 +106,29 @@ private fun LocationRow(
         modifier =
             Modifier
                 .fillMaxWidth()
-                .clickable(onClick = onRename)
-                .padding(start = DesignTokens.CardHorizontalPadding, top = 4.dp, bottom = 4.dp, end = 4.dp),
+                .heightIn(min = LocationRowMinHeight)
+                .padding(start = DesignTokens.SpacingLarge, top = DesignTokens.SpacingSmall, bottom = DesignTokens.SpacingSmall, end = DesignTokens.SpacingXSmall),
         verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingLarge),
     ) {
+        TonalIconBadge(icon = MaterialSymbols.Public)
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = if (hasLabel) location.label else city,
-                style = MaterialTheme.typography.bodyLarge,
+                style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
             Text(
                 text = listOf(if (hasLabel) city else "", country).filter { it.isNotBlank() }.joinToString(" · "),
-                style = MaterialTheme.typography.bodySmall,
+                style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
         }
-        IconButton(onClick = onRename) {
+        AppIconButton(onClick = onRename, tooltip = stringResource(R.string.settings_edit_label)) {
             Icon(
                 imageVector = MaterialSymbols.Edit,
                 contentDescription = stringResource(R.string.settings_edit_label),
@@ -132,7 +136,7 @@ private fun LocationRow(
             )
         }
         if (canMoveUp) {
-            IconButton(onClick = onMoveUp) {
+            AppIconButton(onClick = onMoveUp, tooltip = stringResource(R.string.action_move_up)) {
                 Icon(
                     imageVector = MaterialSymbols.ArrowUpward,
                     contentDescription = stringResource(R.string.action_move_up),
@@ -140,7 +144,7 @@ private fun LocationRow(
                 )
             }
         }
-        IconButton(onClick = onRemove) {
+        AppIconButton(onClick = onRemove, tooltip = stringResource(R.string.action_remove)) {
             Icon(
                 imageVector = MaterialSymbols.Close,
                 contentDescription = stringResource(R.string.action_remove),
@@ -151,33 +155,41 @@ private fun LocationRow(
 }
 
 @Composable
-private fun AddLocationRow(
-    enabled: Boolean,
-    onClick: () -> Unit,
-) {
-    val color = if (enabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+private fun AddLocationRow(enabled: Boolean) {
+    val color = if (enabled) AppColors.Accent else MaterialTheme.colorScheme.onSurface.copy(alpha = AppColors.DisabledContentAlpha)
     Row(
         modifier =
             Modifier
                 .fillMaxWidth()
-                .clickable(enabled = enabled, onClick = onClick)
-                .padding(horizontal = DesignTokens.CardHorizontalPadding, vertical = DesignTokens.CardVerticalPadding),
+                .heightIn(min = LocationRowMinHeight)
+                .padding(horizontal = DesignTokens.SpacingLarge, vertical = DesignTokens.SpacingSmall),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium),
+        horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingLarge),
     ) {
-        Icon(
-            imageVector = MaterialSymbols.Add,
-            contentDescription = null,
-            tint = color,
-            modifier = Modifier.size(DesignTokens.IconSizeSmall),
-        )
+        Box(
+            modifier =
+                Modifier
+                    .size(40.dp)
+                    .clip(AppShapes.full)
+                    .background(color.copy(alpha = AppColors.TintTonalAlpha)),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(
+                imageVector = MaterialSymbols.Add,
+                contentDescription = null,
+                tint = color,
+                modifier = Modifier.size(DesignTokens.IconSize),
+            )
+        }
         Text(
             text = stringResource(R.string.widget_world_clock_add_location),
-            style = MaterialTheme.typography.bodyLarge,
+            style = MaterialTheme.typography.titleMedium,
             color = color,
         )
     }
 }
+
+private val LocationRowMinHeight = 72.dp
 
 /**
  * Sets the name shown on the widget; the current one is the hint. Leaving it empty keeps that name,
@@ -198,21 +210,23 @@ private fun RenameLocationDialog(
         focusRequester.requestFocus()
         keyboardController?.show()
     }
-    AlertDialog(
+    AppAlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(R.string.widget_world_clock_edit_name)) },
         text = {
-            OutlinedTextField(
+            AppOutlinedTextField(
                 value = text,
                 onValueChange = { text = it.take(WorldClockWidgetDefaults.LABEL_MAX_LENGTH) },
                 placeholder = { Text(currentName) },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words),
                 modifier = Modifier.fillMaxWidth().focusRequester(focusRequester),
+                label = null,
+                shape = AppShapes.extraSmall,
             )
         },
         confirmButton = {
-            TextButton(
+            AppTextButton(
                 onClick = {
                     val name = text.trim()
                     onConfirm(
@@ -225,6 +239,6 @@ private fun RenameLocationDialog(
                 },
             ) { Text(stringResource(R.string.dialog_save)) }
         },
-        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.dialog_cancel)) } },
+        dismissButton = { AppTextButton(onClick = onDismiss) { Text(stringResource(R.string.dialog_cancel)) } },
     )
 }

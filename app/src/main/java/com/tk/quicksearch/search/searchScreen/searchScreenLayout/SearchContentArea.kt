@@ -1,13 +1,12 @@
 package com.tk.quicksearch.search.searchScreen.searchScreenLayout
 
+import com.tk.quicksearch.search.searchScreen.rememberImeSettledHeight
+import com.tk.quicksearch.search.searchScreen.SearchTopMatchesState
 import com.tk.quicksearch.search.searchScreen.LocalInsetCardBackdrop
 import com.tk.quicksearch.search.searchScreen.contentBottomInset
 import com.tk.quicksearch.search.searchScreen.contentTopInset
 import com.tk.quicksearch.search.searchScreen.resultsClipShape
-import androidx.compose.animation.core.LinearOutSlowInEasing
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.core.updateTransition
+import com.tk.quicksearch.search.searchScreen.shared.LocalSearchCardLayoutEnabled
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -19,8 +18,6 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -66,9 +63,7 @@ import com.tk.quicksearch.search.searchScreen.CalendarSectionParams
 import com.tk.quicksearch.search.searchScreen.NotesSectionParams
 import com.tk.quicksearch.search.searchScreen.RemindersSectionParams
 import com.tk.quicksearch.search.searchScreen.PredictedSubmitTarget
-import com.tk.quicksearch.search.searchScreen.appThemeResultCardColor
-import com.tk.quicksearch.search.searchScreen.appThemeDividerColor
-import com.tk.quicksearch.search.searchScreen.appThemeActionColor
+import com.tk.quicksearch.search.searchScreen.overlayThemeTints
 import com.tk.quicksearch.search.searchScreen.LocalOverlayResultCardColor
 import com.tk.quicksearch.search.searchScreen.LocalOverlayDividerColor
 import com.tk.quicksearch.search.searchScreen.LocalOverlayActionColor
@@ -77,6 +72,8 @@ import com.tk.quicksearch.search.searchHistory.RecentSearchEntry
 import com.tk.quicksearch.search.searchHistory.RecentSearchItem
 import com.tk.quicksearch.search.searchHistory.SearchHistoryTab
 import com.tk.quicksearch.shared.ui.components.AppDropdownMenu
+import com.tk.quicksearch.shared.ui.components.AppDropdownMenuDivider
+import com.tk.quicksearch.shared.ui.components.AppDropdownMenuItem
 import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import kotlin.math.min
@@ -85,7 +82,7 @@ import com.tk.quicksearch.widgetsPanel.HomeAddWidgetSheet
 
 /** Renders the scrollable content area with sections based on layout mode. */
 @Composable
-fun SearchContentArea(
+internal fun SearchContentArea(
     modifier: Modifier = Modifier,
     state: SearchUiState,
     renderingState: SectionRenderingState,
@@ -137,6 +134,9 @@ fun SearchContentArea(
     onLauncherOverscrollDown: () -> Unit = {},
     onHomeDoubleTap: () -> Unit = {},
     selectedTopMatchIndex: Int? = null,
+    topMatches: SearchTopMatchesState,
+    /** True while the bottom chrome animates its height; card heights hold until it settles. */
+    isBottomChromeAnimating: () -> Boolean = { false },
 ) {
     val currentOnHomeDoubleTap by rememberUpdatedState(onHomeDoubleTap)
     val useOneHandedMode =
@@ -161,8 +161,6 @@ fun SearchContentArea(
                 || com.tk.quicksearch.tools.aiSearch.QuickSearchHelp.questionOrNull(state.query) != null
     val hasQuery = state.query.isNotBlank()
     val isUrlQuery = remember(state.query) { isLikelyWebUrl(state.query) }
-    val hasAnySearchContent =
-        shouldShowAnySection(renderingState, contactsParams, filesParams, calendarParams)
     val alignResultsToBottom =
             useOneHandedMode &&
                     !showAiSearch &&
@@ -175,7 +173,7 @@ fun SearchContentArea(
     val aliasExpandedSectionBottomInset = 12.dp
     // Result cards need breathing room so they do not touch the bar/engine strip.
     val resultCardBottomGap =
-        if (alignResultsToBottom && hasQuery) DesignTokens.SpacingMedium - DesignTokens.SpacingXXSmall else 0.dp
+        if (alignResultsToBottom && hasQuery) DesignTokens.SpacingMedium - DesignTokens.SpacingXSmall else 0.dp
     val expandedCardExtraReduction = 20.dp
     // Compute "no results" state once - shared by both places that need it.
     val shouldShowNoResults = computeShouldShowNoResults(state)
@@ -188,41 +186,13 @@ fun SearchContentArea(
                 !aiSearchState.activeQuery.isNullOrBlank() && aiSearchState.canRetry &&
                 renderingState.expandedSection == ExpandedSection.NONE
     val isSectionAliasMode = state.detectedAliasSearchSection != null
-    val useOverlayThemeTints = !state.deviceThemeEnabled && state.backgroundSource == BackgroundSource.THEME
     val isDarkMode = MaterialTheme.colorScheme.background.luminance() < 0.5f
     val edgeFadeHeight = if (isDarkMode) 32.dp else 16.dp
     val edgeFadeMinAlpha = if (isDarkMode) 0f else 0.4f
-    val overlayCardColor =
-        if (useOverlayThemeTints) {
-            appThemeResultCardColor(
-                theme = state.appTheme,
-                isDarkMode = isDarkMode,
-                intensity = state.overlayThemeIntensity,
-                amoledThemeEnabled = state.amoledThemeEnabled,
-            )
-        } else {
-            null
-        }
-    val overlayDividerTint =
-        if (useOverlayThemeTints) {
-            appThemeDividerColor(
-                theme = state.appTheme,
-                isDarkMode = isDarkMode,
-                intensity = state.overlayThemeIntensity,
-            )
-        } else {
-            null
-        }
-    val overlayActionTint =
-        if (useOverlayThemeTints) {
-            appThemeActionColor(
-                theme = state.appTheme,
-                isDarkMode = isDarkMode,
-                intensity = state.overlayThemeIntensity,
-            )
-        } else {
-            null
-        }
+    val overlayThemeTints = overlayThemeTints(state, isDarkMode)
+    val overlayCardColor = overlayThemeTints.cardColor
+    val overlayDividerTint = overlayThemeTints.dividerTint
+    val overlayActionTint = overlayThemeTints.actionTint
     val keyboardGesturesEnabled = scrollState.maxValue == 0
     val launcherOverscrollUpEnabled =
         keyboardGesturesEnabled &&
@@ -328,39 +298,12 @@ fun SearchContentArea(
                         onTabSelected = { searchHistorySelectedTab = it },
                     ),
         ) {
+            // Card heights follow the area's settled height, so the keyboard sliding in or out (or
+            // the bottom chrome resizing with it) does not recompose the results on every frame.
+            val settledMaxHeight = rememberImeSettledHeight(maxHeight, holdWhile = isBottomChromeAnimating)
             val bottomOverlayInset = LocalInsetCardBackdrop.current?.contentBottomInset() ?: 0.dp
             val topOverlayInset = LocalInsetCardBackdrop.current?.contentTopInset() ?: 0.dp
             val footerBottomPadding = 28.dp + bottomOverlayInset
-            // Expanding or collapsing a section or search history rebuilds the whole layout in
-            // one frame (other sections drop out, bottom alignment and scroll direction flip), so
-            // no per-card size animation can bridge it. Fade and lift the new layout in instead.
-            // The phase flips on every expansion change and is read during composition, so the
-            // first frame of the new layout is already hidden.
-            val expansionPhase =
-                remember { ExpansionPhaseTracker() }
-                    .phaseFor(renderingState.expandedSection to isSearchHistoryExpanded)
-            val expansionTransition = updateTransition(expansionPhase, label = "resultsExpansion")
-            val expansionPhaseProgress by
-                expansionTransition.animateFloat(
-                    transitionSpec = {
-                        tween(durationMillis = ExpansionTransitionDurationMillis, easing = LinearOutSlowInEasing)
-                    },
-                    label = "resultsExpansionProgress",
-                ) { phase -> if (phase) 1f else 0f }
-            val expansionTransitionOffsetPx =
-                with(LocalDensity.current) { ExpansionTransitionOffset.toPx() }
-            val expansionTransitionModifier =
-                Modifier.graphicsLayer {
-                    val enterProgress =
-                        if (expansionPhase) {
-                            expansionPhaseProgress
-                        } else {
-                            1f - expansionPhaseProgress
-                        }
-                    alpha = enterProgress
-                    translationY = (1f - enterProgress) * expansionTransitionOffsetPx
-                }
-
             // Use bottom alignment when one-handed mode is enabled and no special states are
             // showing
             val verticalArrangement =
@@ -491,13 +434,22 @@ fun SearchContentArea(
                     Modifier
                 }
 
+            val roundExpandedViewport = LocalSearchCardLayoutEnabled.current &&
+                (renderingState.expandedSection != ExpandedSection.NONE || isSearchHistoryExpanded)
             Box {
                 Column(
                     modifier =
                         Modifier
                             .edgeBleed(edgeBleed).fillMaxWidth()
-                            .then(expansionTransitionModifier).then(heightModifier)
+                            .then(heightModifier)
                             .clip(LocalInsetCardBackdrop.current.resultsClipShape(TopRoundedShape, edgeBleed))
+                            .then(
+                                if (roundExpandedViewport) {
+                                    Modifier.clip(ExpandedResultsViewportShape(edgeBleed, LocalInsetCardBackdrop.current?.topTarget == null))
+                                } else {
+                                    Modifier
+                                },
+                            )
                             .then(edgeFadeModifier)
                             .then(
                                 if (!hasQuery) {
@@ -541,7 +493,7 @@ fun SearchContentArea(
                                                 } else if (alignResultsToBottom) {
                                                     // The app grid reads fine tucked against the search
                                                     // bar; ContentLayout adds resultCardBottomGap under a card.
-                                                    DesignTokens.SpacingXXSmall
+                                                    DesignTokens.SpacingXSmall
                                                 } else {
                                                     DesignTokens
                                                         .SpacingMedium
@@ -577,11 +529,11 @@ fun SearchContentArea(
                                     if (isOverlayPresentation) {
                                         0.dp
                                     } else {
-                                        this@BoxWithConstraints.maxHeight - bottomOverlayInset - topOverlayInset
+                                        settledMaxHeight - bottomOverlayInset - topOverlayInset
                                     },
                                 expandedCardMaxHeight =
                                     (
-                                        this@BoxWithConstraints.maxHeight - topOverlayInset - bottomOverlayInset -
+                                        settledMaxHeight - topOverlayInset - bottomOverlayInset -
                                             if (isSectionAliasMode) {
                                                 aliasExpandedSectionBottomInset
                                             } else {
@@ -628,6 +580,7 @@ fun SearchContentArea(
                                 onOpenPermissionsSettings = onOpenPermissionsSettings,
                                 onHomePinnedSectionOrderChange = onHomePinnedSectionOrderChange,
                                 selectedTopMatchIndex = selectedTopMatchIndex,
+                                topMatches = topMatches,
                                 isScrollInProgress = { scrollState.isScrollInProgress },
                             )
                         }
@@ -638,43 +591,28 @@ fun SearchContentArea(
                     onDismissRequest = { showBackgroundMenu = false },
                     offset = backgroundMenuDpOffset,
                 ) {
-                    DropdownMenuItem(
-                        text = { Text(stringResource(R.string.action_change_wallpaper)) },
-                        leadingIcon = {
-                            Icon(
-                                imageVector = MaterialSymbols.Image,
-                                contentDescription = null,
-                            )
-                        },
+                    AppDropdownMenuItem(
+                        text = stringResource(R.string.action_change_wallpaper),
+                        icon = MaterialSymbols.Image,
                         onClick = {
                             showBackgroundMenu = false
                             onChangeWallpaperClick()
                         },
                     )
-                    HorizontalDivider()
-                    DropdownMenuItem(
-                        text = { Text(stringResource(R.string.settings_gestures_title)) },
-                        leadingIcon = {
-                            Icon(
-                                imageVector = MaterialSymbols.Swipe,
-                                contentDescription = null,
-                            )
-                        },
+                    AppDropdownMenuDivider()
+                    AppDropdownMenuItem(
+                        text = stringResource(R.string.settings_gestures_title),
+                        icon = MaterialSymbols.Swipe,
                         onClick = {
                             showBackgroundMenu = false
                             onOpenGesturesSettingsClick()
                         },
                     )
                     if (showOpenSettingsOption) {
-                        HorizontalDivider()
-                        DropdownMenuItem(
-                            text = { Text(stringResource(R.string.action_open_settings)) },
-                            leadingIcon = {
-                                Icon(
-                                    imageVector = MaterialSymbols.Settings,
-                                    contentDescription = null,
-                                )
-                            },
+                        AppDropdownMenuDivider()
+                        AppDropdownMenuItem(
+                            text = stringResource(R.string.action_open_settings),
+                            icon = MaterialSymbols.Settings,
                             onClick = {
                                 showBackgroundMenu = false
                                 onOpenSettingsClick()
@@ -682,15 +620,10 @@ fun SearchContentArea(
                         )
                     }
                     if (!isOverlayPresentation) {
-                        HorizontalDivider()
-                        DropdownMenuItem(
-                            text = { Text(stringResource(R.string.widgets_panel_title)) },
-                            leadingIcon = {
-                                Icon(
-                                    imageVector = MaterialSymbols.Widgets,
-                                    contentDescription = null,
-                                )
-                            },
+                        AppDropdownMenuDivider()
+                        AppDropdownMenuItem(
+                            text = stringResource(R.string.widgets_panel_title),
+                            icon = MaterialSymbols.Widgets,
                             onClick = {
                                 showBackgroundMenu = false
                                 showHomeWidgetPicker = true

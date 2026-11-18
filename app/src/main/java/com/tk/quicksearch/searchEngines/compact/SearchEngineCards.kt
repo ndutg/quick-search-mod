@@ -1,5 +1,8 @@
 package com.tk.quicksearch.searchEngines.compact
 
+import androidx.compose.ui.semantics.Role
+import com.tk.quicksearch.shared.ui.components.AppIconButton
+import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -9,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,7 +23,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.core.AppIconShape
@@ -35,6 +36,7 @@ import com.tk.quicksearch.searchEngines.shared.SearchTargetIcon
 import com.tk.quicksearch.search.searchScreen.PredictedSubmitTarget
 import com.tk.quicksearch.search.searchScreen.shared.SearchResultCard
 import com.tk.quicksearch.search.searchScreen.shared.SearchResultCardDefaults
+import com.tk.quicksearch.search.searchScreen.shared.SearchResultCardStyleOverrides
 import com.tk.quicksearch.search.searchScreen.predictedSubmitHighlight
 import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.util.hapticConfirm
@@ -77,7 +79,7 @@ fun NoResultsSearchEngineCards(
 
     Column(
         modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
     ) {
         // When reversed (results at bottom), show customize card at the top
         if (isReversed && shouldShowCustomizeCard) {
@@ -153,6 +155,7 @@ fun SearchEngineCard(
                     opaqueCardTopResultBorder = true,
                 )
                 .combinedClickable(
+                    role = Role.Button,
                     onClick = {
                         hapticConfirm(view)()
                         onClick()
@@ -160,6 +163,7 @@ fun SearchEngineCard(
                     onLongClick = onLongClick,
                 ),
         showWallpaperBackground = showWallpaperBackground,
+        styleOverrides = SearchResultCardStyleOverrides(showBorder = false),
     ) {
         Row(
             modifier =
@@ -187,14 +191,14 @@ fun SearchEngineCard(
                 text = stringResource(actionLabelResId, targetName),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurface,
-                fontWeight = FontWeight.Medium,
                 modifier = Modifier.weight(1f),
             )
 
             if (onClear != null) {
-                IconButton(
+                AppIconButton(
                     onClick = onClear,
-                    modifier = Modifier.size(24.dp),
+                    modifier = Modifier.size(DesignTokens.ButtonHeightSmall),
+                    tooltip = stringResource(R.string.desc_clear_search),
                 ) {
                     Icon(
                         imageVector = MaterialSymbols.Close,
@@ -232,6 +236,7 @@ private fun SearchTargetCard(
                     opaqueCardTopResultBorder = true,
                 )
                 .combinedClickable(
+                    role = Role.Button,
                     onClick = {
                         hapticConfirm(view)()
                         onClick()
@@ -239,6 +244,7 @@ private fun SearchTargetCard(
                     onLongClick = onLongClick,
                 ),
         showWallpaperBackground = showWallpaperBackground,
+        styleOverrides = SearchResultCardStyleOverrides(showBorder = false),
     ) {
         Row(
             modifier =
@@ -270,7 +276,6 @@ private fun SearchTargetCard(
                     ),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurface,
-                fontWeight = FontWeight.Medium,
                 modifier = Modifier.weight(1f),
             )
         }
@@ -292,7 +297,7 @@ private fun CustomizeSearchEnginesCard(
             modifier
                 .fillMaxWidth()
                 .clip(SearchResultCardDefaults.shape)
-                .clickable {
+                .clickable(role = Role.Button) {
                     hapticConfirm(view)()
                     onClick()
                 },
@@ -312,7 +317,7 @@ private fun CustomizeSearchEnginesCard(
             Icon(
                 imageVector = MaterialSymbols.Settings,
                 contentDescription = null,
-                modifier = Modifier.size(24.dp),
+                modifier = Modifier.size(DesignTokens.IconSize),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
             )
 
@@ -323,7 +328,6 @@ private fun CustomizeSearchEnginesCard(
                 text = stringResource(R.string.customize_search_engines),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurface,
-                fontWeight = FontWeight.Medium,
                 modifier = Modifier.weight(1f),
             )
         }

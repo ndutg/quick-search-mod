@@ -1,13 +1,13 @@
 package com.tk.quicksearch.search.files
 
+import com.tk.quicksearch.shared.ui.components.AppFilterChip
+import com.tk.quicksearch.shared.ui.theme.AppShapes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -53,25 +53,12 @@ internal fun FileTypeFilterChips(
     ) {
         FILE_TYPE_CHIPS.forEach { chip ->
             val selected = chip.fileType == selectedFileType
-            FilterChip(
+            AppFilterChip(
                 selected = selected,
                 onClick = { if (!selected) onFileTypeSelected(chip.fileType) },
-                label = { Text(text = stringResource(chip.labelRes)) },
-                shape = DesignTokens.ShapeFull,
-                border =
-                    FilterChipDefaults.filterChipBorder(
-                        enabled = true,
-                        selected = selected,
-                        borderColor = unselectedBorderColor,
-                        selectedBorderColor = Color.Transparent,
-                    ),
-                colors =
-                    FilterChipDefaults.filterChipColors(
-                        containerColor = Color.Transparent,
-                        labelColor = unselectedLabelColor,
-                        selectedContainerColor = MaterialTheme.colorScheme.primary,
-                        selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
-                    ),
+                label = stringResource(chip.labelRes),
+                unselectedLabelColor = unselectedLabelColor,
+                unselectedBorderColor = unselectedBorderColor,
             )
         }
     }

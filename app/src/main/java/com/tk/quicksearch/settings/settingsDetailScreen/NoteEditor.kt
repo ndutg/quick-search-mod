@@ -1,5 +1,7 @@
 package com.tk.quicksearch.settings.settingsDetailScreen
 
+import com.tk.quicksearch.shared.ui.theme.AppMotion
+import com.tk.quicksearch.shared.ui.theme.AppShapes
 import android.Manifest
 import android.app.Activity
 import android.content.Context
@@ -30,7 +32,6 @@ import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -74,12 +75,15 @@ import com.tk.quicksearch.pinnedNotifications.PinnedNotifications
 import com.tk.quicksearch.search.data.NotesRepository
 import com.tk.quicksearch.search.notes.NotesTextUtils
 import com.tk.quicksearch.shared.ui.components.AppDropdownMenu
+import com.tk.quicksearch.shared.ui.components.AppDropdownMenuItem
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.concurrent.atomic.AtomicLong
 
 private const val NOTE_EDITOR_BACK_SWIPE_THRESHOLD_PX = 140f
 private const val NOTE_EDITOR_TITLE_FIELD = "title"
@@ -99,6 +103,21 @@ private fun applyNoteLinkHighlighting(
     value.copy(
         annotatedString =
             NotesTextUtils.buildLinkHighlightedAnnotatedString(value.text, linkColor),
+    )
+
+/** [value] with links highlighted, rescanning only the lines edited since [previous]. */
+private fun updateNoteLinkHighlighting(
+    previous: TextFieldValue,
+    value: TextFieldValue,
+    linkColor: Color,
+): TextFieldValue =
+    value.copy(
+        annotatedString =
+            NotesTextUtils.updateLinkHighlightedAnnotatedString(
+                previous.annotatedString,
+                value.text,
+                linkColor,
+            ),
     )
 
 private fun launchNoteLink(
@@ -199,8 +218,8 @@ private fun LinkStyledNoteTextField(
                             R.string.notes_editor_action_send_email
                         else -> R.string.notes_editor_action_open_link
                     }
-                DropdownMenuItem(
-                    text = { Text(stringResource(labelRes)) },
+                AppDropdownMenuItem(
+                    text = stringResource(labelRes),
                     onClick = {
                         linkMenu = null
                         launchNoteLink(context, url)
@@ -331,21 +350,35 @@ fun NoteEditor(
         }
     }
 
-    fun persistNote() {
-        val title = titleInput.text.trim()
-        val body = bodyInput.text
-        if (title.isBlank() && body.isBlank()) return
+    // Autosave writes on IO while the leave-save writes on Main; one lock and this id keep them from
+    // both creating the same new note.
+    val persistLock = remember { Any() }
+    val persistedNoteId = remember { AtomicLong(activeNoteId) }
 
-        if (activeNoteId > 0L) {
-            repository.updateNote(activeNoteId, title, body)
-        } else {
+    /** Writes the note and returns its id, or -1 when there is nothing to save. Blocking. */
+    fun writeNote(title: String, body: String): Long {
+        if (title.isBlank() && body.isBlank()) return -1L
+        synchronized(persistLock) {
+            val id = persistedNoteId.get().takeIf { it > 0L } ?: activeNoteId
+            if (id > 0L) {
+                repository.updateNote(id, title, body)
+                persistedNoteId.set(id)
+                return id
+            }
             val created = repository.createNote(title = title, markdownContent = body)
-            activeNoteId = created.noteId
+            persistedNoteId.set(created.noteId)
+            return created.noteId
         }
+    }
+
+    /** Applies a finished [writeNote] to the editor state and posts a requested notification pin. */
+    fun onNotePersisted(noteId: Long, title: String, body: String) {
+        if (noteId <= 0L) return
+        activeNoteId = noteId
         if (notificationPinRequested && canPostNotifications(context)) {
             PinnedNotifications.pin(
                 context,
-                noteNotificationAction(context, activeNoteId, title, body),
+                noteNotificationAction(context, noteId, title, body),
                 PinnedNotifications.PinMode.SEPARATELY,
             )
             notificationPinRequested = false
@@ -353,12 +386,26 @@ fun NoteEditor(
         }
     }
 
+    fun persistNote() {
+        val title = titleInput.text.trim()
+        val body = bodyInput.text
+        onNotePersisted(writeNote(title, body), title, body)
+    }
+
     LaunchedEffect(hasEdits, titleInput.text, bodyInput.text) {
         if (!hasEdits) return@LaunchedEffect
         delay(450)
-        persistNote()
-        contentBaselineTitle = titleInput.text
-        contentBaselineBody = bodyInput.text
+        val titleText = titleInput.text
+        val bodyText = bodyInput.text
+        val title = titleText.trim()
+        // A newer keystroke restarts this effect; let a started write finish so its new note id is
+        // kept, and the next save updates that note instead of creating another.
+        withContext(NonCancellable) {
+            val noteId = withContext(Dispatchers.IO) { writeNote(title, bodyText) }
+            onNotePersisted(noteId, title, bodyText)
+        }
+        contentBaselineTitle = titleText
+        contentBaselineBody = bodyText
     }
 
     val currentPersist by rememberUpdatedState(newValue = ::persistNote)
@@ -428,7 +475,7 @@ fun NoteEditor(
                     .fillMaxWidth()
                     .padding(top = if (hideTopBar) DesignTokens.SpacingLarge else 0.dp)
                     .padding(bottom = DesignTokens.CardBottomPadding),
-            shape = MaterialTheme.shapes.extraLarge,
+            shape = AppShapes.extraLarge,
             color = AppColors.getSettingsCardContainerColor(),
         ) {
             Box(modifier = Modifier.fillMaxSize()) {
@@ -445,7 +492,7 @@ fun NoteEditor(
                         value = titleInput,
                         onValueChange = {
                             if (!isQuickNote) {
-                                titleInput = applyNoteLinkHighlighting(it, linkColor)
+                                titleInput = updateNoteLinkHighlighting(titleInput, it, linkColor)
                             }
                         },
                         modifier =
@@ -475,7 +522,7 @@ fun NoteEditor(
                                     style = MaterialTheme.typography.headlineSmall,
                                     color =
                                         MaterialTheme.colorScheme.onSurfaceVariant.copy(
-                                            alpha = 0.55f,
+                                            alpha = AppColors.ContentMutedAlpha,
                                         ),
                                 )
                             }
@@ -491,7 +538,7 @@ fun NoteEditor(
                     LinkStyledNoteTextField(
                         value = bodyInput,
                         onValueChange = { newValue ->
-                            bodyInput = applyNoteLinkHighlighting(newValue, linkColor)
+                            bodyInput = updateNoteLinkHighlighting(bodyInput, newValue, linkColor)
                         },
                         modifier =
                             Modifier
@@ -530,7 +577,7 @@ fun NoteEditor(
                                     style = MaterialTheme.typography.bodyLarge,
                                     color =
                                         MaterialTheme.colorScheme.onSurfaceVariant.copy(
-                                            alpha = 0.55f,
+                                            alpha = AppColors.ContentMutedAlpha,
                                         ),
                                 )
                             }
@@ -545,7 +592,7 @@ fun NoteEditor(
                             .align(Alignment.CenterEnd)
                             .fillMaxHeight()
                             .padding(end = DesignTokens.SpacingXSmall)
-                            .width(DesignTokens.SpacingXXSmall),
+                            .width(DesignTokens.SpacingXSmall),
                 )
             }
         }
@@ -572,12 +619,12 @@ private fun NoteEditorScrollIndicator(
     }
     val alpha by animateFloatAsState(
         targetValue = if (indicatorVisible && scrollState.maxValue > 0) 1f else 0f,
-        animationSpec = tween(durationMillis = 180),
+        animationSpec = tween(durationMillis = AppMotion.DurationShort, easing = AppMotion.EmphasizedEasing),
         label = "noteScrollIndicator",
     )
     if (alpha <= 0.01f) return
-    val trackColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.22f)
-    val thumbColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.55f)
+    val trackColor = MaterialTheme.colorScheme.outline.copy(alpha = AppColors.TintStrongAlpha)
+    val thumbColor = MaterialTheme.colorScheme.outline.copy(alpha = AppColors.ContentMutedAlpha)
     Canvas(
         modifier =
             modifier.graphicsLayer {

@@ -1,10 +1,9 @@
 package com.tk.quicksearch.search.searchScreen.searchScreenLayout
 
+import com.tk.quicksearch.shared.ui.components.AppMessages
 import android.os.Build
-import android.widget.Toast
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -17,7 +16,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
 import com.tk.quicksearch.customInfo.CustomInfoItem
 import com.tk.quicksearch.customInfo.CustomInfoRepository
@@ -26,6 +24,9 @@ import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.util.MarkdownText
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import com.tk.quicksearch.shared.ui.theme.DesignTokens
+import com.tk.quicksearch.shared.ui.components.AppIconButton
+import com.tk.quicksearch.shared.ui.components.AppIconButtonStyle
 
 internal class CustomInfoGlance(
     val items: List<CustomInfoItem>,
@@ -42,22 +43,19 @@ internal fun rememberCustomInfoGlance(enabled: Boolean): CustomInfoGlance {
     val change by CustomInfoRepository.changes.collectAsState()
     val resumeKey = rememberResumeRefreshKey()
     var items by remember { mutableStateOf(emptyList<CustomInfoItem>()) }
-    LaunchedEffect(enabled, change, resumeKey) {
+    // Not keyed on [enabled]: typing a query hides the rows without reading them again.
+    LaunchedEffect(change, resumeKey) {
         items =
-            if (enabled) {
-                withContext(Dispatchers.IO) {
-                    repository.all().filter { item ->
-                        item.enabled && item.showOnHome &&
-                            (item.status == CustomInfoItem.ERROR ||
-                                (item.status == CustomInfoItem.COMPLETE && item.answer.isNotBlank()))
-                    }
+            withContext(Dispatchers.IO) {
+                repository.all().filter { item ->
+                    item.enabled && item.showOnHome &&
+                        (item.status == CustomInfoItem.ERROR ||
+                            (item.status == CustomInfoItem.COMPLETE && item.answer.isNotBlank()))
                 }
-            } else {
-                emptyList()
             }
     }
     return CustomInfoGlance(
-        items = items,
+        items = if (enabled) items else emptyList(),
         dismiss = { item ->
             CustomInfoScheduler.cancelNotification(appContext, item.id)
             repository.update(item.id) { it.copy(showOnHome = false) }
@@ -90,19 +88,24 @@ internal fun CustomInfoRow(
             onDismiss = onDismiss,
             trailing = {
                 if (retrying) {
-                    CircularProgressIndicator(modifier = Modifier.size(24.dp), strokeWidth = 2.dp)
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(DesignTokens.InlineProgressSize),
+                        strokeWidth = DesignTokens.InlineProgressStrokeWidth,
+                    )
                 } else {
-                    FilledTonalIconButton(
+                    AppIconButton(
                         onClick = {
                             retrying = true
                             onRetry()
                         },
-                        modifier = Modifier.size(40.dp),
+                        tooltip = stringResource(R.string.action_retry),
+                        style = AppIconButtonStyle.Tonal,
+                        modifier = Modifier.size(DesignTokens.ButtonHeightSmall),
                     ) {
                         Icon(
                             imageVector = MaterialSymbols.Refresh,
                             contentDescription = stringResource(R.string.action_retry),
-                            modifier = Modifier.size(20.dp),
+                            modifier = Modifier.size(DesignTokens.IconSizeSmall),
                         )
                     }
                 }
@@ -122,14 +125,14 @@ internal fun CustomInfoRow(
             onLongClick = {
                 val copied = copySensitiveText(context, copyLabel, item.answer, sensitive = false)
                 if (copied && Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-                    Toast.makeText(context, copiedMessage, Toast.LENGTH_SHORT).show()
+                    AppMessages.show(context, copiedMessage)
                 }
             },
             onDismiss = onDismiss,
             belowText = {
                 MarkdownText(
                     markdown = item.answer,
-                    style = MaterialTheme.typography.bodySmall,
+                    style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             },

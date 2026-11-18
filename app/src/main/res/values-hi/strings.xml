@@ -12,7 +12,6 @@
     <!-- ============================================================================
          App &amp; Search Entry
          ============================================================================ -->
-    <string name="app_name">Quick Search</string>
     <string name="direct_answer_contact_name">AI उत्तर</string>
     <string name="direct_search_enter_query">खोजने के लिए कृपया कोई क्वेरी दर्ज करें।</string>
     <string name="direct_search_ask_follow_up">अगला सवाल पूछें</string>
@@ -25,14 +24,11 @@
     <string name="quick_search_help_intro">Quick Search की सुविधाओं और सेटिंग्स के बारे में जवाब पाने के लिए @help के बाद अपना सवाल लिखें।</string>
     <string name="gemini_web_search_quota_fallback_tip">Gemini की वेब खोज सीमा पूरी हो गई है, इसलिए यह उत्तर वेब खोज के बिना तैयार किया गया है।</string>
     <string name="direct_search_powered_by">पावर्ड बाय</string>
-    <string name="empty_state_subtitle">सुझाव देखने के लिए कोई ऐप खोलें या अपनी खोज को और स्पष्ट करें।</string>
-    <string name="empty_state_title">दिखाने के लिए कुछ नहीं (अभी)</string>
     <string name="error_action_not_available">यह क्रिया उपलब्ध नहीं है</string>
     <string name="error_gemini_empty_response">Gemini से खाली जवाब मिला</string>
     <string name="error_gemini_load_models_failed">Gemini मॉडल लोड नहीं हो सके</string>
     <string name="error_gemini_request_failed">अनुरोध विफल (%1$d)</string>
     <string name="error_unknown">अज्ञात त्रुटि</string>
-    <string name="gemini_model_flash_latest">Gemini Flash (Latest)</string>
     <string name="keyboard_switch_back">सामान्य कीबोर्ड</string>
     <string name="keyboard_switch_to_number">नंबर कीबोर्ड</string>
     <string name="no_results_found">कोई परिणाम नहीं मिला। वेब पर खोजने के लिए नीचे दिए गए सर्च इंजन पर टैप करें।</string>
@@ -86,6 +82,7 @@
     <string name="action_unlock_app">अनलॉक करें</string>
     <string name="app_lock_prompt_lock">%1$s को लॉक करें</string>
     <string name="app_lock_prompt_unlock">%1$s को अनलॉक करें</string>
+    <string name="app_lock_unlock_device_credential">डिवाइस क्रेडेंशियल से अनलॉक करें</string>
     <string name="app_lock_unavailable">इस ऐप को अनलॉक करने के लिए Quick Search खोलें</string>
     <string name="action_change_icon">आइकन बदलें</string>
     <string name="icon_picker_search">आइकन खोजें</string>
@@ -114,6 +111,9 @@
     <string name="action_open_folder">फोल्डर खोलें</string>
     <string name="action_open_keyboard">कीबोर्ड खोलें</string>
     <string name="action_open_settings">सेटिंग्स खोलें</string>
+    <string name="keyboard_shortcut_open_top_result">शीर्ष परिणाम खोलें या खोजें</string>
+    <string name="keyboard_shortcut_previous_result">पिछला परिणाम चुनें</string>
+    <string name="keyboard_shortcut_next_result">अगला परिणाम चुनें</string>
     <string name="settings_gestures_title">जेस्चर</string>
     <string name="settings_gestures_desc">स्वाइप क्रियाओं को कस्टमाइज़ करें</string>
     <string name="settings_gesture_swipe_right">दाएँ स्वाइप करें</string>
@@ -148,7 +148,6 @@
     <string name="settings_gesture_view_all_apps">सभी ऐप्स देखें</string>
     <string name="settings_gesture_lock_screen">स्क्रीन लॉक करें</string>
     <string name="settings_gesture_lock_screen_requires_accessibility">सुलभता अनुमति आवश्यक है</string>
-    <string name="accessibility_lock_screen_service_label">Quick Search</string>
     <string name="accessibility_lock_screen_service_description">Quick Search को होम स्क्रीन पर डबल-टैप जेस्चर से स्क्रीन लॉक करने, नॉच पर टैप का जवाब देने, किसी भी ऐप में किनारे से स्वाइप या फ़्लोटिंग बटन से खुलने और Quick Search के बाहर खोले गए ऐप्स के लिए SpeedBump दिखाने की अनुमति देता है। यह केवल देखता है कि कौन-सा ऐप खुला है और स्क्रीन की सामग्री नहीं पढ़ता।</string>
     <string name="accessibility_service_stopped_hint">Android ने Quick Search की सुलभता सेवा बंद कर दी है। सुलभता सेटिंग में इसे बंद करके फिर से चालू करें।</string>
 <string name="accessibility_permission_disclaimer_title">सुलभता अनुमति अस्वीकरण</string>
@@ -265,6 +264,7 @@
     <string name="desc_navigate_back">पीछे जाएं</string>
     <string name="desc_navigate_forward">आगे जाएं</string>
     <string name="desc_open_settings">Quick Search सेटिंग्स खोलें</string>
+    <string name="desc_open_device_settings">डिवाइस सेटिंग खोलें</string>
     <string name="desc_selected">चयनित</string>
     <string name="desc_voice_search_icon">वॉइस खोज शुरू करें</string>
 
@@ -277,7 +277,6 @@
     <string name="app_suggestions_tabs_dialog_message">चुनें कि होम स्क्रीन पर कौन से ऐप सुझाव टैब दिखाई दें।</string>
     <string name="app_suggestions_tabs_dialog_title">ऐप सुझाव टैब</string>
     <string name="app_suggestions_enabled_tabs_picker_hint">टैब चुनें</string>
-    <string name="app_suggestions_tab_required_toast">कम से कम एक ऐप सुझाव टैब सक्षम रखें</string>
     <string name="app_suggestions_toggle_desc">होम स्क्रीन पर सुझाए गए ऐप दिखाएं या छिपाएं</string>
     <string name="app_suggestions_toggle_title">ऐप सुझाव</string>
     <string name="show_all_apps_button_toggle_desc">ऐप सुझावों के नीचे \"सभी ऐप्स\" बटन दिखाएं</string>
@@ -323,7 +322,6 @@
     <string name="section_media">मीडिया नियंत्रण</string>
     <string name="section_settings">डिवाइस सेटिंग्स</string>
     <string name="search_section_menu_title">इसमें खोजें</string>
-    <string name="top_match_title">टॉप मैच</string>
     <string name="top_matches_count_label">मैचों की संख्या</string>
     <string name="top_matches_priority_desc">टॉप मैच में प्राथमिकता बदलें और आइटम अक्षम करें</string>
     <string name="top_matches_priority_dialog_info">प्राथमिकता बदलने के लिए दबाकर खींचें, और कुछ परिणाम प्रकार सक्षम या अक्षम करने के लिए टॉगल का उपयोग करें।</string>
@@ -362,17 +360,13 @@
     <string name="error_uninstall_self">आप यहां से Quick Search अनइंस्टॉल नहीं कर सकते।</string>
     <string name="failed_to_refresh_apps">ऐप्स रिफ्रेश नहीं हो सके</string>
     <string name="settings_app_apk_size_format">APK आकार: %1$.2f Mb</string>
-    <string name="settings_app_columns_4">4</string>
-    <string name="settings_app_columns_5">5</string>
     <string name="settings_app_columns_title">प्रति पंक्ति ऐप्स</string>
     <string name="settings_app_result_rows_title">ऐप परिणाम पंक्तियाँ</string>
-    <string name="settings_app_icon_size_percent">%1$d%%</string>
     <string name="settings_app_icon_size_title">ऐप आइकन आकार</string>
     <string name="settings_app_info_install_date">इंस्टॉल की तारीख</string>
     <string name="settings_app_info_last_update">अंतिम अपडेट</string>
     <string name="settings_app_info_minimum_sdk">न्यूनतम SDK</string>
     <string name="settings_app_info_not_available">उपलब्ध नहीं</string>
-    <string name="settings_app_info_package_name">पैकेज नाम</string>
     <string name="settings_app_info_target_sdk">लक्ष्य SDK</string>
     <string name="settings_app_info_version">संस्करण</string>
     <string name="settings_app_info_version_code">संस्करण कोड</string>
@@ -442,7 +436,6 @@
     <string name="settings_app_shortcuts_shortcut_name_label">शॉर्टकट नाम</string>
     <string name="settings_app_shortcuts_update_failed">शॉर्टकट अपडेट नहीं हो सका।</string>
     <string name="settings_app_shortcuts_update_success">शॉर्टकट अपडेट हो गया।</string>
-    <string name="settings_app_shortcuts_url_label">URL</string>
     <string name="shortcut_song_search_label">गीत खोज</string>
     <string name="shortcut_watch_later_label">बाद में देखें</string>
 
@@ -452,17 +445,12 @@
     <string name="contact_method_call_label">कॉल</string>
     <string name="contact_method_email_label">ईमेल</string>
     <string name="contact_method_fallback_label">अन्य</string>
-    <string name="contact_method_google_meet_label">Google Meet</string>
     <string name="contact_method_message_label">संदेश</string>
-    <string name="contact_method_signal_message_label">Signal</string>
     <string name="contact_method_signal_video_call_label">Signal वीडियो कॉल</string>
     <string name="contact_method_signal_voice_call_label">Signal वॉइस कॉल</string>
-    <string name="contact_method_telegram_message_label">Telegram</string>
     <string name="contact_method_telegram_video_call_label">Telegram वीडियो कॉल</string>
     <string name="contact_method_telegram_voice_call_label">Telegram वॉइस कॉल</string>
     <string name="contact_method_view_in_contacts_label">कॉन्टैक्ट्स ऐप में देखें</string>
-    <string name="contact_method_whatsapp_message_label">WhatsApp</string>
-    <string name="contact_method_whatsapp_business_label">WhatsApp Business</string>
     <string name="contact_method_whatsapp_video_call_label">WhatsApp वीडियो कॉल</string>
     <string name="contact_method_whatsapp_voice_call_label">WhatsApp वॉइस कॉल</string>
     <string name="contact_button_sms">SMS</string>
@@ -481,10 +469,7 @@
     <string name="contacts_action_hint_message">सुझाव: यहां किसी भी एक्शन को दबाकर रखें, ताकि उसे अलग-अलग कॉन्टैक्ट्स के लिए कस्टमाइज़ कर सकें।</string>
     <string name="contacts_action_next_number">अगला फोन नंबर</string>
     <string name="contacts_action_previous_number">पिछला फोन नंबर</string>
-    <string name="contacts_action_signal">Signal कॉन्टैक्ट</string>
     <string name="contacts_action_sms">कॉन्टैक्ट को संदेश भेजें</string>
-    <string name="contacts_action_telegram">Telegram कॉन्टैक्ट</string>
-    <string name="contacts_action_whatsapp">WhatsApp कॉन्टैक्ट</string>
     <string name="contacts_no_methods_available">कोई कॉन्टैक्ट तरीका उपलब्ध नहीं है</string>
     <string name="contacts_refreshed_successfully">कॉन्टैक्ट्स सफलतापूर्वक रिफ्रेश हो गए</string>
     <string name="contacts_section_permission_subtitle">कॉन्टैक्ट खोज के लिए कॉन्टैक्ट अनुमति आवश्यक है</string>
@@ -503,6 +488,7 @@
     <string name="error_telegram_chat_failed">Telegram चैट खोलने में विफल</string>
     <string name="error_telegram_not_installed">Telegram इंस्टॉल नहीं है</string>
     <string name="error_whatsapp_call_failed">WhatsApp कॉल विफल हुई। कृपया सुनिश्चित करें कि WhatsApp इंस्टॉल है।</string>
+    <string name="error_whatsapp_call_unavailable_opened_chat">WhatsApp इस संपर्क को सीधे कॉल नहीं कर सकता। इसके बजाय चैट खोली गई।</string>
     <string name="error_whatsapp_chat_failed">WhatsApp चैट खोलने में विफल</string>
     <string name="error_whatsapp_not_installed">WhatsApp इंस्टॉल नहीं है</string>
     <string name="error_whatsapp_video_call_failed">WhatsApp वीडियो कॉल खोलने में विफल</string>
@@ -567,13 +553,8 @@
     <!-- ============================================================================
          Calendar
          ============================================================================ -->
-    <string name="app_settings_create_calendar_event_desc">नया इवेंट बनाएं और जोड़ें</string>
-    <string name="app_settings_create_calendar_event_title">नया कैलेंडर इवेंट</string>
     <string name="calendar_create_event_name_hint">इवेंट नाम</string>
     <string name="calendar_create_event_select_date">तारीख चुनें</string>
-    <string name="calendar_create_event_sync_notice">यह इवेंट आपके डिवाइस कैलेंडर से सिंक नहीं होगा</string>
-    <string name="calendar_create_event_title">नया इवेंट</string>
-    <string name="calendar_edit_event_title">इवेंट संपादित करें</string>
     <string name="calendar_relative_ago_format">%1$s पहले</string>
     <plurals name="calendar_relative_days">
         <item quantity="one">%d दिन</item>
@@ -584,7 +565,6 @@
         <item quantity="other">%d घंटे</item>
     </plurals>
     <string name="calendar_relative_in_format">%1$s में</string>
-    <string name="calendar_relative_in_minutes">%1$d मिनट में</string>
     <plurals name="calendar_relative_minutes">
         <item quantity="one">%d मिनट</item>
         <item quantity="other">%d मिनट</item>
@@ -653,7 +633,6 @@
     <string name="notes_editor_notification_note_title">सूचना नोट</string>
     <string name="notes_empty_note_subtext">खाली नोट</string>
     <string name="notes_quick_note_title">क्विक नोट</string>
-    <string name="notes_quick_note_toggle_desc">स्वाइप नेविगेशन से क्विक नोट खोलें</string>
     <string name="notes_title_hint">शीर्षक</string>
     <string name="notes_untitled">बिना शीर्षक</string>
     <string name="settings_notes_view_all_desc">सभी नोट्स देखें</string>
@@ -690,7 +669,6 @@
     <string name="settings_shortcut_location">लोकेशन</string>
     <string name="settings_shortcut_mobile_data">मोबाइल डेटा</string>
     <string name="settings_shortcut_network">नेटवर्क और इंटरनेट</string>
-    <string name="settings_shortcut_nfc">NFC</string>
     <string name="settings_shortcut_notification_listener">अधिसूचनाओं तक पहुंच</string>
     <string name="settings_shortcut_notification_history">सूचना इतिहास</string>
     <string name="notification_history_permission_desc">सूचनाएं यहां एकत्र करने के लिए सूचना एक्सेस की अनुमति दें। इस सूची में केवल एक्सेस मिलने के बाद प्राप्त सूचनाएं दिखाई देती हैं।</string>
@@ -708,7 +686,6 @@
     <string name="settings_shortcut_storage">स्टोरेज</string>
     <string name="settings_shortcut_usage_access">उपयोग पहुंच</string>
     <string name="settings_shortcut_voice_input">डिजिटल असिस्टेंट</string>
-    <string name="settings_shortcut_vpn">VPN</string>
     <string name="settings_shortcut_wifi">Wi\u2011Fi</string>
     <string name="settings_unable_to_open_settings">सेटिंग्स नहीं खुल सकीं</string>
 
@@ -723,8 +700,6 @@
     <string name="settings_features_export_failed">फ़ीचर दस्तावेज़ सेव नहीं किया जा सका।</string>
     <string name="settings_features_saved_to_downloads">डाउनलोड में सेव किया गया</string>
     <string name="settings_features_sections_title">सामग्री</string>
-    <string name="settings_search_description_change_app_theme">ऐप थीम बदलें</string>
-    <string name="settings_search_description_change_font_size">ऐप फ़ॉन्ट आकार बदलें</string>
     <string name="settings_search_description_change_icon_pack">आइकन पैक बदलें</string>
     <string name="settings_search_description_change_layout">ऐप लेआउट विकल्प बदलें</string>
     <string name="settings_search_description_change_wallpaper">वॉलपेपर रूप बदलें</string>
@@ -737,16 +712,22 @@
     <string name="customize_search_engines">सर्च इंजन कस्टमाइज़ करें</string>
     <string name="settings_app_theme_aurora">ऑरोरा</string>
     <string name="settings_app_theme_forest">फॉरेस्ट</string>
-    <string name="settings_app_theme_monochrome">मोनो</string>
+    <string name="settings_app_theme_monochrome">डिफ़ॉल्ट</string>
+    <string name="settings_app_theme_colorful">रंगीन</string>
     <string name="settings_app_theme_sunset">सनसेट</string>
+    <string name="settings_app_theme_custom_dialog_title">रंग चुनें</string>
+    <string name="settings_app_theme_amber">एम्बर</string>
+    <string name="settings_app_theme_teal">टील</string>
+    <string name="settings_app_theme_lavender">लैवेंडर</string>
+    <string name="settings_app_theme_indigo">नील</string>
+    <string name="settings_app_theme_slate">स्लेटी</string>
+    <string name="settings_app_theme_rose">गुलाबी</string>
+    <string name="settings_app_theme_mocha">मोचा</string>
     <string name="settings_app_theme_title">थीम</string>
     <string name="settings_appearance_desc">वॉलपेपर, सर्च इंजन स्टाइल, एक-हाथ मोड, आदि।</string>
     <string name="settings_appearance_title">दिखावट</string>
     <string name="settings_assistant_voice_mode_desc">डिजिटल असिस्टेंट के रूप में लॉन्च होने पर वॉइस टाइपिंग शुरू करें</string>
     <string name="settings_assistant_voice_mode_title">असिस्टेंट वॉइस मोड</string>
-    <string name="settings_beta_features_disabled">Beta फ़ीचर्स बंद हैं</string>
-    <string name="settings_beta_features_enabled">नए beta फ़ीचर्स चालू हैं</string>
-    <string name="settings_beta_features_unavailable">कोई नए फ़ीचर्स उपलब्ध नहीं हैं</string>
     <string name="settings_beta_tag">Beta</string>
     <string name="settings_bottom_searchbar_desc">सर्च बार को स्क्रीन के नीचे रखें</string>
     <string name="settings_bottom_searchbar_title">नीचे सर्च बार</string>
@@ -762,11 +743,10 @@
     <string name="settings_default_assistant_title">डिफ़ॉल्ट असिस्टेंट</string>
     <string name="settings_default_launcher_desc">इस ऐप को अपना डिफ़ॉल्ट होम ऐप बनाएं।</string>
     <string name="settings_default_launcher_title">डिफ़ॉल्ट लॉन्चर</string>
-    <string name="settings_amoled_theme_desc">Mono थीम के लिए ट्रू ब्लैक बैकग्राउंड इस्तेमाल करें</string>
+    <string name="settings_amoled_theme_desc">डार्क मोड में ट्रू ब्लैक बैकग्राउंड इस्तेमाल करें</string>
     <string name="settings_amoled_theme_title">AMOLED थीम</string>
     <string name="settings_device_theme_blocked_toast">Material You थीम चालू होने पर बंद</string>
     <string name="settings_device_theme_desc">ऐप थीम के रूप में अपने डिवाइस का डायनैमिक रंग पैलेट इस्तेमाल करें</string>
-    <string name="settings_device_theme_title">Material You</string>
     <string name="settings_edit_label">संपादित करें</string>
     <string name="settings_font_size_big">बड़ा</string>
     <string name="settings_font_size_extra_small">बहुत छोटा</string>
@@ -826,6 +806,8 @@
     <string name="settings_unified_pinned_items_desc">पिन किए गए आइटम को होम स्क्रीन पर एक एकीकृत सूची के रूप में दिखाएं।</string>
     <string name="settings_show_status_bar_title">स्टेटस बार दिखाएं</string>
     <string name="settings_show_status_bar_desc">स्क्रीन के ऊपर Android स्टेटस बार दिखाएं।</string>
+    <string name="settings_search_chrome_blur_title">धुंधली पृष्ठभूमि</string>
+    <string name="settings_search_chrome_blur_desc">सर्च बार के पीछे की चीज़ें धुंधली करें।</string>
     <string name="settings_pinned_sections_order_title">पिन किए गए सेक्शन का क्रम</string>
     <string name="settings_pinned_sections_order_desc">होम पर पिन किए गए सेक्शन का क्रम बदलें</string>
     <string name="settings_pinned_sections_order_dialog_info">होम पर पिन किए गए सेक्शन का क्रम बदलने के लिए दबाकर रखें और खींचें।</string>
@@ -855,8 +837,6 @@
     <string name="settings_refresh_contacts_title">कॉन्टैक्ट्स रिफ्रेश करें</string>
     <string name="settings_refresh_data_note">डेटा अपने आप रिफ्रेश होता है। मैन्युअल रूप से तुरंत रिफ्रेश करने के लिए इन बटनों का उपयोग करें।</string>
     <string name="settings_refresh_data_title">डेटा रिफ्रेश करें</string>
-    <string name="settings_refresh_icon_packs">आइकन पैक रिफ्रेश करें</string>
-    <string name="settings_refreshing_icon_packs">आइकन पैक सूची रिफ्रेश की जा रही है</string>
     <string name="settings_scroll_to_top">ऊपर स्क्रॉल करें</string>
     <string name="settings_search_hints_desc">घूमते हुए खोज संकेत चालू/बंद करें</string>
     <string name="settings_search_hints_title">खोज संकेत</string>
@@ -868,8 +848,6 @@
     <string name="settings_themed_icons_desc">थीम से मेल खाने के लिए ऐप आइकनों में रंग लगाएं</string>
     <string name="settings_themed_icons_title">थीम वाले ऐप आइकन</string>
     <string name="settings_tools_desc">कैलकुलेटर, यूनिट कन्वर्टर, शब्दकोश और बहुत कुछ</string>
-    <string name="settings_tools_gemini_api_desc">API key जोड़ने से और टूल्स सक्षम होते हैं।</string>
-    <string name="settings_tools_gemini_api_title">AI Provider कॉन्फ़िगर करें</string>
     <string name="settings_tools_info_examples_header">यहां कुछ उदाहरण हैं जिन्हें आप सर्च बार में पूछ सकते हैं</string>
     <string name="settings_tools_title">टूल्स</string>
     <string name="settings_at_a_glance_title">एक नज़र में</string>
@@ -877,7 +855,6 @@
     <string name="custom_info_edit_title">विवरण संपादित करें</string>
     <string name="custom_info_prompt">प्रॉम्प्ट</string>
     <string name="custom_info_set_date_time">तारीख और समय सेट करें</string>
-    <string name="custom_info_desc">आपके चुने समय पर होम पर आपके प्रॉम्प्ट के AI जवाब</string>
     <string name="settings_ai_api_key_required_message">इस फ़ीचर के लिए AI provider API key आवश्यक है।</string>
     <string name="settings_ai_api_key_required_title">API key आवश्यक है</string>
     <string name="settings_ai_api_key_setup_action">Key सेट करें</string>
@@ -886,7 +863,7 @@
     <string name="custom_info_send_notification">सूचना भेजें</string>
     <string name="custom_info_preview">पूर्वावलोकन</string>
     <string name="custom_info_saved">सहेजा गया</string>
-    <string name="custom_info_delete_confirm_title">%1$s हटाएं?</string>
+    <string name="dialog_delete_item_title">%1$s हटाएं?</string>
     <string name="custom_info_delete_confirm_message">यह कस्टम जानकारी और इसका शेड्यूल स्थायी रूप से हटा दिया जाएगा।</string>
     <string name="settings_at_a_glance_desc">उपयोगी जानकारी जो सही समय पर आपकी होम स्क्रीन पर दिखती है</string>
     <string name="settings_at_a_glance_alarms_title">अलार्म</string>
@@ -955,13 +932,13 @@
     <string name="settings_use_system_font_desc">अपने डिवाइस की फ़ॉन्ट शैली का पालन करें</string>
     <string name="settings_use_system_font_title">सिस्टम फ़ॉन्ट उपयोग करें</string>
     <string name="settings_accent_color_from_wallpaper">वॉलपेपर</string>
-    <string name="settings_accent_color_none">कोई नहीं</string>
     <string name="settings_accent_color_picker_title">एक्सेंट रंग</string>
     <string name="settings_accent_color_wallpaper_required_toast">पहले वॉलपेपर बैकग्राउंड सेट करें</string>
+    <string name="settings_accent_color_default_theme_required_toast">पहले डिफ़ॉल्ट थीम पर स्विच करें</string>
     <string name="settings_wallpaper_accent_desc">वॉलपेपर से एक्सेंट रंग प्राप्त करें या कस्टम रंग चुनें</string>
     <string name="settings_wallpaper_accent_title">एक्सेंट रंग</string>
     <string name="settings_wallpaper_blur_label">ब्लर</string>
-    <string name="settings_wallpaper_card_title">वॉलपेपर पृष्ठभूमि</string>
+    <string name="settings_wallpaper_card_title">पृष्ठभूमि</string>
     <string name="settings_wallpaper_transparency_label">पारदर्शिता</string>
 
     <!-- ============================================================================
@@ -976,14 +953,8 @@
     <string name="settings_add_search_engine_error_multiple_placeholders">{{query}} का उपयोग केवल एक बार करें।</string>
     <string name="settings_add_search_engine_error_placeholder">URL में {{query}} होना चाहिए</string>
     <string name="settings_add_search_engine_error_required">कृपया URL टेम्पलेट दर्ज करें।</string>
-    <string name="settings_ai_provider_groq">Groq</string>
-    <string name="settings_ai_provider_meta">Meta AI</string>
-    <string name="settings_ai_provider_opencode">OpenCode</string>
-    <string name="settings_ai_provider_openai">OpenAI</string>
     <string name="settings_alias_label">उपनाम:</string>
-    <string name="settings_amazon_domain_default">amazon.com</string>
     <string name="settings_amazon_domain_label">डोमेन:</string>
-    <string name="settings_api_key_saved_last4">****%1$s पर समाप्त होने वाली key सहेजी गई है</string>
     <string name="settings_api_key_setup_desc">संबंधित AI provider के मॉडल्स तक पहुंच के लिए API keys कॉन्फ़िगर करें।</string>
     <string name="settings_api_key_setup_nav_desc">provider API keys जोड़ें या हटाएं</string>
     <string name="settings_configure_api_key_title">API key कॉन्फ़िगर करें</string>
@@ -992,7 +963,6 @@
     <string name="custom_provider_models_load_failed">इस प्रदाता से मॉडल लोड नहीं हो सके: %1$s</string>
     <string name="settings_custom_provider_advanced_payload_desc">इस प्रदाता के माध्यम से भेजे गए प्रत्येक अनुरोध में विलय कर दिया गया।</string>
     <string name="settings_custom_provider_advanced_payload_error">एक मान्य JSON ऑब्जेक्ट दर्ज करें।</string>
-    <string name="settings_custom_provider_advanced_payload_hint" translatable="false">Example: { \"tools\": [{ \"type\": \"openrouter:web_search\" }] }</string>
     <string name="settings_custom_provider_advanced_payload_title">उन्नत अनुरोध पेलोड</string>
     <string name="settings_free_api_key_tip_description">मुफ्त में Gemini API Key प्राप्त करने के चरण।</string>
     <string name="settings_open_free_api_key_guide">मुफ्त API Key गाइड खोलें</string>
@@ -1000,7 +970,6 @@
     <string name="settings_direct_search_how_to">मुफ्त API Key प्राप्त करें</string>
     <string name="settings_direct_search_model_label">मॉडल</string>
     <string name="settings_select_model">मॉडल चुनें</string>
-    <string name="settings_ai_model_with_provider">%1$s · %2$s</string>
     <string name="ai_error_selected_model_unavailable">चुना गया मॉडल उपलब्ध नहीं है। कृपया सेटिंग में कोई दूसरा मॉडल चुनें।</string>
     <string name="settings_loading_models">मॉडल लोड हो रहे हैं…</string>
     <string name="settings_direct_search_personal_context">व्यक्तिगत संदर्भ</string>
@@ -1015,7 +984,6 @@
     <string name="settings_gemini_api_key_paste_hint">key पेस्ट करने के लिए टैप करें</string>
     <string name="settings_gemini_api_key_reset">Key रीसेट करें</string>
     <string name="settings_gemini_api_key_saving">सहेजा जा रहा है...</string>
-    <string name="settings_gemini_guide_url" translatable="false">https://medium.com/@tejakarlapudi.apps/setting-up-gemini-api-key-in-quick-search-25ee92aa4311</string>
     <string name="settings_model_picker_search_hint">मॉडल खोजें</string>
     <string name="settings_model_picker_more_models_hint">नवीनतम मॉडल दिखाए जा रहे हैं। अन्य मॉडल खोजने के लिए सर्च करें।</string>
     <string name="settings_search_engine_alias_suffix_desc">क्वेरी के अंत में उपनाम जोड़ने पर सर्च इंजन ट्रिगर होता है। उपनाम शुरुआत में हमेशा काम करेंगे।</string>
@@ -1054,7 +1022,6 @@
     <string name="settings_backup_export_option_pinned_items_title">पिन किए गए आइटम</string>
     <string name="settings_backup_export_option_api_keys">API keys</string>
     <string name="settings_backup_export_selection_title">डेटा एक्सपोर्ट करें</string>
-    <string name="settings_backup_export_success">सेटिंग्स सफलतापूर्वक एक्सपोर्ट हो गईं।</string>
     <string name="settings_backup_import_button">इम्पोर्ट</string>
     <string name="settings_backup_import_failed">सेटिंग्स इम्पोर्ट नहीं हो सकीं।</string>
     <string name="settings_backup_import_success">सेटिंग्स सफलतापूर्वक इम्पोर्ट हो गईं।</string>
@@ -1062,9 +1029,8 @@
     <string name="settings_backup_import_warning_title">सेटिंग्स इम्पोर्ट करें?</string>
     <string name="settings_backup_restore_desc">अपनी ऐप सेटिंग्स एक्सपोर्ट या इम्पोर्ट करें</string>
     <string name="settings_backup_restore_title">बैकअप और रिस्टोर</string>
-    <string name="settings_feedback_developer_desc">निर्माता: %1$s</string>
     <string name="settings_feedback_developer_name">Teja Karlapudi</string>
-    <string name="settings_feedback_developer_title">%1$s v%2$s</string>
+    <string name="settings_feedback_developer_made_by">निर्माता</string>
     <string name="settings_feedback_github_desc">इस प्रोजेक्ट का स्रोत कोड GitHub पर देखें</string>
     <string name="settings_feedback_github_title">डेवलपमेंट</string>
     <string name="settings_feedback_rate_desc">अगर आपको यह ऐप उपयोगी लगता है तो 5 स्टार रेटिंग दें 🙏</string>
@@ -1110,7 +1076,6 @@
     <string name="date_calculator_category_time_ranges">समय सीमाएं</string>
     <string name="date_calculator_info_title">तारीख और समय कैलकुलेटर</string>
     <string name="date_calculator_invalid_date">अमान्य या अपरिचित तारीख या समय</string>
-    <string name="date_calculator_toggle_action_desc">तारीख और समय कैलकुलेटर चालू या बंद करें</string>
     <string name="date_calculator_toggle_desc">उपयोग उदाहरण</string>
     <string name="dictionary_example_label">उदाहरण: %1$s</string>
     <string name="dictionary_definition_not_found">“%1$s” की कोई परिभाषा नहीं मिली</string>
@@ -1147,7 +1112,6 @@
     <string name="unit_converter_enter_conversion_hint">रूपांतरण दर्ज करें (जैसे, 5lbs in kgs)</string>
     <string name="unit_converter_info_title">यूनिट कन्वर्टर</string>
     <string name="unit_converter_invalid_or_unsupported_query">अमान्य या असमर्थित रूपांतरण</string>
-    <string name="unit_converter_toggle_action_desc">यूनिट कन्वर्टर चालू या बंद करें</string>
     <string name="world_clock_error_not_recognized">समय से जुड़े इस अनुरोध को हल नहीं किया जा सका। शहर, देश, टाइमज़ोन या स्पष्ट समय आज़माएं।</string>
     <string name="world_clock_toggle_desc">उदाहरण: Time in Tokyo</string>
     <string name="world_clock_toggle_title">वर्ल्ड क्लॉक</string>
@@ -1167,6 +1131,14 @@
     <string name="shortcut_voice_search_short_label">Voice Search</string>
     <string name="voice_input_not_available">वॉइस टाइपिंग अभी उपलब्ध नहीं है।</string>
     <string name="widget_background_color_custom_dialog_title">कस्टम रंग</string>
+    <string name="color_picker_hex">हेक्स रंग (#RRGGBB)</string>
+    <string name="color_picker_hue">रंगत</string>
+    <string name="color_picker_saturation">संतृप्ति</string>
+    <string name="color_picker_brightness">चमक</string>
+    <string name="color_picker_increase_saturation">संतृप्ति बढ़ाएँ</string>
+    <string name="color_picker_decrease_saturation">संतृप्ति घटाएँ</string>
+    <string name="color_picker_increase_brightness">चमक बढ़ाएँ</string>
+    <string name="color_picker_decrease_brightness">चमक घटाएँ</string>
     <string name="widget_border_color">बॉर्डर रंग</string>
     <string name="widget_custom_button_add_desc">कस्टम बटन जोड़ें</string>
     <string name="widget_custom_buttons_dialog_hint">ऐप्स, ऐप शॉर्टकट्स, कॉन्टैक्ट्स, फाइलें, फोल्डर्स, नोट्स और डिवाइस सेटिंग्स खोजें।</string>
@@ -1236,6 +1208,15 @@
     <string name="widget_toggle_show_label">Quick Search टेक्स्ट</string>
     <string name="widget_toggle_show_empty_date">कोई आइटम न होने पर तारीख दिखाएं</string>
     <string name="widgets_panel_title">विजेट्स</string>
+    <string name="widget_edit_layout">विजेट का लेआउट बदलें</string>
+    <string name="widget_move_left">बाईं ओर ले जाएँ</string>
+    <string name="widget_move_right">दाईं ओर ले जाएँ</string>
+    <string name="widget_increase_width">चौड़ाई बढ़ाएँ</string>
+    <string name="widget_decrease_width">चौड़ाई घटाएँ</string>
+    <string name="widget_increase_height">ऊँचाई बढ़ाएँ</string>
+    <string name="widget_decrease_height">ऊँचाई घटाएँ</string>
+    <string name="widgets_panel_lock_layout">लेआउट लॉक करें</string>
+    <string name="widgets_panel_unlock_layout">लेआउट अनलॉक करें</string>
     <string name="widgets_picker_empty">कोई विजेट नहीं मिला।</string>
     <string name="widgets_picker_loading">विजेट्स लोड हो रहे हैं...</string>
     <string name="widgets_picker_preview_unavailable">प्रीव्यू उपलब्ध नहीं</string>
@@ -1250,14 +1231,13 @@
     <string name="permissions_calling_desc">डायलर खोले बिना आपके कॉन्टैक्ट्स को सीधे कॉल करने के लिए आवश्यक।</string>
     <string name="settings_notifications_permission_title">पोस्ट नोटिफ़िकेशन</string>
     <string name="permissions_notifications_desc">रिमाइंडर सूचनाओं और खोज परिणामों को सूचना पैनल में पिन करने के लिए आवश्यक</string>
-    <string name="permissions_notification_access_desc">सूचना बिंदु और सूचना इतिहास सुविधाएं चालू करने के लिए आवश्यक</string>
+    <string name="permissions_notification_access_desc">सूचना बिंदु, सूचना इतिहास और एक नज़र में की उपयोगी सुविधाएं चालू करने के लिए आवश्यक।</string>
     <string name="permissions_accessibility_lock_screen_title">सुलभता</string>
     <string name="permissions_accessibility_lock_screen_desc">जेस्चर, फ़्लोटिंग बटन और SpeedBump सक्षम करता है।</string>
     <string name="permissions_contacts_desc">आपके कॉन्टैक्ट्स खोजने के लिए आवश्यक।</string>
     <string name="permissions_files_desc">आपके दस्तावेज़ों और अन्य फाइलों में खोजने के लिए आवश्यक।</string>
     <string name="permissions_files_title">फाइल पहुंच</string>
     <string name="permissions_granted">प्रदान की गई</string>
-    <string name="permissions_mandatory_indicator">*</string>
     <string name="permissions_reminder_dialog_message">यदि बाद में आप %1$s अनुमति के बारे में अपना निर्णय बदलते हैं, तो आप ऐप सेटिंग्स से अनुमति दे सकते हैं।</string>
     <string name="permissions_reminder_dialog_title">अनुमतियां प्रदान नहीं की गईं</string>
     <string name="permissions_screen_subtitle">सभी अनुमतियाँ वैकल्पिक हैं। ये केवल अतिरिक्त सुविधाएँ अनलॉक करती हैं और आपका डेटा आपके डिवाइस पर ही रहता है।</string>
@@ -1265,6 +1245,10 @@
     <string name="permissions_open_source_desc">देखें कि इन अनुमतियों का उपयोग कैसे किया जाता है।</string>
     <string name="permissions_open_source_action">कोड देखने के लिए टैप करें।</string>
     <string name="permissions_screen_optional_emphasis">वैकल्पिक</string>
+    <string name="permissions_trust_optional">हर अनुमति वैकल्पिक है</string>
+    <string name="permissions_trust_on_device">आपका डेटा डिवाइस पर ही रहता है</string>
+    <string name="permissions_trust_open_source">पूरी तरह ओपन सोर्स</string>
+    <string name="permissions_trust_view_code">कोड देखें</string>
     <string name="permissions_usage_desc">सुझावों में हाल ही में उपयोग किए गए ऐप्स दिखाने के लिए आवश्यक।</string>
     <string name="setup_action_next">आगे</string>
     <string name="setup_action_skip_permissions">अनुमतियों के बिना जारी रखें</string>
@@ -1292,33 +1276,12 @@
     <string name="browser_in_app_name">इन-ऐप ब्राउज़र</string>
     <string name="open_with_engine">%1$s के साथ खोलें</string>
     <string name="search_engine_ai_mode">AI मोड</string>
-    <string name="search_engine_amazon">Amazon</string>
-    <string name="search_engine_bing">Bing</string>
     <string name="search_engine_brave">Brave Search</string>
-    <string name="search_engine_chatgpt">ChatGPT</string>
-    <string name="search_engine_claude">Claude</string>
     <string name="search_engine_custom">कस्टम खोज</string>
-    <string name="search_engine_duckduckgo">DuckDuckGo</string>
-    <string name="search_engine_fdroid">F-Droid</string>
-    <string name="search_engine_facebook_marketplace">Facebook Marketplace</string>
-    <string name="search_engine_gemini">Gemini</string>
-    <string name="search_engine_google">Google</string>
     <string name="search_engine_google_drive">Google Drive</string>
     <string name="search_engine_google_maps">Google Maps</string>
     <string name="search_engine_google_photos">Google Photos</string>
-    <string name="search_engine_google_play">Google Play</string>
-    <string name="search_engine_grok">Grok</string>
-    <string name="search_engine_onboarding_description">जब आप अपनी खोज क्वेरी टाइप करके इनमें से किसी भी सर्च इंजन पर टैप करते हैं, तो इन ऐप्स के भीतर खोज शुरू हो जाएगी। आप उन्हें दबाकर रखकर बदल सकते हैं।</string>
-    <string name="search_engine_perplexity">Perplexity</string>
-    <string name="search_engine_reddit">Reddit</string>
-    <string name="search_engine_spotify">Spotify</string>
-    <string name="search_engine_startpage">Startpage</string>
-    <string name="search_engine_waze">Waze</string>
     <string name="search_engine_wikipedia">Wikipedia</string>
-    <string name="search_engine_x">X</string>
-    <string name="search_engine_you_com">You.com</string>
-    <string name="search_engine_youtube">YouTube</string>
-    <string name="search_engine_youtube_music">YouTube Music</string>
     <string name="search_on_engine">%1$s पर खोजें</string>
 
     <!-- ============================================================================
@@ -1368,9 +1331,7 @@
     <string name="widget_custom_button_change_colour">रंग बदलें</string>
     <string name="widget_custom_button_choose_colour">फ़ोल्डर का रंग चुनें</string>
     <string name="search_engine_google_translate">Google अनुवाद</string>
-    <string name="search_engine_kagi">Kagi</string>
     <string name="search_engine_kagi_assistant">Kagi Assistant</string>
-    <string name="search_engine_muse">Muse</string>
     <string name="tasker_integration_title">Tasker क्रियाएं</string>
     <string name="tasker_integration_description">ब्रॉडकास्ट इंटेंट का उपयोग करके Tasker क्रियाएं बनाएं।</string>
     <string name="tasker_add_intent_title">Tasker ब्रॉडकास्ट इंटेंट जोड़ें</string>
@@ -1388,7 +1349,7 @@
     <string name="icon_picker_no_icon_packs">ऐप आइकन बदलने के लिए कोई आइकन पैक इंस्टॉल नहीं है।</string>
     <string name="icon_picker_download_icon_packs">डाउनलोड करें</string>
     <string name="app_menu_usage_today">आज %1$s इस्तेमाल किया · %2$s बार खोला</string>
-    <string name="app_menu_version">v%1$s</string>
+    <string name="app_menu_version">संस्करण %1$s</string>
     <plurals name="app_menu_opened_count"><item quantity="one">%d बार</item><item quantity="other">%d बार</item></plurals>
     <plurals name="app_menu_usage_hours"><item quantity="one">%d घंटा</item><item quantity="other">%d घंटे</item></plurals>
     <plurals name="app_menu_usage_minutes"><item quantity="one">%d मिनट</item><item quantity="other">%d मिनट</item></plurals>
@@ -1403,7 +1364,8 @@
     <string name="speed_bump_explainer_just_enabled">आपने इसे अभी %1$s के लिए चालू किया</string>
     <string name="speed_bump_overlay_prompt">%1$s जल्द ही खुलेगा…</string>
     <string name="speed_bump_overlay_title">एक गहरी सांस लें</string>
-    <string name="speed_bump_title">SpeedBump</string>
+    <string name="speed_bump_pause_action">SpeedBump रोकें</string>
+    <string name="speed_bump_pause_menu_title">%1$s के लिए SpeedBump रोकें</string>
     <string name="speed_bump_outside_quick_search_title">SpeedBump का विस्तार करें</string>
     <string name="speed_bump_outside_quick_search_desc">Quick Search के बाहर ऐप्स खोले जाने पर SpeedBump लागू करें</string>
     <string name="home_upcoming_alarm">आगामी अलार्म</string>
@@ -1500,7 +1462,6 @@
     <string name="bookmarks_link_label">लिंक</string>
     <string name="bookmarks_invalid_link">मान्य वेब पता दर्ज करें</string>
     <string name="reminders_permission_hint">रिमाइंडर सूचनाएं दिखाने के लिए अनुमति चाहिए। अनुमति देने के लिए टैप करें।</string>
-    <string name="reminders_home_card_dismiss">होम से हटाएं</string>
     <string name="settings_include_past_reminders_title">पिछले रिमाइंडर</string>
     <string name="settings_include_past_reminders_desc">खोज परिणामों में पिछले रिमाइंडर दिखाएं</string>
     <string name="app_setting_create_reminder">रिमाइंडर बनाएं</string>

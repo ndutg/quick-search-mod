@@ -1,11 +1,10 @@
 package com.tk.quicksearch.search.contacts.components
 
+import com.tk.quicksearch.settings.settingsDetailScreen.SettingsDetailType
+import com.tk.quicksearch.search.appSettings.AppSettingsTarget
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.setValue
@@ -16,13 +15,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
-import com.tk.quicksearch.search.appSettings.AppSettingsDestination
 import com.tk.quicksearch.search.appSettings.LocalOpenAppSettingDestination
 import com.tk.quicksearch.shared.ui.components.AppDropdownMenu
+import com.tk.quicksearch.shared.ui.components.AppDropdownMenuDivider
+import com.tk.quicksearch.shared.ui.components.AppDropdownMenuItem
 import com.tk.quicksearch.shared.ui.components.ItemMenuLongPressOption
 import com.tk.quicksearch.shared.ui.components.ItemMenuPopup
 import com.tk.quicksearch.shared.ui.components.ItemMenuRow
@@ -219,7 +218,7 @@ fun ContactDropdownMenu(
                                 },
                                 onClick = {
                                     onDismissRequest()
-                                    openDestination(AppSettingsDestination.CALLS_TEXTS)
+                                    openDestination(AppSettingsTarget.Page(SettingsDetailType.CALLS_TEXTS))
                                 },
                         ),
                 )
@@ -233,12 +232,12 @@ fun ContactDropdownMenu(
             ) {
                 menuItems.forEachIndexed { index, item ->
                     if (index > 0) {
-                        HorizontalDivider()
+                        AppDropdownMenuDivider()
                     }
-                    DropdownMenuItem(
-                            text = { Text(text = stringResource(item.textResId)) },
-                            leadingIcon = { item.icon() },
-                            onClick = item.onClick,
+                    AppDropdownMenuItem(
+                        text = stringResource(item.textResId),
+                        leadingIcon = item.icon,
+                        onClick = item.onClick,
                     )
                 }
             }
@@ -258,9 +257,6 @@ fun ContactDropdownMenu(
                     title = {
                         Text(
                                 text = displayName,
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.SemiBold,
-                                color = MaterialTheme.colorScheme.onSurface,
                                 maxLines = 2,
                                 overflow = TextOverflow.Ellipsis,
                         )

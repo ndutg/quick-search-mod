@@ -1,75 +1,58 @@
 package com.tk.quicksearch.settings.shared.settingsRoute
 
+import com.tk.quicksearch.shared.ui.components.AppMessages
 import android.Manifest
-import android.content.Context
-import android.content.Intent
-import android.os.Build
-import android.os.Environment
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import com.tk.quicksearch.app.navigation.LocalPageSwipeController
+import com.tk.quicksearch.app.navigation.LocalRootPageSettled
 import com.tk.quicksearch.app.navigation.RootDestination
 import com.tk.quicksearch.app.navigation.detectPageSwipe
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import com.tk.quicksearch.search.data.appShortcutRepository.StaticShortcut
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import com.tk.quicksearch.settings.shared.toSettingsScreenState
-import com.tk.quicksearch.shared.ui.components.AppAlertDialog
-import androidx.compose.material3.Switch
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.VerticalDivider
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.foundation.LocalIndication
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.core.app.ActivityCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.tk.quicksearch.R
+import com.tk.quicksearch.shared.util.hapticGestureThreshold
 import com.tk.quicksearch.app.navigation.openDefaultAssistantSettings
 import com.tk.quicksearch.app.navigation.openDefaultLauncherSettings
+import com.tk.quicksearch.overlay.OverlayModeController
 import com.tk.quicksearch.search.core.*
 import com.tk.quicksearch.search.data.userAppPreferences.UserAppPreferences
 import com.tk.quicksearch.shared.permissions.PermissionHelper
 import com.tk.quicksearch.shared.permissions.PermissionSettingsDialog
-import com.tk.quicksearch.tools.aiSearch.LlmTextModel
 import com.tk.quicksearch.tile.requestAddQuickSearchTile
-import com.tk.quicksearch.shared.ui.theme.DesignTokens
+import com.tk.quicksearch.shared.util.cachedDefaultHomeAppStatus
 import com.tk.quicksearch.shared.util.isDefaultHomeApp
 import com.tk.quicksearch.shared.util.hapticToggle
 import com.tk.quicksearch.widgets.utils.requestAddQuickSearchWidget
 import com.tk.quicksearch.settings.appShortcutsSettings.*
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 private const val SETTINGS_BACK_SWIPE_THRESHOLD_PX = 140f
@@ -86,6 +69,7 @@ fun SettingsRoute(
     scrollState: androidx.compose.foundation.ScrollState =
         androidx.compose.foundation.rememberScrollState(),
 ) {
+    val pageSettled = LocalRootPageSettled.current
     val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val userPreferences = remember { UserAppPreferences(context) }
@@ -94,11 +78,12 @@ fun SettingsRoute(
 
     val state = uiState.toSettingsScreenState()
 
-    val shouldShowBanner = remember { mutableStateOf(uiState.shouldShowUsagePermissionBanner) }
     val hasSeenSettingsSearchTip = remember {
         mutableStateOf(userPreferences.hasSeenSettingsSearchTip())
     }
     val lifecycleOwner = LocalLifecycleOwner.current
+    val scope = rememberCoroutineScope()
+    var isDefaultLauncher by remember(context) { mutableStateOf(context.cachedDefaultHomeAppStatus()) }
     val pendingEnableDirectDial = remember { mutableStateOf(false) }
     var showPermissionSettingsDialog by remember { mutableStateOf(false) }
     var pendingPermissionSettingsAction by remember { mutableStateOf<(() -> Unit)?>(null) }
@@ -114,10 +99,6 @@ fun SettingsRoute(
             onSetBackgroundSource = viewModel::setBackgroundSource,
             onOptionalPermissionChanged = viewModel::handleOptionalPermissionChange,
         )
-
-    androidx.compose.runtime.LaunchedEffect(Unit) {
-        viewModel.handleOptionalPermissionChange()
-    }
 
     val contactsPermissionLauncher =
         rememberLauncherForActivityResult(
@@ -209,10 +190,15 @@ fun SettingsRoute(
     val onToggleOverlayMode: (Boolean) -> Unit = { enabled ->
         val isDefaultHomeApp = context.isDefaultHomeApp()
         val shouldEnableOverlay = enabled && !isDefaultHomeApp
-        viewModel.setOverlayModeEnabled(shouldEnableOverlay)
         if (shouldEnableOverlay) {
-            com.tk.quicksearch.overlay.OverlayModeController.startOverlay(context)
-            (context as? android.app.Activity)?.finish()
+            viewModel.setOverlayModeEnabled(true) {
+                OverlayModeController.startOverlay(context)
+                (context as? android.app.Activity)?.finish()
+            }
+        } else if (!enabled) {
+            viewModel.setOverlayModeEnabled(false) {
+                OverlayModeController.openMainActivity(context, returnToOverlay = false)
+            }
         }
     }
     val appShortcutSourceFlow =
@@ -232,12 +218,7 @@ fun SettingsRoute(
                 )
             },
             onSourceLaunchUnsupported = {
-                Toast
-                    .makeText(
-                        context,
-                        context.getString(R.string.settings_app_shortcuts_create_not_supported),
-                        Toast.LENGTH_SHORT,
-                    ).show()
+                AppMessages.show(context, R.string.settings_app_shortcuts_create_not_supported)
             },
         )
     var filteredAppShortcutSources by remember { mutableStateOf<List<AppShortcutSource>>(emptyList()) }
@@ -333,36 +314,21 @@ fun SettingsRoute(
                     },
                     onRefreshApps = { showToast ->
                         if (SearchSection.APPS in uiState.disabledSections) {
-                            Toast
-                                .makeText(
-                                    context,
-                                    context.getString(R.string.settings_refresh_apps_disabled),
-                                    Toast.LENGTH_SHORT,
-                                ).show()
+                            AppMessages.show(context, R.string.settings_refresh_apps_disabled)
                         } else {
                             viewModel.refreshApps(showToast)
                         }
                     },
                     onRefreshContacts = { showToast ->
                         if (SearchSection.CONTACTS in uiState.disabledSections) {
-                            Toast
-                                .makeText(
-                                    context,
-                                    context.getString(R.string.settings_refresh_contacts_disabled),
-                                    Toast.LENGTH_SHORT,
-                                ).show()
+                            AppMessages.show(context, R.string.settings_refresh_contacts_disabled)
                         } else {
                             viewModel.refreshContacts(showToast)
                         }
                     },
                     onRefreshFiles = { showToast ->
                         if (SearchSection.FILES in uiState.disabledSections) {
-                            Toast
-                                .makeText(
-                                    context,
-                                    context.getString(R.string.settings_refresh_files_disabled),
-                                    Toast.LENGTH_SHORT,
-                                ).show()
+                            AppMessages.show(context, R.string.settings_refresh_files_disabled)
                         } else {
                             viewModel.refreshFiles(showToast)
                         }
@@ -376,34 +342,36 @@ fun SettingsRoute(
                 ),
         )
 
-    // Refresh permission state and reset banner session dismissed flag when activity starts/resumes
-    androidx.compose.runtime.DisposableEffect(lifecycleOwner) {
+    // Refresh permissions and launcher role when the activity resumes.
+    var hasSettled by remember { mutableStateOf(pageSettled) }
+    LaunchedEffect(pageSettled) {
+        if (pageSettled) hasSettled = true
+    }
+    DisposableEffect(lifecycleOwner, hasSettled) {
+        if (!hasSettled) return@DisposableEffect onDispose { }
+        var launcherRoleJob: Job? = null
         val observer =
             LifecycleEventObserver { _, event ->
                 when (event) {
-                    Lifecycle.Event.ON_START -> {
-                        viewModel.resetUsagePermissionBannerSessionDismissed()
-                        shouldShowBanner.value = viewModel.uiState.value.shouldShowUsagePermissionBanner
-                    }
-
                     Lifecycle.Event.ON_RESUME -> {
                         viewModel.handleOnResume()
+                        launcherRoleJob?.cancel()
+                        launcherRoleJob = scope.launch {
+                            isDefaultLauncher = withContext(Dispatchers.Default) { context.isDefaultHomeApp() }
+                        }
                         wallpaperPermissionController.onRefreshPermissionState()
-                        shouldShowBanner.value = viewModel.uiState.value.shouldShowUsagePermissionBanner
                     }
 
                     else -> {}
                 }
             }
         lifecycleOwner.lifecycle.addObserver(observer)
-        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+        onDispose {
+            launcherRoleJob?.cancel()
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
     }
 
-    val onDismissBanner = {
-        viewModel.incrementUsagePermissionBannerDismissCount()
-        viewModel.setUsagePermissionBannerSessionDismissed(true)
-        shouldShowBanner.value = viewModel.uiState.value.shouldShowUsagePermissionBanner
-    }
     val onDismissSettingsSearchTip = {
         userPreferences.setHasSeenSettingsSearchTip(true)
         hasSeenSettingsSearchTip.value = true
@@ -411,6 +379,7 @@ fun SettingsRoute(
 
     val resolvedState = state.copy(hasWallpaperPermission = wallpaperPermissionController.hasWallpaperPermission)
     val pageSwipeController = LocalPageSwipeController.current
+    val view = LocalView.current
     val latestOnBack by rememberUpdatedState(onBack)
     val swipeNavigationModifier =
         Modifier.pointerInput(pageSwipeController) {
@@ -419,6 +388,7 @@ fun SettingsRoute(
                 thresholdPx = SETTINGS_BACK_SWIPE_THRESHOLD_PX,
                 targetFor = { direction -> RootDestination.Search.takeIf { direction > 0 } },
                 onSwipe = { direction -> if (direction > 0) latestOnBack() },
+                onThresholdCrossed = { hapticGestureThreshold(view, it) },
             )
         }
 
@@ -426,17 +396,7 @@ fun SettingsRoute(
         modifier = modifier.then(swipeNavigationModifier),
         state = resolvedState,
         callbacks = callbacks,
-        hasUsagePermission = uiState.hasUsagePermission,
-        hasContactPermission = uiState.hasContactPermission,
-        hasFilePermission = uiState.hasFilePermission,
-        hasCallPermission = uiState.hasCallPermission,
-        shouldShowBanner = shouldShowBanner.value,
-        onRequestUsagePermission = onRequestUsagePermission,
-        onRequestContactPermission = onRequestContactPermission,
-        onRequestFilePermission = onRequestFilePermission,
-        onRequestCalendarPermission = onRequestCalendarPermission,
-        onRequestCallPermission = onRequestCallPermission,
-        onDismissBanner = onDismissBanner,
+        isOverlayModeBlockedByLauncher = isDefaultLauncher,
         shouldShowSettingsSearchTip = !hasSeenSettingsSearchTip.value,
         onDismissSettingsSearchTip = onDismissSettingsSearchTip,
         onNavigateToDetail = onNavigateToDetail,

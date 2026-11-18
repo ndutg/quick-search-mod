@@ -1,5 +1,10 @@
 package com.tk.quicksearch.overlay
 
+import com.tk.quicksearch.R
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
+import com.tk.quicksearch.shared.ui.theme.AppMotion
+import com.tk.quicksearch.shared.ui.theme.AppShapes
 import com.tk.quicksearch.search.searchScreen.LocalPinnedGlanceOnly
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -25,8 +30,6 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -39,7 +42,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.ui.Alignment
@@ -53,7 +55,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -83,12 +84,12 @@ private const val OVERLAY_TABLET_PORTRAIT_WIDTH_PERCENT = 0.85f
 private const val OVERLAY_TABLET_WIDTH_PERCENT = 0.65f
 private const val OVERLAY_MAX_HEIGHT_PERCENT = 0.95f
 private const val OVERLAY_FALLBACK_GRADIENT_ALPHA = 0.98f
-private const val OVERLAY_CONTENT_RESIZE_ANIMATION_MS = 140
-private const val OVERLAY_ENTER_ANIMATION_MS = 420
-private const val OVERLAY_EXIT_ANIMATION_MS = 220
+private const val OVERLAY_CONTENT_RESIZE_ANIMATION_MS = AppMotion.DurationExit
+private const val OVERLAY_ENTER_ANIMATION_MS = AppMotion.DurationLarge
+private const val OVERLAY_EXIT_ANIMATION_MS = AppMotion.DurationStandard
 private const val OVERLAY_ENTER_START_DELAY_MS = 32
 private const val OVERLAY_ENTER_START_SCALE = 0.9f
-private val OVERLAY_BORDER_WIDTH = 1.25.dp
+private val OVERLAY_BORDER_WIDTH = DesignTokens.BorderWidth
 private val OVERLAY_OPERATOR_ROW_ESTIMATED_HEIGHT = 48.dp
 private val OVERLAY_TOP_OFFSET = 16.dp
 private val OVERLAY_BUBBLE_TOP_GAP = 2.dp
@@ -119,7 +120,8 @@ fun OverlayRoot(
         var canPlayEnterAnimation by remember(animationToken) { mutableStateOf(false) }
 
         // Handle closing with animation
-        val handleClose = { isVisible = false }
+        val closeLabel = stringResource(R.string.common_close)
+    val handleClose = { isVisible = false }
 
         // Call onCloseRequested immediately when isVisible becomes false
         val exitAnimationDuration = OVERLAY_EXIT_ANIMATION_MS
@@ -177,7 +179,11 @@ fun OverlayRoot(
                         modifier =
                                 modifier
                                         .fillMaxSize()
+                                        // Tapping the scrim outside the card dismisses the overlay; the
+                                        // dismiss animation is the feedback, so a full-screen ripple is skipped.
                                         .clickable(
+                                                role = Role.Button,
+                                                onClickLabel = closeLabel,
                                                 interactionSource =
                                                         remember { MutableInteractionSource() },
                                                 indication = null,
@@ -256,15 +262,6 @@ fun OverlayRoot(
                                 } else {
                                         0.dp
                                 }
-                        val overlayOperatorRowReservedHeight by animateDpAsState(
-                                targetValue = targetOperatorRowReservedHeight,
-                                animationSpec =
-                                        tween(
-                                                durationMillis = OVERLAY_CONTENT_RESIZE_ANIMATION_MS,
-                                                easing = LinearOutSlowInEasing,
-                                        ),
-                                label = "operatorRowReservedHeight",
-                        )
                         val topSafePadding = systemBarsPadding.calculateTopPadding()
                         val leftSafePadding = systemBarsPadding.calculateLeftPadding(layoutDirection)
                         val rightSafePadding =
@@ -279,7 +276,7 @@ fun OverlayRoot(
                                 (maxHeight -
                                                 overlayTopPadding -
                                                 bottomSafePadding -
-                                                overlayOperatorRowReservedHeight)
+                                                targetOperatorRowReservedHeight)
                                         .coerceAtLeast(
                                         0.dp
                                 )
@@ -385,7 +382,7 @@ fun OverlayRoot(
                                                         } else {
                                                                 OVERLAY_EXIT_ANIMATION_MS
                                                         },
-                                                easing = FastOutSlowInEasing,
+                                                easing = AppMotion.EmphasizedEasing,
                                         ),
                                 label = "overlayEntryProgress",
                         )
@@ -402,7 +399,7 @@ fun OverlayRoot(
                                 if (pinnedGlanceOnly) {
                                         remember(bubbleArrowCenterX) { OverlayBubbleShape(bubbleArrowCenterX) }
                                 } else {
-                                        DesignTokens.ExtraLargeCardShape
+                                        AppShapes.extraLarge
                                 }
                         Box(
                                 modifier =
@@ -434,13 +431,17 @@ fun OverlayRoot(
                                                                         },
                                                                 max = maxOverlayHeight,
                                                         )
-                                                        .animateContentSize(
-                                                                animationSpec =
-                                                                        tween(
-                                                                                durationMillis =
-                                                                                        OVERLAY_CONTENT_RESIZE_ANIMATION_MS,
-                                                                                easing = LinearOutSlowInEasing,
-                                                                        ),
+                                                        .then(
+                                                                if (pinnedGlanceOnly) {
+                                                                        Modifier.animateContentSize(
+                                                                                tween(
+                                                                                        durationMillis = OVERLAY_CONTENT_RESIZE_ANIMATION_MS,
+                                                                                        easing = AppMotion.EmphasizedDecelerateEasing,
+                                                                                ),
+                                                                        )
+                                                                } else {
+                                                                        Modifier
+                                                                },
                                                         )
                                                         .graphicsLayer {
                                                                 alpha = overlayEntryProgress
@@ -474,6 +475,9 @@ fun OverlayRoot(
                                                                 color = overlayBorderColor,
                                                                 shape = cardShape,
                                                         )
+                                                        // Swallows taps on the card's empty space so they don't
+                                                        // reach the dismiss-on-scrim handler; it has no action,
+                                                        // so it shows no ripple.
                                                         .clickable(
                                                                 interactionSource =
                                                                         remember {
@@ -490,7 +494,7 @@ fun OverlayRoot(
                                                         uiState.wallpaperBackgroundAlpha,
                                                 wallpaperBlurRadius = uiState.wallpaperBlurRadius,
                                                 backgroundTransitionDurationMillis =
-                                                        DesignTokens.WallpaperFadeInDuration + 220,
+                                                        AppMotion.DurationMedium + 220,
                                                 animateBlurRadius = false,
                                                 fallbackBackgroundAlpha = fallbackAlpha,
                                                 useGradientFallback =
@@ -507,6 +511,7 @@ fun OverlayRoot(
                                                 overlayThemeIntensity =
                                                         uiState.overlayThemeIntensity,
                                                 amoledThemeEnabled = uiState.amoledThemeEnabled,
+                                                publishFrostedCards = true,
                                                 // matchParentSize lets the card take its size from the content.
                                                 modifier =
                                                         if (pinnedGlanceOnly) Modifier.matchParentSize() else Modifier.fillMaxSize(),
@@ -655,8 +660,8 @@ fun OverlayRoot(
                         AnimatedVisibility(
                                 visible = shouldShowOverlayOperatorRow,
                                 modifier = Modifier.align(Alignment.BottomCenter),
-                                enter = fadeIn(animationSpec = tween(durationMillis = OVERLAY_CONTENT_RESIZE_ANIMATION_MS)),
-                                exit = fadeOut(animationSpec = tween(durationMillis = OVERLAY_CONTENT_RESIZE_ANIMATION_MS)),
+                                enter = fadeIn(animationSpec = tween(durationMillis = OVERLAY_CONTENT_RESIZE_ANIMATION_MS, easing = AppMotion.EmphasizedDecelerateEasing)),
+                                exit = fadeOut(animationSpec = tween(durationMillis = OVERLAY_CONTENT_RESIZE_ANIMATION_MS, easing = AppMotion.EmphasizedAccelerateEasing)),
                         ) {
                                 NumberKeyboardOperatorPills(
                                         modifier =

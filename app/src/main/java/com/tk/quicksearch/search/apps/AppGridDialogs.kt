@@ -1,6 +1,6 @@
 package com.tk.quicksearch.search.apps
 
-import com.tk.quicksearch.search.searchScreen.shared.LocalSearchCardLayoutEnabled
+import androidx.compose.ui.semantics.Role
 import com.tk.quicksearch.search.apps.swipeGestures.appSwipeGestures
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -14,11 +14,7 @@ import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -35,14 +31,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.tk.quicksearch.R
 import com.tk.quicksearch.search.apps.notificationDots.AppNotificationDot
 import com.tk.quicksearch.search.apps.notificationDots.hasNotificationDot
 import com.tk.quicksearch.search.apps.privateSpace.privateSpaceItems
@@ -113,11 +106,7 @@ internal fun AllAppsDrawer(
                     modifier =
                             Modifier
                                     .fillMaxWidth()
-                                    .padding(
-                                            end =
-                                                    (LazyGridScrollbarTouchWidth - AllAppsDialogSeekEdgeNudge)
-                                                            .coerceAtLeast(DesignTokens.SpacingSmall),
-                                    ),
+                                    .padding(end = LazyGridScrollbarTouchWidth),
                     horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium),
                     verticalArrangement = Arrangement.spacedBy(AllAppsDialogRowSpacing),
             ) {
@@ -195,10 +184,7 @@ internal fun AllAppsDrawer(
             )
             LazyGridVerticalScrollbar(
                     state = gridState,
-                    modifier =
-                            Modifier
-                                    .align(Alignment.CenterEnd)
-                                    .offset(x = AllAppsDialogSeekEdgeNudge),
+                    modifier = Modifier.align(Alignment.CenterEnd),
                     onDragFractionChange = { scrollbarDragFraction = it },
             )
         }
@@ -244,6 +230,7 @@ internal fun AllAppsDialogGridItem(
                         Modifier
                                 .fillMaxWidth()
                                 .combinedClickable(
+                                        role = Role.Button,
                                         onClick = {
                                             hapticConfirm(view)()
                                             onClick()
@@ -315,78 +302,6 @@ internal fun AllAppsDialogGridItem(
                 onOpenInSplitScreen = appActions.onOpenInSplitScreen,
         )
     }
-}
-
-@Composable
-internal fun AppSuggestionTabStrip(
-        tabs: List<AppSuggestionTab>,
-        selectedIndex: Int,
-        onSelectedIndexChange: (Int) -> Unit,
-) {
-    val activeColor = homeTextColor()
-    val inactiveColor = activeColor.copy(alpha = SuggestionTabInactiveAlpha)
-    val leftTab = tabs.getOrNull(selectedIndex - 1)
-    val rightTab = tabs.getOrNull(selectedIndex + 1)
-    // With the card layout off the strip sits right under a divider, so it gets room to breathe.
-    val compactLayout = !LocalSearchCardLayoutEnabled.current
-
-    Row(
-            modifier =
-                    Modifier
-                            .fillMaxWidth(0.86f)
-                            .padding(
-                                    top = if (compactLayout) DesignTokens.SpacingSmall else 0.dp,
-                                    bottom = if (compactLayout) DesignTokens.SpacingMedium else DesignTokens.SpacingXSmall,
-                            ),
-            verticalAlignment = Alignment.CenterVertically,
-    ) {
-        EdgeSuggestionTabLabel(
-                title = leftTab?.title.orEmpty(),
-                color = inactiveColor,
-                alignment = TextAlign.Start,
-                onClick = {
-                    if (selectedIndex > 0) onSelectedIndexChange(selectedIndex - 1)
-                },
-        )
-        Text(
-                text = tabs[selectedIndex].title,
-                modifier = Modifier.weight(1f),
-                color = activeColor,
-                style = MaterialTheme.typography.labelMedium,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                textAlign = TextAlign.Center,
-        )
-        EdgeSuggestionTabLabel(
-                title = rightTab?.title.orEmpty(),
-                color = inactiveColor,
-                alignment = TextAlign.End,
-                onClick = {
-                    if (selectedIndex < tabs.lastIndex) onSelectedIndexChange(selectedIndex + 1)
-                },
-        )
-    }
-}
-
-@Composable
-internal fun RowScope.EdgeSuggestionTabLabel(
-        title: String,
-        color: Color,
-        alignment: TextAlign,
-        onClick: () -> Unit,
-) {
-    Text(
-            text = title,
-            modifier =
-                    Modifier
-                            .weight(1f)
-                            .clickable(onClick = onClick),
-            color = color,
-            style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            textAlign = alignment,
-    )
 }
 
 internal fun fillSuggestionGridApps(

@@ -1,64 +1,39 @@
 package com.tk.quicksearch.app.navigation
 
+import com.tk.quicksearch.shared.ui.components.AppMessages
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
-import android.widget.Toast
 import com.tk.quicksearch.R
-import com.tk.quicksearch.reminders.ReminderEditorRequests
-import com.tk.quicksearch.search.appSettings.AppSettingsDestination
-import com.tk.quicksearch.settings.settingsDetailScreen.NotesNavigationMemory
+import com.tk.quicksearch.search.appSettings.AppSettingsAction
+import com.tk.quicksearch.search.appSettings.AppSettingsTarget
 import com.tk.quicksearch.settings.settingsDetailScreen.SettingsDetailType
 
 private const val QUICK_SEARCH_DEVELOPMENT_URL = "https://github.com/teja2495/quick-search"
 
 internal data class AppSettingsDestinationHandlers(
     val onOpenSettingsDetail: (SettingsDetailType) -> Unit,
-    val onReloadApps: () -> Unit = {},
-    val onReloadContacts: () -> Unit = {},
-    val onReloadFiles: () -> Unit = {},
-    val onSendFeedback: () -> Unit = {},
-    val onRateQuickSearch: () -> Unit = {},
-    val onOpenDevelopmentPage: () -> Unit = {},
-    val onSetDefaultAssistant: () -> Unit = {},
-    val onSetDefaultLauncher: () -> Unit = {},
-    val onAddHomeScreenWidget: () -> Unit = {},
-    val onAddQuickSettingsTile: () -> Unit = {},
+    val onReloadApps: () -> Unit,
+    val onReloadContacts: () -> Unit,
+    val onReloadFiles: () -> Unit,
+    val onSendFeedback: () -> Unit,
+    val onRateQuickSearch: () -> Unit,
+    val onOpenDevelopmentPage: () -> Unit,
+    val onSetDefaultAssistant: () -> Unit,
+    val onSetDefaultLauncher: () -> Unit,
+    val onAddHomeScreenWidget: () -> Unit,
+    val onAddQuickSettingsTile: () -> Unit,
 )
 
 internal fun handleAppSettingsDestination(
-    destination: AppSettingsDestination,
+    destination: AppSettingsTarget.Host,
     handlers: AppSettingsDestinationHandlers,
 ) {
-    destination.toSettingsDetailTypeOrNull()?.let { detailType ->
-        handlers.onOpenSettingsDetail(detailType)
-        return
-    }
-
     when (destination) {
-        AppSettingsDestination.RELOAD_APPS -> handlers.onReloadApps()
-        AppSettingsDestination.RELOAD_CONTACTS -> handlers.onReloadContacts()
-        AppSettingsDestination.RELOAD_FILES -> handlers.onReloadFiles()
-        AppSettingsDestination.SEND_FEEDBACK -> handlers.onSendFeedback()
-        AppSettingsDestination.RATE_QUICK_SEARCH -> handlers.onRateQuickSearch()
-        AppSettingsDestination.DEVELOPMENT -> handlers.onOpenDevelopmentPage()
-        AppSettingsDestination.SET_DEFAULT_ASSISTANT -> handlers.onSetDefaultAssistant()
-        AppSettingsDestination.SET_DEFAULT_LAUNCHER -> handlers.onSetDefaultLauncher()
-        AppSettingsDestination.ADD_HOME_SCREEN_WIDGET -> handlers.onAddHomeScreenWidget()
-        AppSettingsDestination.ADD_QUICK_SETTINGS_TILE -> handlers.onAddQuickSettingsTile()
-        AppSettingsDestination.CREATE_NOTE -> {
-            NotesNavigationMemory.setPendingNoteId(null)
-            handlers.onOpenSettingsDetail(SettingsDetailType.NOTE_EDITOR)
-        }
-        AppSettingsDestination.CREATE_NOTIFICATION_NOTE -> {
-            NotesNavigationMemory.setPendingNoteId(null, pinToNotification = true)
-            handlers.onOpenSettingsDetail(SettingsDetailType.NOTE_EDITOR)
-        }
-        AppSettingsDestination.NOTES_LIST -> handlers.onOpenSettingsDetail(SettingsDetailType.NOTES)
-        AppSettingsDestination.CREATE_REMINDER -> ReminderEditorRequests.openNew()
-        else -> Unit
+        is AppSettingsTarget.Page -> handlers.onOpenSettingsDetail(destination.detailType)
+        is AppSettingsAction -> destination.perform(handlers)
     }
 }
 
@@ -109,10 +84,6 @@ private fun openSystemSettingsFallback(context: Context) {
     try {
         context.startActivity(Intent(Settings.ACTION_SETTINGS))
     } catch (_: Exception) {
-        Toast.makeText(
-            context,
-            context.getString(R.string.settings_unable_to_open_settings),
-            Toast.LENGTH_SHORT,
-        ).show()
+        AppMessages.show(context, context.getString(R.string.settings_unable_to_open_settings))
     }
 }

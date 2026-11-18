@@ -1,7 +1,7 @@
 package com.tk.quicksearch.search.core
+import com.tk.quicksearch.shared.ui.components.AppMessages
 import android.app.Application
 import android.os.Trace
-import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.tk.quicksearch.R
@@ -61,17 +61,13 @@ import com.tk.quicksearch.searchEngines.SearchEngineManager
 import com.tk.quicksearch.searchEngines.SecondarySearchOrchestrator
 import com.tk.quicksearch.searchEngines.AliasHandler
 import com.tk.quicksearch.searchEngines.getId
-import com.tk.quicksearch.shared.featureFlags.FeatureFlags
 import com.tk.quicksearch.shared.util.cachedDefaultHomeAppStatus
 import com.tk.quicksearch.shared.util.isLowRamDevice
 import com.tk.quicksearch.tools.aiTools.CurrencyConverterHandler
 import com.tk.quicksearch.tools.aiTools.DictionaryHandler
 import com.tk.quicksearch.tools.aiTools.WorldClockHandler
-import com.tk.quicksearch.tools.calculator.CalculatorHandler
-import com.tk.quicksearch.tools.dateCalculator.DateCalculatorHandler
 import com.tk.quicksearch.tools.aiSearch.AiSearchHandler
 import com.tk.quicksearch.tools.aiSearch.QuickSearchHelp
-import com.tk.quicksearch.tools.unitConverter.UnitConverterHandler
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
@@ -122,7 +118,7 @@ class SearchViewModel(
     private val initialConfigState = initialState.configState
     private val repository by lazy { AppsRepository(appContext) }
     private val appShortcutRepository by lazy {
-        AppShortcutRepository(appContext)
+        AppShortcutRepository.getInstance(appContext)
     }
     private val calendarRepository by lazy { CalendarRepository(appContext) }
     private val contactRepository by lazy { ContactRepository(appContext) }
@@ -230,8 +226,6 @@ class SearchViewModel(
         set(value) {
             runtimeState.startupConfig = value
         }
-    private val isAppShortcutsLoadInFlight: AtomicBoolean
-        get() = runtimeState.isAppShortcutsLoadInFlight
     private val hasStartedStartupPhases: AtomicBoolean
         get() = runtimeState.hasStartedStartupPhases
     private var resumeNeedsStaticDataRefresh: Boolean
@@ -275,7 +269,7 @@ class SearchViewModel(
     private fun updateFeatureState(updater: (SearchFeatureState) -> SearchFeatureState) {
         uiStateMutationLock.withLock { _featureState.update(updater) }
     }
-    private fun updateConfigState(updater: (SearchUiConfigState) -> SearchUiConfigState) {
+    internal fun updateConfigState(updater: (SearchUiConfigState) -> SearchUiConfigState) {
         uiStateMutationLock.withLock { _configState.update(updater) }
     }
     private fun updateUiState(updater: (SearchUiState) -> SearchUiState) {
@@ -310,14 +304,14 @@ class SearchViewModel(
         }
     }
     private val handlers: SearchHandlerContainer by lazy { SearchHandlerContainer(application = application, appContext = appContext, userPreferences = userPreferences, scope = viewModelScope, repository = repository, contactRepository = contactRepository, fileRepository = fileRepository, calendarRepository = calendarRepository, notesRepository = notesRepository, appShortcutRepository = appShortcutRepository, settingsShortcutRepository = settingsShortcutRepository, appSettingsRepository = appSettingsRepository, permissionManager = permissionManager, searchOperations = searchOperations, startupDispatcher = startupDispatcher, updateUiState = this::updateUiState, updateConfigState = this::updateConfigState, refreshSecondarySearches = this::refreshSecondarySearches, refreshAppShortcutsState = this::refreshAppShortcutsState, refreshAppSuggestions = this::refreshAppSuggestions, refreshDerivedState = this::refreshDerivedState, showToast = this::showToast, currentStateProvider = { uiState.value }, isLowRamDevice = isLowRamDevice(appContext)) }
-    private val startupCoordinator by lazy { SearchStartupCoordinator(scope = viewModelScope, hasStartedStartupPhases = hasStartedStartupPhases, updateStartupPhase = { phase -> updateConfigState { it.copy(startupPhase = phase) } }, shouldReserveKeyboardStartupWindow = { openKeyboardOnLaunch }, loadCacheAndMinimalPrefsBlock = this::loadCacheAndMinimalPrefs, loadRemainingStartupPreferencesBlock = this::loadRemainingStartupPreferences, launchDeferredInitializationBlock = this::launchDeferredInitialization) }
-    private val toolCoordinator by lazy { SearchToolCoordinator(appContext = appContext, scope = viewModelScope, workerDispatcher = Dispatchers.Default, userPreferences = userPreferences, calculatorHandler = handlers.calculatorHandler, unitConverterHandler = handlers.unitConverterHandler, dateCalculatorHandler = handlers.dateCalculatorHandler, colorVisualizerHandler = handlers.colorVisualizerHandler, currencyConverterHandler = handlers.currencyConverterHandler, worldClockHandler = handlers.worldClockHandler, dictionaryHandler = handlers.dictionaryHandler, weatherHandler = handlers.weatherHandler, toolAliasStateProvider = { ToolAliasState(lockedToolMode = lockedToolMode, lockedCurrencyConverterAlias = lockedCurrencyConverterAlias, lockedWorldClockAlias = lockedWorldClockAlias, lockedDictionaryAlias = lockedDictionaryAlias, lockedWeatherAlias = lockedWeatherAlias, lockedCustomToolId = lockedCustomToolId) }, hasApiKeyProvider = { _featureState.value.hasApiKey }, currentQueryProvider = { _resultsState.value.query }, clearInformationCardsExcept = this::clearInformationCardsExcept, updateResultsState = this::updateResultsState, showToast = this::showToast) }
+    private val startupCoordinator by lazy { SearchStartupCoordinator(scope = viewModelScope, hasStartedStartupPhases = hasStartedStartupPhases, updateStartupPhase = { phase -> updateConfigState { it.copy(startupPhase = phase) } }, shouldReserveKeyboardStartupWindow = { openKeyboardOnLaunch }, loadCacheAndMinimalPrefsBlock = this::loadCacheAndMinimalPrefs, loadRemainingStartupPreferencesBlock = this::loadRemainingStartupPreferences, launchDeferredInitializationBlock = this::launchDeferredInitialization, onKeyboardWindowEndBlock = { startupLifecycleDelegate.publishPendingSnapshotSuggestions() }) }
+    private val toolCoordinator by lazy { SearchToolCoordinator(appContext = appContext, scope = viewModelScope, workerDispatcher = Dispatchers.Default, userPreferences = userPreferences, currencyConverterHandler = handlers.currencyConverterHandler, worldClockHandler = handlers.worldClockHandler, dictionaryHandler = handlers.dictionaryHandler, weatherHandler = handlers.weatherHandler, toolAliasStateProvider = { ToolAliasState(lockedToolMode = lockedToolMode, lockedCurrencyConverterAlias = lockedCurrencyConverterAlias, lockedWorldClockAlias = lockedWorldClockAlias, lockedDictionaryAlias = lockedDictionaryAlias, lockedWeatherAlias = lockedWeatherAlias, lockedCustomToolId = lockedCustomToolId) }, hasApiKeyProvider = { _featureState.value.hasApiKey }, currentResultsProvider = { _resultsState.value }, currentQueryProvider = { _resultsState.value.query }, clearInformationCardsExcept = this::clearInformationCardsExcept, updateResultsState = this::updateResultsState, showToast = this::showToast) }
     private val queryCoordinator by lazy { SearchQueryCoordinator(scope = viewModelScope, workerDispatcher = Dispatchers.Default, handlers = handlers, toolCoordinator = toolCoordinator, userPreferences = userPreferences, appSearchDebounceMs = APP_SEARCH_DEBOUNCE_MS, aliasStateProvider = { SearchQueryAliasState(lockedShortcutTarget = lockedShortcutTarget, lockedAliasSearchSection = lockedAliasSearchSection, lockedToolMode = lockedToolMode, lockedCurrencyConverterAlias = lockedCurrencyConverterAlias, lockedWorldClockAlias = lockedWorldClockAlias, lockedDictionaryAlias = lockedDictionaryAlias, lockedWeatherAlias = lockedWeatherAlias, lockedCustomToolId = lockedCustomToolId, lockedTaskerIntentId = lockedTaskerIntentId) }, updateAliasState = { state -> lockedShortcutTarget = state.lockedShortcutTarget; lockedAliasSearchSection = state.lockedAliasSearchSection; lockedToolMode = state.lockedToolMode; lockedCurrencyConverterAlias = state.lockedCurrencyConverterAlias; lockedWorldClockAlias = state.lockedWorldClockAlias; lockedDictionaryAlias = state.lockedDictionaryAlias; lockedWeatherAlias = state.lockedWeatherAlias; lockedCustomToolId = state.lockedCustomToolId; lockedTaskerIntentId = state.lockedTaskerIntentId }, currentResultsStateProvider = { _resultsState.value }, updateUiState = this::updateUiState, updateResultsState = this::updateResultsState, clearInformationCardsExcept = this::clearInformationCardsExcept, getSearchableAppsSnapshot = this::getSearchableAppsSnapshot, getGridItemCount = this::getGridItemCount, loadAppShortcuts = this::loadAppShortcuts, refreshRecentItems = this::refreshRecentItems, refreshAliasRecentItems = this::refreshAliasRecentItems) }
     internal val visibilityStateResolver by lazy { SearchVisibilityStateResolver() }
     internal val appSuggestionSelector by lazy { AppSuggestionSelector(repository, userPreferences) }
     private val historyDelegate by lazy { SearchHistoryDelegate(scope = viewModelScope, userPreferences = userPreferences, contactRepository = contactRepository, fileRepository = fileRepository, settingsSearchHandler = handlers.settingsSearchHandler, appShortcutSearchHandler = handlers.appShortcutSearchHandler, appSettingsSearchHandler = handlers.appSettingsSearchHandler, calendarRepository = calendarRepository, notesRepository = notesRepository, reminderRepository = ReminderRepository(appContext), featureStateProvider = { _featureState.value }, configStateProvider = { _configState.value }, currentQueryProvider = { uiState.value.query }, updateResultsState = this::updateResultsState, updateUiState = this::updateUiState) }
     private val contactActionsDelegate by lazy { SearchContactActionsDelegate(appContext = appContext, scope = viewModelScope, userPreferences = userPreferences, contactPreferences = contactPreferences, contactRepository = contactRepository, contactActionHandler = handlers.contactActionHandler, permissionStateProvider = { _permissionState.value }, aiSearchActiveProvider = { isAiSearchActive() }, currentQueryProvider = { uiState.value.query }, updateResultsState = this::updateResultsState, updateConfigState = this::updateConfigState, showToastRes = this::showToast, setDirectDialEnabled = this::setDirectDialEnabled, handleOptionalPermissionChange = this::handleOptionalPermissionChange) }
-    private val staticDataDelegate by lazy { SearchStaticDataDelegate(scope = viewModelScope, userPreferences = userPreferences, repository = repository, appShortcutRepository = appShortcutRepository, contactRepository = contactRepository, fileRepository = fileRepository, calendarRepository = calendarRepository, handlersProvider = { handlers }, resultsStateProvider = { _resultsState.value }, isAppShortcutsLoadInFlight = isAppShortcutsLoadInFlight, hasCalendarPermission = this::hasCalendarPermission, updateUiState = this::updateUiState, updateResultsState = this::updateResultsState, updatePermissionState = this::updatePermissionState, showToastRes = this::showToast, refreshRecentItems = this::refreshRecentItems) }
+    private val staticDataDelegate by lazy { SearchStaticDataDelegate(scope = viewModelScope, userPreferences = userPreferences, repository = repository, appShortcutRepository = appShortcutRepository, contactRepository = contactRepository, fileRepository = fileRepository, calendarRepository = calendarRepository, handlersProvider = { handlers }, resultsStateProvider = { _resultsState.value }, hasCalendarPermission = this::hasCalendarPermission, updateUiState = this::updateUiState, updateResultsState = this::updateResultsState, updatePermissionState = this::updatePermissionState, showToastRes = this::showToast, refreshRecentItems = this::refreshRecentItems) }
     private val legacyPreferenceState =
         SearchViewModelLegacyPreferenceState(clearQueryOnLaunch = initialConfigState.clearQueryOnLaunch)
     private val preferencesStateAccess =
@@ -340,7 +334,7 @@ class SearchViewModel(
             directDialEnabledProvider = { legacyPreferenceState.directDialEnabled },
             setDirectDialEnabled = { legacyPreferenceState.directDialEnabled = it },
         )
-    private val startupLifecycleDelegate by lazy { SearchStartupLifecycleDelegate(scope = viewModelScope, applicationProvider = { getApplication() }, repository = repository, userPreferences = userPreferences, handlersProvider = { handlers }, resultsStateProvider = { _resultsState.value }, permissionStateProvider = { _permissionState.value }, configStateProvider = { _configState.value }, stateAccess = startupLifecycleStateAccess, getStartupConfig = { startupConfig }, setStartupConfig = { startupConfig = it }, setPrefCache = { prefCache = it }, readStartupPreferencesSnapshot = this::startupPreferencesSnapshot, readLoadedPreferencesSnapshot = this::loadedPreferencesSnapshot, updatePermissionState = this::updatePermissionState, updateFeatureState = this::updateFeatureState, updateResultsState = this::updateResultsState, updateUiState = this::updateUiState, updateConfigState = this::updateConfigState, applyVisibilityStates = this::applyVisibilityStates, hasContactPermission = this::hasContactPermission, hasFilePermission = this::hasFilePermission, hasCalendarPermission = this::hasCalendarPermission, clearQuery = this::clearQuery, refreshApps = { refreshApps() }, refreshAppSuggestions = { refreshAppSuggestions() }, warmSearchableAppsSnapshot = this::warmSearchableAppsSnapshot, refreshSettingsState = { refreshSettingsState() }, refreshAppShortcutsState = { refreshAppShortcutsState() }, refreshDerivedState = this::refreshDerivedState, refreshPostStartupState = this::refreshPostStartupState, saveStartupSurfaceSnapshotAsync = this::saveStartupSurfaceSnapshotAsync, applyPreferenceCacheToLegacyVars = this::applyPreferenceCacheToLegacyVars, applyLauncherIconSelection = this::applyLauncherIconSelection, refreshRecentItems = this::refreshRecentItems, awaitRecentItemsReady = historyDelegate::awaitRecentItemsReady, getGridItemCount = this::getGridItemCount, selectSuggestedApps = this::extractSuggestedApps, shouldShowSearchBarWelcome = this::shouldShowSearchBarWelcome, loadApps = { staticDataDelegate.loadAppsForStartup() }, loadSettingsShortcuts = this::loadSettingsShortcuts, loadAppSettings = { handlers.appSettingsSearchHandler.loadSettings() }, loadAppShortcuts = { staticDataDelegate.loadAppShortcutsForStartup() }, startupDispatcher = startupDispatcher, loadPinnedAndExcludedCalendarEvents = this::loadPinnedAndExcludedCalendarEvents, setDirectDialEnabled = this::setDirectDialEnabled, isQueryActive = { _resultsState.value.query.isNotBlank() }) }
+    private val startupLifecycleDelegate by lazy { SearchStartupLifecycleDelegate(scope = viewModelScope, applicationProvider = { getApplication() }, repository = repository, userPreferences = userPreferences, handlersProvider = { handlers }, resultsStateProvider = { _resultsState.value }, permissionStateProvider = { _permissionState.value }, configStateProvider = { _configState.value }, stateAccess = startupLifecycleStateAccess, getStartupConfig = { startupConfig }, setStartupConfig = { startupConfig = it }, setPrefCache = { prefCache = it }, readStartupPreferencesSnapshot = this::startupPreferencesSnapshot, readLoadedPreferencesSnapshot = this::loadedPreferencesSnapshot, updatePermissionState = this::updatePermissionState, updateFeatureState = this::updateFeatureState, updateResultsState = this::updateResultsState, updateUiState = this::updateUiState, updateConfigState = this::updateConfigState, applyVisibilityStates = this::applyVisibilityStates, hasContactPermission = this::hasContactPermission, hasFilePermission = this::hasFilePermission, hasCalendarPermission = this::hasCalendarPermission, clearQuery = this::clearQuery, refreshApps = { refreshApps() }, refreshAppSuggestions = { refreshAppSuggestions() }, warmSearchableAppsSnapshot = this::warmSearchableAppsSnapshot, refreshSettingsState = { refreshSettingsState() }, refreshAppShortcutsState = { refreshAppShortcutsState() }, refreshDerivedState = this::refreshDerivedState, refreshPostStartupState = this::refreshPostStartupState, saveStartupSurfaceSnapshotAsync = this::saveStartupSurfaceSnapshotAsync, applyPreferenceCacheToLegacyVars = this::applyPreferenceCacheToLegacyVars, applyLauncherIconSelection = this::applyLauncherIconSelection, refreshRecentItems = this::refreshRecentItems, awaitRecentItemsReady = historyDelegate::awaitRecentItemsReady, getGridItemCount = this::getGridItemCount, selectSuggestedApps = this::extractSuggestedApps, shouldShowSearchBarWelcome = this::shouldShowSearchBarWelcome, loadApps = { staticDataDelegate.loadAppsForStartup() }, loadSettingsShortcuts = this::loadSettingsShortcuts, loadAppSettings = { handlers.appSettingsSearchHandler.loadSettings() }, loadAppShortcuts = { staticDataDelegate.loadAppShortcutsForStartup() }, startupDispatcher = startupDispatcher, loadPinnedAndExcludedCalendarEvents = this::loadPinnedAndExcludedCalendarEvents, setDirectDialEnabled = this::setDirectDialEnabled, isQueryActive = { _resultsState.value.query.isNotBlank() }, rerunCurrentQuery = { queryCoordinator.rerunCurrentQuery() }, startupSnapshotProvider = { initialState.startupSnapshot }) }
     internal val derivedStateDelegate: SearchDerivedStateDelegate by lazy { SearchDerivedStateDelegate(scope = viewModelScope, appContext = appContext, applicationProvider = { getApplication() }, startupSurfaceStore = startupSurfaceStore, userPreferences = userPreferences, handlersProvider = { handlers }, appSuggestionSelector = appSuggestionSelector, instantStartupSurfaceEnabled = instantStartupSurfaceEnabled, cachedAllSearchableAppsProvider = { cachedAllSearchableApps }, setCachedAllSearchableApps = { cachedAllSearchableApps = it }, resultsStateProvider = { _resultsState.value }, permissionStateProvider = { _permissionState.value }, featureStateProvider = { _featureState.value }, configStateProvider = { _configState.value }, updateResultsState = this::updateResultsState, updatePermissionState = this::updatePermissionState, updateConfigState = this::updateConfigState) }
     private val specialFlowsDelegate by lazy { SearchViewModelSpecialFlowsDelegate(scope = viewModelScope, userPreferences = userPreferences, aiSearchStateFlow = handlers.aiSearchHandler.aiSearchState, clearAiSearchState = { handlers.aiSearchHandler.clearAiSearchState() }, cancelInactiveTools = toolCoordinator::cancelInactive, shouldRecordPendingAiSearchQueryInHistory = { shouldRecordPendingAiSearchQueryInHistory }, setShouldRecordPendingAiSearchQueryInHistory = { shouldRecordPendingAiSearchQueryInHistory = it }, updateResultsState = this::updateResultsState, updateConfigState = this::updateConfigState, updateFeatureState = this::updateFeatureState, resultsStateProvider = { _resultsState.value }) }
     private val taskerIntentDelegate by lazy { SearchTaskerIntentDelegate(scope = viewModelScope, appContext = appContext, userPreferences = userPreferences, aliasHandler = { handlers.aliasHandler }, aiSearchHandler = { handlers.aiSearchHandler }, featureStateProvider = { _featureState.value }, currentQueryProvider = { _resultsState.value.query }, lockedTaskerIntentIdProvider = { lockedTaskerIntentId }, updateFeatureState = this::updateFeatureState, clearQuery = this::clearQuery, showToast = this::showToast) }
@@ -353,8 +347,6 @@ class SearchViewModel(
     private var enabledFileTypes by legacyPreferenceState::enabledFileTypes
     @set:JvmName("setShowFoldersLegacy")
     private var showFolders by legacyPreferenceState::showFolders
-    @set:JvmName("setFilePreviewsEnabledLegacy")
-    private var filePreviewsEnabled by legacyPreferenceState::filePreviewsEnabled
     @set:JvmName("setShowSystemFilesLegacy")
     private var showSystemFiles by legacyPreferenceState::showSystemFiles
     @set:JvmName("setFolderWhitelistPatternsLegacy")
@@ -406,6 +398,8 @@ class SearchViewModel(
     private var deviceThemeEnabled by legacyPreferenceState::deviceThemeEnabled
     @set:JvmName("setAmoledThemeEnabledLegacy")
     private var amoledThemeEnabled by legacyPreferenceState::amoledThemeEnabled
+    @set:JvmName("setSearchChromeBlurEnabledLegacy")
+    private var searchChromeBlurEnabled by legacyPreferenceState::searchChromeBlurEnabled
     @set:JvmName("setMaskUnsupportedIconPackIconsLegacy")
     private var maskUnsupportedIconPackIcons by legacyPreferenceState::maskUnsupportedIconPackIcons
     @set:JvmName("setWallpaperBackgroundAlphaLegacy")
@@ -451,17 +445,17 @@ class SearchViewModel(
     private fun applyPreferenceCacheToLegacyVars() {
         legacyPreferenceState.applyPreferenceCacheToLegacyVars(prefCache)
     }
-    private fun startupPreferencesSnapshot() = SearchStartupPreferencesSnapshot(oneHandedMode = oneHandedMode, bottomSearchBarEnabled = bottomSearchBarEnabled, unifiedPinnedItemsEnabled = unifiedPinnedItemsEnabled, topResultIndicatorEnabled = topResultIndicatorEnabled, openTopResultUsingKeyboardEnabled = openTopResultUsingKeyboardEnabled, accentColorMode = accentColorMode, customAccentColorArgb = customAccentColorArgb, openKeyboardOnLaunch = openKeyboardOnLaunch, clearQueryOnLaunch = clearQueryOnLaunch, autoCloseOverlay = autoCloseOverlay, backgroundSource = backgroundSource, wallpaperBackgroundAlpha = wallpaperBackgroundAlpha, wallpaperBlurRadius = wallpaperBlurRadius, appTheme = appTheme, overlayThemeIntensity = overlayThemeIntensity, useSystemFont = useSystemFont, appIconSizeStep = appIconSizeStep, appIconShape = appIconShape, launcherAppIcon = launcherAppIcon, themedIconsEnabled = themedIconsEnabled, deviceThemeEnabled = deviceThemeEnabled, amoledThemeEnabled = amoledThemeEnabled, maskUnsupportedIconPackIcons = maskUnsupportedIconPackIcons, customImageUri = customImageUri)
-    private fun loadedPreferencesSnapshot() = SearchLoadedPreferencesSnapshot(enabledFileTypes = enabledFileTypes, oneHandedMode = oneHandedMode, bottomSearchBarEnabled = bottomSearchBarEnabled, unifiedPinnedItemsEnabled = unifiedPinnedItemsEnabled, searchHintsEnabled = userPreferences.isSearchHintsEnabled(), cardLayoutEnabled = userPreferences.isCardLayoutEnabled(), settingsIconEnabled = userPreferences.isSettingsIconEnabled(), topResultIndicatorEnabled = topResultIndicatorEnabled, openTopResultUsingKeyboardEnabled = openTopResultUsingKeyboardEnabled, openKeyboardOnLaunch = openKeyboardOnLaunch, clearQueryOnLaunch = clearQueryOnLaunch, autoCloseOverlay = autoCloseOverlay, overlayModeEnabled = overlayModeEnabled, appSuggestionsEnabled = appSuggestionsEnabled, showAllAppsButton = userPreferences.shouldShowAllAppsButton(), includeNonLaunchableAppsInSearch = userPreferences.shouldIncludeNonLaunchableAppsInSearch(), selectedAppSuggestionTab = userPreferences.getSelectedAppSuggestionTab(), enabledAppSuggestionTabs = userPreferences.getEnabledAppSuggestionTabs(), showAppLabels = showAppLabels, phoneAppGridColumns = phoneAppGridColumns, appIconSizeStep = appIconSizeStep, appIconShape = appIconShape, launcherAppIcon = launcherAppIcon, themedIconsEnabled = themedIconsEnabled, deviceThemeEnabled = deviceThemeEnabled, amoledThemeEnabled = amoledThemeEnabled, maskUnsupportedIconPackIcons = maskUnsupportedIconPackIcons, backgroundSource = backgroundSource, wallpaperBackgroundAlpha = wallpaperBackgroundAlpha, wallpaperBlurRadius = wallpaperBlurRadius, appTheme = appTheme, overlayThemeIntensity = overlayThemeIntensity, fontScaleMultiplier = fontScaleMultiplier, useSystemFont = useSystemFont, customImageUri = customImageUri, showFolders = showFolders, filePreviewsEnabled = filePreviewsEnabled, showSystemFiles = showSystemFiles, folderWhitelistPatterns = folderWhitelistPatterns, folderBlacklistPatterns = folderBlacklistPatterns, excludedFileExtensions = excludedFileExtensions, amazonDomain = amazonDomain, directDialEnabled = directDialEnabled, assistantLaunchVoiceModeEnabled = assistantLaunchVoiceModeEnabled)
+    private fun startupPreferencesSnapshot() = SearchStartupPreferencesSnapshot(oneHandedMode = oneHandedMode, bottomSearchBarEnabled = bottomSearchBarEnabled, unifiedPinnedItemsEnabled = unifiedPinnedItemsEnabled, topResultIndicatorEnabled = topResultIndicatorEnabled, openTopResultUsingKeyboardEnabled = openTopResultUsingKeyboardEnabled, accentColorMode = accentColorMode, customAccentColorArgb = customAccentColorArgb, openKeyboardOnLaunch = openKeyboardOnLaunch, clearQueryOnLaunch = clearQueryOnLaunch, autoCloseOverlay = autoCloseOverlay, backgroundSource = backgroundSource, wallpaperBackgroundAlpha = wallpaperBackgroundAlpha, wallpaperBlurRadius = wallpaperBlurRadius, appTheme = appTheme, overlayThemeIntensity = overlayThemeIntensity, useSystemFont = useSystemFont, appIconSizeStep = appIconSizeStep, appIconShape = appIconShape, launcherAppIcon = launcherAppIcon, themedIconsEnabled = themedIconsEnabled, deviceThemeEnabled = deviceThemeEnabled, amoledThemeEnabled = amoledThemeEnabled, searchChromeBlurEnabled = searchChromeBlurEnabled, maskUnsupportedIconPackIcons = maskUnsupportedIconPackIcons, customImageUri = customImageUri)
+    private fun loadedPreferencesSnapshot() = SearchLoadedPreferencesSnapshot(enabledFileTypes = enabledFileTypes, oneHandedMode = oneHandedMode, bottomSearchBarEnabled = bottomSearchBarEnabled, unifiedPinnedItemsEnabled = unifiedPinnedItemsEnabled, searchHintsEnabled = userPreferences.isSearchHintsEnabled(), cardLayoutEnabled = userPreferences.isCardLayoutEnabled(), settingsIconEnabled = userPreferences.isSettingsIconEnabled(), topResultIndicatorEnabled = topResultIndicatorEnabled, openTopResultUsingKeyboardEnabled = openTopResultUsingKeyboardEnabled, openKeyboardOnLaunch = openKeyboardOnLaunch, clearQueryOnLaunch = clearQueryOnLaunch, autoCloseOverlay = autoCloseOverlay, overlayModeEnabled = overlayModeEnabled, appSuggestionsEnabled = appSuggestionsEnabled, showAllAppsButton = userPreferences.shouldShowAllAppsButton(), includeNonLaunchableAppsInSearch = userPreferences.shouldIncludeNonLaunchableAppsInSearch(), selectedAppSuggestionTab = userPreferences.getSelectedAppSuggestionTab(), enabledAppSuggestionTabs = userPreferences.getEnabledAppSuggestionTabs(), showAppLabels = showAppLabels, phoneAppGridColumns = phoneAppGridColumns, appIconSizeStep = appIconSizeStep, appIconShape = appIconShape, launcherAppIcon = launcherAppIcon, themedIconsEnabled = themedIconsEnabled, deviceThemeEnabled = deviceThemeEnabled, amoledThemeEnabled = amoledThemeEnabled, searchChromeBlurEnabled = searchChromeBlurEnabled, maskUnsupportedIconPackIcons = maskUnsupportedIconPackIcons, backgroundSource = backgroundSource, wallpaperBackgroundAlpha = wallpaperBackgroundAlpha, wallpaperBlurRadius = wallpaperBlurRadius, appTheme = appTheme, overlayThemeIntensity = overlayThemeIntensity, fontScaleMultiplier = fontScaleMultiplier, useSystemFont = useSystemFont, customImageUri = customImageUri, showFolders = showFolders, showSystemFiles = showSystemFiles, folderWhitelistPatterns = folderWhitelistPatterns, folderBlacklistPatterns = folderBlacklistPatterns, excludedFileExtensions = excludedFileExtensions, amazonDomain = amazonDomain, directDialEnabled = directDialEnabled, assistantLaunchVoiceModeEnabled = assistantLaunchVoiceModeEnabled)
     private fun onNavigationTriggered() {
         pendingNavigationClear = true
         _externalNavigationEvent.tryEmit(Unit)
     }
     private fun showToast(messageResId: Int) {
-        Toast.makeText(getApplication(), messageResId, Toast.LENGTH_SHORT).show()
+        AppMessages.show(getApplication(), messageResId)
     }
     private fun showToast(message: String) {
-        Toast.makeText(getApplication(), message, Toast.LENGTH_SHORT).show()
+        AppMessages.show(getApplication(), message)
     }
     private fun hasContactPermission(): Boolean = contactRepository.hasPermission()
     private fun hasFilePermission(): Boolean = fileRepository.hasPermission()
@@ -510,7 +504,6 @@ class SearchViewModel(
         )
     }
     init {
-        FeatureFlags.initialize(appContext)
         // Initialize services after all handlers are available
         initializeServices()
         setupAiSearchStateListener()
@@ -524,7 +517,7 @@ class SearchViewModel(
         viewModelScope.launch {
             ReminderRepository.changes.drop(1).collect {
                 handlers.pinningHandler.refreshPinnedReminders()
-                refreshSecondarySearches()
+                handlers.secondarySearchOrchestrator.refreshSections(_resultsState.value.query, setOf(SearchSection.REMINDERS, SearchSection.NOTED))
                 // The reminders shortcut's list with no query reloads on its own path.
                 if (_resultsState.value.query.isBlank() && lockedAliasSearchSection == SearchSection.REMINDERS) {
                     refreshAliasRecentItems(SearchSection.REMINDERS)
@@ -604,7 +597,7 @@ class SearchViewModel(
     private fun loadPinnedAndExcludedCalendarEvents() =
         staticDataDelegate.loadPinnedAndExcludedCalendarEvents()
     fun refreshCalendarEvents() {
-        loadPinnedAndExcludedCalendarEvents()
+        viewModelScope.launch(Dispatchers.IO) { loadPinnedAndExcludedCalendarEvents() }
     }
     fun onQueryChange(newQuery: String) {
         inMemoryRetainedQuery = newQuery
@@ -768,15 +761,6 @@ class SearchViewModel(
         }
         updateFeatureState { it.copy(showUpdateCard = false) }
     }
-    fun resetUsagePermissionBannerSessionDismissed() {
-        specialFlowsDelegate.resetUsagePermissionBannerSessionDismissed()
-    }
-    fun incrementUsagePermissionBannerDismissCount() {
-        specialFlowsDelegate.incrementUsagePermissionBannerDismissCount()
-    }
-    fun setUsagePermissionBannerSessionDismissed(dismissed: Boolean) {
-        specialFlowsDelegate.setUsagePermissionBannerSessionDismissed(dismissed)
-    }
     companion object {
         @Volatile private var inMemoryRetainedQuery: String = ""
         // Keep a short debounce to collapse very fast key bursts without making the primary app
@@ -784,6 +768,7 @@ class SearchViewModel(
         private const val APP_SEARCH_DEBOUNCE_MS = 50L
     }
     fun handleOptionalPermissionChange() = startupLifecycleDelegate.handleOptionalPermissionChange()
+    internal fun refreshPermissionSnapshotForVisiblePage() = startupLifecycleDelegate.refreshPermissionSnapshotForVisiblePage()
     fun refreshPermissionSnapshotAtLaunch() = startupLifecycleDelegate.refreshPermissionSnapshotAtLaunch()
     override fun onCleared() {
         queryCoordinator.cancel()

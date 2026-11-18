@@ -67,6 +67,12 @@ class UserAppPreferences(context: Context) : UserAppPreferencesFeatures(context)
     fun setEnabledAppSuggestionTabs(tabs: Set<AppSuggestionTabType>) =
             uiPreferences.setEnabledAppSuggestionTabs(tabs)
 
+    fun isAppearanceCardExpanded(cardKey: String): Boolean =
+            uiPreferences.isAppearanceCardExpanded(cardKey)
+
+    fun setAppearanceCardExpanded(cardKey: String, expanded: Boolean) =
+            uiPreferences.setAppearanceCardExpanded(cardKey, expanded)
+
     fun shouldShowAppLabels(): Boolean = uiPreferences.shouldShowAppLabels()
 
     fun setShowAppLabels(show: Boolean) = uiPreferences.setShowAppLabels(show)
@@ -105,25 +111,9 @@ class UserAppPreferences(context: Context) : UserAppPreferencesFeatures(context)
     // Calculator Preferences
     // ============================================================================
 
-    fun isCalculatorEnabled(): Boolean = uiPreferences.isCalculatorEnabled()
-
-    fun setCalculatorEnabled(enabled: Boolean) = uiPreferences.setCalculatorEnabled(enabled)
-
-    fun isUnitConverterEnabled(): Boolean = uiPreferences.isUnitConverterEnabled()
-
-    fun setUnitConverterEnabled(enabled: Boolean) = uiPreferences.setUnitConverterEnabled(enabled)
-
-    fun isDateCalculatorEnabled(): Boolean = uiPreferences.isDateCalculatorEnabled()
-
-    fun setDateCalculatorEnabled(enabled: Boolean) = uiPreferences.setDateCalculatorEnabled(enabled)
-
     fun isCurrencyConverterEnabled(): Boolean = uiPreferences.isCurrencyConverterEnabled()
 
     fun setCurrencyConverterEnabled(enabled: Boolean) = uiPreferences.setCurrencyConverterEnabled(enabled)
-
-    fun isColorVisualizerEnabled(): Boolean = uiPreferences.isColorVisualizerEnabled()
-
-    fun setColorVisualizerEnabled(enabled: Boolean) = uiPreferences.setColorVisualizerEnabled(enabled)
 
     fun isWorldClockEnabled(): Boolean = uiPreferences.isWorldClockEnabled()
 
@@ -241,9 +231,6 @@ class UserAppPreferences(context: Context) : UserAppPreferencesFeatures(context)
             }
     fun setWeatherProviderId(providerId: AiSearchLlmProviderId) =
         weatherPreferences.setProviderId(providerId)
-    fun isWeatherGroundingEnabled(): Boolean = true
-    fun setWeatherGroundingEnabled(enabled: Boolean) =
-        weatherPreferences.setGroundingEnabled(true)
     fun isWeatherThinkingEnabled(): Boolean =
         weatherPreferences.getThinkingOverride() ?: isLlmThinkingEnabled(getWeatherProviderId())
     fun getWeatherThinkingOverride(): Boolean? = weatherPreferences.getThinkingOverride()
@@ -279,6 +266,9 @@ class UserAppPreferences(context: Context) : UserAppPreferencesFeatures(context)
 
     fun getRecentResultOpens(): List<com.tk.quicksearch.search.searchHistory.RecentSearchEntry> =
             recentResultOpensPreferences.getRecentResultOpens()
+
+    fun getRecentResultRecencyIndex(): com.tk.quicksearch.search.utils.RecentResultRankingUtils.RecencyIndex =
+        recentResultOpensPreferences.getRecencyIndex()
 
     fun getRecentResultOpenCounts(): Map<String, Int> =
         recentResultOpensPreferences.getRecentResultOpenCounts()
@@ -347,40 +337,4 @@ class UserAppPreferences(context: Context) : UserAppPreferencesFeatures(context)
 
     // Notch gestures (run system-wide by the accessibility service)
     // ============================================================================
-
-    fun getNotchSingleTapAction(): HomeSwipeGestureAction = gesturesPreferences.getNotchSingleTapAction()
-
-    fun setNotchSingleTapAction(action: HomeSwipeGestureAction) = gesturesPreferences.setNotchSingleTapAction(action)
-
-    fun getNotchSingleTapCustomAction(): String? = gesturesPreferences.getNotchSingleTapCustomAction()
-
-    fun setNotchSingleTapCustomAction(actionJson: String?) = gesturesPreferences.setNotchSingleTapCustomAction(actionJson)
-
-    fun getNotchSingleTapAliasTarget(): String? = gesturesPreferences.getNotchSingleTapAliasTarget()
-
-    fun setNotchSingleTapAliasTarget(targetId: String?) = gesturesPreferences.setNotchSingleTapAliasTarget(targetId)
-
-    fun getNotchDoubleTapAction(): HomeSwipeGestureAction = gesturesPreferences.getNotchDoubleTapAction()
-
-    fun setNotchDoubleTapAction(action: HomeSwipeGestureAction) = gesturesPreferences.setNotchDoubleTapAction(action)
-
-    fun getNotchDoubleTapCustomAction(): String? = gesturesPreferences.getNotchDoubleTapCustomAction()
-
-    fun setNotchDoubleTapCustomAction(actionJson: String?) = gesturesPreferences.setNotchDoubleTapCustomAction(actionJson)
-
-    fun getNotchDoubleTapAliasTarget(): String? = gesturesPreferences.getNotchDoubleTapAliasTarget()
-
-    fun setNotchDoubleTapAliasTarget(targetId: String?) = gesturesPreferences.setNotchDoubleTapAliasTarget(targetId)
-
-    fun getNotchLongPressAction(): HomeSwipeGestureAction = gesturesPreferences.getNotchLongPressAction()
-
-    fun setNotchLongPressAction(action: HomeSwipeGestureAction) = gesturesPreferences.setNotchLongPressAction(action)
-
-    fun getNotchLongPressCustomAction(): String? = gesturesPreferences.getNotchLongPressCustomAction()
-
-    fun setNotchLongPressCustomAction(actionJson: String?) = gesturesPreferences.setNotchLongPressCustomAction(actionJson)
-
-    fun getNotchLongPressAliasTarget(): String? = gesturesPreferences.getNotchLongPressAliasTarget()
-
-    fun setNotchLongPressAliasTarget(targetId: String?) = gesturesPreferences.setNotchLongPressAliasTarget(targetId)
 }

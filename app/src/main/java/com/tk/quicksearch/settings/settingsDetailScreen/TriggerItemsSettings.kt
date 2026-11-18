@@ -1,18 +1,21 @@
 package com.tk.quicksearch.settings.settingsDetailScreen
 
+import com.tk.quicksearch.shared.ui.components.TonalIconBadgeContainer
+import com.tk.quicksearch.shared.ui.theme.AppShapes
 import android.provider.ContactsContract
 import android.provider.OpenableColumns
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,14 +25,11 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.apps.rememberAppIcon
 import com.tk.quicksearch.search.data.appShortcutRepository.AppShortcutCache
@@ -37,7 +37,9 @@ import com.tk.quicksearch.search.data.NotesRepository
 import com.tk.quicksearch.search.contacts.models.ContactCardAction
 import com.tk.quicksearch.search.data.preferences.TriggerPreferences
 import com.tk.quicksearch.search.deviceSettings.DeviceSettingsRepository
-import com.tk.quicksearch.settings.shared.SettingsCard
+import com.tk.quicksearch.settings.shared.SettingsRemoveButton
+import com.tk.quicksearch.shared.ui.components.SegmentedTile
+import com.tk.quicksearch.shared.ui.components.SegmentedTileRow
 import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
@@ -159,9 +161,12 @@ fun TriggerItemsScreen(
             modifier = Modifier.padding(bottom = DesignTokens.SectionDescriptionBottomPadding),
         )
 
-        SettingsCard(modifier = Modifier.fillMaxWidth()) {
-            Column {
-                allItems.forEachIndexed { index, item ->
+        LazyColumn(
+            modifier = Modifier.fillMaxWidth().weight(1f).clip(AppShapes.extraLarge),
+            verticalArrangement = Arrangement.spacedBy(DesignTokens.SegmentedListGap),
+        ) {
+            itemsIndexed(allItems) { index, item ->
+                SegmentedTile(index = index, count = allItems.size) {
                     TriggerItemRow(
                         item = item,
                         onRemove = {
@@ -178,9 +183,6 @@ fun TriggerItemsScreen(
                             refreshSignal++
                         },
                     )
-                    if (index < allItems.lastIndex) {
-                        HorizontalDivider(color = AppColors.SettingsDivider)
-                    }
                 }
             }
         }
@@ -192,50 +194,16 @@ private fun TriggerItemRow(
     item: TriggerItem,
     onRemove: () -> Unit,
 ) {
-    Row(
-        modifier =
-            Modifier
-                .fillMaxWidth()
-                .padding(
-                    horizontal = DesignTokens.CardHorizontalPadding,
-                    vertical = DesignTokens.CardVerticalPadding,
-                ),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween,
-    ) {
-        Row(
-            modifier = Modifier.weight(1f),
-            horizontalArrangement = Arrangement.spacedBy(DesignTokens.ItemRowSpacing),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            TriggerItemIcon(item = item)
-
-            Column(modifier = Modifier.padding(vertical = 2.dp)) {
-                Text(
-                    text = item.word,
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    maxLines = Int.MAX_VALUE,
-                    overflow = TextOverflow.Visible,
-                )
-                if (item.itemName.isNotBlank()) {
-                    Text(
-                        text = item.itemName,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
-            }
-        }
-
-        IconButton(onClick = onRemove) {
-            Icon(
-                imageVector = MaterialSymbols.Close,
-                contentDescription = stringResource(R.string.action_remove),
-                tint = MaterialTheme.colorScheme.primary,
-            )
-        }
-    }
+    SegmentedTileRow(
+        title = item.word,
+        description = item.itemName.takeIf { it.isNotBlank() },
+        leading = {
+            TonalIconBadgeContainer { TriggerItemIcon(item) }
+        },
+        trailing = {
+            SettingsRemoveButton(onClick = onRemove)
+        },
+    )
 }
 
 @Composable
@@ -254,7 +222,7 @@ private fun TriggerItemIcon(item: TriggerItem) {
                 Icon(
                     imageVector = MaterialSymbols.Apps,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    tint = AppColors.Accent,
                     modifier = Modifier.size(DesignTokens.IconSize),
                 )
             }
@@ -289,7 +257,7 @@ private fun TriggerItemIcon(item: TriggerItem) {
                     Icon(
                         imageVector = MaterialSymbols.Apps,
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        tint = AppColors.Accent,
                         modifier = Modifier.size(DesignTokens.IconSize),
                     )
                 }
@@ -298,31 +266,31 @@ private fun TriggerItemIcon(item: TriggerItem) {
         is TriggerItem.Contact -> Icon(
             imageVector = MaterialSymbols.Person,
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            tint = AppColors.Accent,
             modifier = Modifier.size(DesignTokens.IconSize),
         )
         is TriggerItem.ContactAction -> Icon(
             imageVector = MaterialSymbols.Person,
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            tint = AppColors.Accent,
             modifier = Modifier.size(DesignTokens.IconSize),
         )
         is TriggerItem.File -> Icon(
             imageVector = MaterialSymbols.InsertDriveFile,
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            tint = AppColors.Accent,
             modifier = Modifier.size(DesignTokens.IconSize),
         )
         is TriggerItem.Setting -> Icon(
             imageVector = MaterialSymbols.Settings,
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            tint = AppColors.Accent,
             modifier = Modifier.size(DesignTokens.IconSize),
         )
         is TriggerItem.Note -> Icon(
             imageVector = MaterialSymbols.Description,
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            tint = AppColors.Accent,
             modifier = Modifier.size(DesignTokens.IconSize),
         )
     }

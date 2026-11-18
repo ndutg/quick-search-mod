@@ -1,39 +1,24 @@
 package com.tk.quicksearch.settings.settingsDetailScreen
 
-import android.widget.Toast
-import androidx.compose.foundation.BorderStroke
+import androidx.compose.ui.semantics.Role
+import com.tk.quicksearch.shared.ui.components.AppIconButton
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.border
-import com.tk.quicksearch.settings.shared.settingsRoute.SectionSettingsSection
-import com.tk.quicksearch.settings.shared.settingsRoute.SettingsScreenCallbacks
-import com.tk.quicksearch.settings.shared.settingsRoute.SettingsScreenState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.AssistChip
-import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -43,46 +28,43 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateList
+import androidx.compose.ui.semantics.CustomAccessibilityAction
+import androidx.compose.ui.semantics.customActions
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
 import androidx.core.view.HapticFeedbackConstantsCompat
 import com.tk.quicksearch.R
-import com.tk.quicksearch.search.data.preferences.NicknamePreferences
-import com.tk.quicksearch.search.data.preferences.TriggerPreferences
+import com.tk.quicksearch.search.data.preferences.UiPreferences
 import com.tk.quicksearch.search.core.AppSuggestionTabType
-import com.tk.quicksearch.search.core.ItemPriorityConfig
-import com.tk.quicksearch.search.core.SearchSection
-import com.tk.quicksearch.search.core.SearchSectionUiMetadataRegistry
 import com.tk.quicksearch.search.models.SecondaryRankingSignal
 import com.tk.quicksearch.pinnedNotifications.PinnedNotifications
 import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.widgets.customButtonsWidget.CustomWidgetButtonAction
-import com.tk.quicksearch.widgets.customButtonsWidget.CustomWidgetButtonType
 import com.tk.quicksearch.settings.shared.*
-import com.tk.quicksearch.settings.shared.SettingsCard
-import com.tk.quicksearch.shared.featureFlags.FeatureFlags
-import com.tk.quicksearch.shared.ui.components.AppAlertDialog
-import com.tk.quicksearch.shared.ui.components.TipBanner
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.util.hapticToggle
 import com.tk.quicksearch.shared.util.performHapticFeedbackSafely
-import sh.calvin.reorderable.ReorderableColumn
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
-import com.tk.quicksearch.shared.ui.components.PreserveHostKeyboardStateEffect
+import com.tk.quicksearch.shared.ui.components.AppDialogSurface
+import com.tk.quicksearch.shared.ui.components.SegmentedGroup
+import com.tk.quicksearch.shared.ui.components.SegmentedTileContent
+import com.tk.quicksearch.shared.ui.components.SegmentedTileRow
+import com.tk.quicksearch.shared.ui.components.SegmentedTile
+import com.tk.quicksearch.shared.ui.components.TonalIconBadge
+import com.tk.quicksearch.shared.ui.components.ConnectedChoiceGroup
+import com.tk.quicksearch.shared.ui.components.ChoiceOption
+import com.tk.quicksearch.shared.ui.components.AppTextButton
 
-private val RecentQueriesDisplayCountOptions = listOf(1, 3, 5, 7, 10)
+private val RecentQueriesDisplayCountOptions = UiPreferences.RECENT_QUERIES_DISPLAY_COUNT_OPTIONS
 
 private fun recentQueriesDisplayCountOptionIndex(count: Int): Int =
     RecentQueriesDisplayCountOptions.indexOf(count).coerceAtLeast(0)
@@ -151,9 +133,9 @@ internal fun SearchOptionsCard(
         }
     }
 
-    SettingsCard(modifier = modifier.fillMaxWidth()) {
-        Column {
-            SettingsToggleRow(
+    val tiles = buildList<@Composable () -> Unit> {
+        add {
+            SearchResultsSliderToggle(
                 title = stringResource(R.string.web_search_suggestions_title),
                 checked = webSuggestionsEnabled,
                 onCheckedChange = onWebSuggestionsToggle,
@@ -177,11 +159,10 @@ internal fun SearchOptionsCard(
                     } else {
                         null
                     },
-                isFirstItem = true,
-                isLastItem = false,
             )
-
-            SettingsToggleRow(
+        }
+        add {
+            SearchResultsSliderToggle(
                 title = stringResource(R.string.recent_queries_toggle_title),
                 subtitle = stringResource(R.string.recent_queries_toggle_desc),
                 checked = recentQueriesEnabled,
@@ -207,26 +188,22 @@ internal fun SearchOptionsCard(
                     } else {
                         null
                     },
-                isFirstItem = false,
-                isLastItem = false,
             )
-
-            if (fuzzySearchAvailable) {
-                HorizontalDivider(color = AppColors.SettingsDivider)
+        }
+        if (fuzzySearchAvailable) {
+            add {
                 SettingsToggleRow(
                     title = stringResource(R.string.fuzzy_search_toggle_title),
                     subtitle = stringResource(R.string.fuzzy_search_toggle_desc),
                     checked = fuzzySearchEnabled,
                     onCheckedChange = onFuzzySearchToggle,
                     leadingIcon = MaterialSymbols.AutoAwesome,
-                    isFirstItem = false,
-                    isLastItem = false,
                     showDivider = false,
                 )
             }
-            HorizontalDivider(color = AppColors.SettingsDivider)
-
-            SettingsNavigationRow(
+        }
+        add {
+            SearchOptionsNavigationRow(
                 item =
                     SettingsCardItem(
                         title = stringResource(R.string.secondary_ranking_title),
@@ -234,30 +211,23 @@ internal fun SearchOptionsCard(
                         icon = MaterialSymbols.Reorder,
                         actionOnPress = { showSecondaryRankingDialog = true },
                     ),
-                contentPadding =
-                    PaddingValues(
-                        horizontal = DesignTokens.SpacingXXLarge,
-                        vertical = DesignTokens.SpacingLarge,
-                    ),
             )
-            HorizontalDivider(color = AppColors.SettingsDivider)
-
-            if (appResultsEnabled) {
+        }
+        if (appResultsEnabled) {
+            add {
                 AppResultRowsSelector(
                     selectedRowCount = appResultRowCount,
                     onSelectRowCount = onAppResultRowCountChange,
                 )
-                HorizontalDivider(color = AppColors.SettingsDivider)
             }
-
+        }
+        add {
             SettingsToggleRow(
                 title = stringResource(R.string.app_suggestions_toggle_title),
                 subtitle = stringResource(R.string.app_suggestions_toggle_desc),
                 checked = appSuggestionsEnabled,
                 onCheckedChange = onAppSuggestionsToggle,
                 leadingIcon = MaterialSymbols.Apps,
-                isFirstItem = false,
-                isLastItem = false,
                 showTipBanner = appSuggestionsEnabled && !hasUsagePermission && !appSuggestionsTipDismissed,
                 tipBannerText = stringResource(R.string.app_suggestions_usage_access_tip),
                 tipBannerLinkText = stringResource(R.string.app_suggestions_usage_access_link),
@@ -265,16 +235,18 @@ internal fun SearchOptionsCard(
                 onTipBannerDismiss = { appSuggestionsTipDismissed = true },
                 showDivider = false,
             )
-            if (appSuggestionsEnabled) {
+        }
+        if (appSuggestionsEnabled) {
+            add {
                 AppSuggestionTabsPickerRow(
                     enabledTabs = enabledAppSuggestionTabs,
                     onClick = { showAppSuggestionTabsDialog = true },
                 )
             }
-
-            if (pinnedNotificationItems.isNotEmpty()) {
-                HorizontalDivider(color = AppColors.SettingsDivider)
-                SettingsNavigationRow(
+        }
+        if (pinnedNotificationItems.isNotEmpty()) {
+            add {
+                SearchOptionsNavigationRow(
                     item =
                         SettingsCardItem(
                             title = stringResource(R.string.notification_pinned_items_title),
@@ -282,22 +254,12 @@ internal fun SearchOptionsCard(
                             icon = MaterialSymbols.Notifications,
                             actionOnPress = { showPinnedNotificationItemsDialog = true },
                         ),
-                    contentPadding =
-                        PaddingValues(
-                            horizontal = DesignTokens.SpacingXXLarge,
-                            vertical = DesignTokens.SpacingLarge,
-                        ),
                 )
             }
-
-            val hasAnyNavigationRows = hasNicknames || hasTriggers || hasExcludedItems
-            var hasRenderedNavigationRow = false
-            if (hasAnyNavigationRows) {
-                HorizontalDivider(color = AppColors.SettingsDivider)
-            }
-
-            if (hasNicknames) {
-                SettingsNavigationRow(
+        }
+        if (hasNicknames) {
+            add {
+                SearchOptionsNavigationRow(
                     item =
                         SettingsCardItem(
                             title = stringResource(R.string.settings_nicknames_title),
@@ -305,20 +267,12 @@ internal fun SearchOptionsCard(
                             icon = MaterialSymbols.Label,
                             actionOnPress = onNavigateToNicknames,
                         ),
-                    contentPadding =
-                        PaddingValues(
-                            horizontal = DesignTokens.SpacingXXLarge,
-                            vertical = DesignTokens.SpacingLarge,
-                        ),
                 )
-                hasRenderedNavigationRow = true
             }
-
-            if (hasTriggers) {
-                if (hasRenderedNavigationRow) {
-                    HorizontalDivider(color = AppColors.SettingsDivider)
-                }
-                SettingsNavigationRow(
+        }
+        if (hasTriggers) {
+            add {
+                SearchOptionsNavigationRow(
                     item =
                         SettingsCardItem(
                             title = stringResource(R.string.settings_triggers_title),
@@ -326,20 +280,12 @@ internal fun SearchOptionsCard(
                             icon = MaterialSymbols.Bolt,
                             actionOnPress = onNavigateToTriggers,
                         ),
-                    contentPadding =
-                        PaddingValues(
-                            horizontal = DesignTokens.SpacingXXLarge,
-                            vertical = DesignTokens.SpacingLarge,
-                        ),
                 )
-                hasRenderedNavigationRow = true
             }
-
-            if (hasExcludedItems) {
-                if (hasRenderedNavigationRow) {
-                    HorizontalDivider(color = AppColors.SettingsDivider)
-                }
-                SettingsNavigationRow(
+        }
+        if (hasExcludedItems) {
+            add {
+                SearchOptionsNavigationRow(
                     item =
                         SettingsCardItem(
                             title = excludedItemsTitle,
@@ -347,13 +293,13 @@ internal fun SearchOptionsCard(
                             icon = MaterialSymbols.VisibilityOff,
                             actionOnPress = onNavigateToExcludedItems,
                         ),
-                    contentPadding =
-                        PaddingValues(
-                            horizontal = DesignTokens.SpacingXXLarge,
-                            vertical = DesignTokens.SpacingLarge,
-                        ),
                 )
             }
+        }
+    }
+    SegmentedGroup(modifier = modifier) {
+        tiles.forEachIndexed { index, tile ->
+            SegmentedTile(index = index, count = tiles.size) { tile() }
         }
     }
 
@@ -427,61 +373,28 @@ private fun AppResultRowsSelector(
     selectedRowCount: Int,
     onSelectRowCount: (Int) -> Unit,
 ) {
-    val view = LocalView.current
-    Row(
-        modifier =
-            Modifier
-                .fillMaxWidth()
-                .padding(
-                    horizontal = DesignTokens.SpacingXXLarge,
-                    vertical = DesignTokens.SpacingMedium,
-                ),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(DesignTokens.ItemRowSpacing),
-        ) {
-            Icon(
-                imageVector = MaterialSymbols.Apps,
-                contentDescription = null,
-                modifier = Modifier.size(DesignTokens.IconSizeSmall),
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            Text(
-                text = stringResource(R.string.settings_app_result_rows_title),
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurface,
-            )
-        }
-        Row(horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall)) {
-            listOf(1, 2).forEach { rowCount ->
-                val selected = selectedRowCount == rowCount
-                AssistChip(
-                    onClick = {
-                        hapticToggle(view)()
-                        onSelectRowCount(rowCount)
-                    },
-                    label = { Text(rowCount.toString()) },
-                    shape = DesignTokens.ShapeFull,
-                    border =
-                        BorderStroke(
-                            if (selected) 1.5.dp else 1.dp,
-                            if (selected) MaterialTheme.colorScheme.primary.copy(alpha = 0.5f) else AppColors.SettingsDivider,
-                        ),
-                    colors =
-                        AssistChipDefaults.assistChipColors(
-                            containerColor = Color.Transparent,
-                            labelColor =
-                                if (selected) MaterialTheme.colorScheme.primary
-                                else MaterialTheme.colorScheme.onSurface,
-                        ),
-                )
-            }
-        }
+    SegmentedTileContent {
+        Text(
+            text = stringResource(R.string.settings_app_result_rows_title),
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.onSurface,
+        )
+        ConnectedChoiceGroup(
+            options = listOf(1, 2).map { ChoiceOption(it, it.toString()) },
+            selected = selectedRowCount,
+            onSelect = onSelectRowCount,
+        )
     }
+}
 
+@Composable
+private fun SearchOptionsNavigationRow(item: SettingsCardItem) {
+    SegmentedTileRow(
+        title = item.title,
+        description = item.description,
+        leading = { SettingsIconBadge(item) },
+        modifier = Modifier.clickable(role = Role.Button, onClick = item.actionOnPress),
+    )
 }
 
 @Composable
@@ -494,6 +407,8 @@ internal fun PinnedNotificationItemsDialog(
     val screenHeight = LocalConfiguration.current.screenHeightDp.dp
     val view = LocalView.current
     val reorderableItems = remember(items) { items.toMutableStateList() }
+    val moveUp = stringResource(R.string.action_move_up)
+    val moveDown = stringResource(R.string.action_move_down)
     val listState = rememberLazyListState()
     var reorderedDuringDrag by remember { mutableStateOf(false) }
     val reorderableState =
@@ -507,124 +422,129 @@ internal fun PinnedNotificationItemsDialog(
                 )
             }
         }
-    PreserveHostKeyboardStateEffect()
-    Dialog(onDismissRequest = onDismiss) {
-        Surface(
-            modifier = Modifier.fillMaxWidth().height(screenHeight * 0.65f),
-            shape = MaterialTheme.shapes.extraLarge,
-            color = AppColors.DialogBackground,
+    AppDialogSurface(
+        onDismissRequest = onDismiss,
+        modifier = Modifier.fillMaxWidth().height(screenHeight * 0.65f),
+    ) {
+        Column(
+            modifier =
+                Modifier
+                    .fillMaxHeight()
+                    .padding(
+                        horizontal = DesignTokens.SpacingXXLarge,
+                        vertical = DesignTokens.SpacingXLarge,
+                    ),
         ) {
-            Column(
-                modifier =
-                    Modifier
-                        .fillMaxHeight()
-                        .padding(
-                            horizontal = DesignTokens.SpacingXXLarge,
-                            vertical = DesignTokens.SpacingXLarge,
-                        ),
+            Text(
+                text = stringResource(R.string.notification_pinned_items_title),
+                style = MaterialTheme.typography.headlineSmall,
+                color = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.padding(bottom = DesignTokens.SpacingMedium),
+            )
+            LazyColumn(
+                state = listState,
+                modifier = Modifier.fillMaxWidth().weight(1f),
             ) {
-                Text(
-                    text = stringResource(R.string.notification_pinned_items_title),
-                    style = MaterialTheme.typography.headlineSmall,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.padding(bottom = DesignTokens.SpacingMedium),
-                )
-                LazyColumn(
-                    state = listState,
-                    modifier = Modifier.fillMaxWidth().weight(1f),
-                ) {
-                    itemsIndexed(
-                        items = reorderableItems,
-                        key = { _, action -> action.toJson() },
-                    ) { index, action ->
-                        ReorderableItem(
-                            state = reorderableState,
-                            key = action.toJson(),
-                        ) { isDragging ->
-                            if (index > 0) HorizontalDivider(color = AppColors.SettingsDivider)
-                            val category =
-                                when (action.type) {
-                                    CustomWidgetButtonType.APP -> stringResource(R.string.notification_pinned_item_type_app)
-                                    CustomWidgetButtonType.APP_SHORTCUT -> stringResource(R.string.notification_pinned_item_type_app_shortcut)
-                                    CustomWidgetButtonType.CONTACT -> stringResource(R.string.notification_pinned_item_type_contact)
-                                    CustomWidgetButtonType.FILE -> stringResource(R.string.notification_pinned_item_type_file)
-                                    CustomWidgetButtonType.SETTING -> stringResource(R.string.settings_gesture_settings)
-                                    CustomWidgetButtonType.NOTE -> stringResource(R.string.notification_pinned_item_type_note)
-                                    CustomWidgetButtonType.MEDIA -> stringResource(R.string.section_media)
-                                }
-                            Surface(
-                                color = if (isDragging) MaterialTheme.colorScheme.surfaceVariant else Color.Transparent,
-                                modifier = Modifier.fillMaxWidth(),
+                itemsIndexed(
+                    items = reorderableItems,
+                    key = { _, action -> action.toJson() },
+                ) { index, action ->
+                    ReorderableItem(
+                        state = reorderableState,
+                        key = action.toJson(),
+                    ) { isDragging ->
+                        fun moveBy(delta: Int): Boolean {
+                            val current = reorderableItems.indexOf(action)
+                            val target = current + delta
+                            if (current < 0 || target !in reorderableItems.indices) return false
+                            reorderableItems.add(target, reorderableItems.removeAt(current))
+                            onReorder(reorderableItems.toList())
+                            return true
+                        }
+                        if (index > 0) HorizontalDivider(color = AppColors.SettingsDivider)
+                        val category = stringResource(action.type.categoryRes)
+                        Surface(
+                            color = if (isDragging) MaterialTheme.colorScheme.surfaceVariant else Color.Transparent,
+                            modifier = Modifier.fillMaxWidth(),
+                        ) {
+                            Row(
+                                modifier =
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .heightIn(min = 48.dp)
+                                        .padding(vertical = DesignTokens.SpacingSmall),
+                                verticalAlignment = Alignment.CenterVertically,
                             ) {
-                                Row(
+                                Icon(
+                                    imageVector = MaterialSymbols.DragHandle,
+                                    contentDescription = stringResource(R.string.settings_action_reorder),
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                     modifier =
                                         Modifier
-                                            .fillMaxWidth()
-                                            .heightIn(min = 48.dp)
-                                            .padding(vertical = DesignTokens.SpacingSmall),
-                                    verticalAlignment = Alignment.CenterVertically,
+                                            .size(DesignTokens.MinTouchTarget)
+                                            .longPressDraggableHandle(
+                                                onDragStarted = {
+                                                    reorderedDuringDrag = false
+                                                    performHapticFeedbackSafely(
+                                                        view,
+                                                        HapticFeedbackConstantsCompat.GESTURE_START,
+                                                    )
+                                                },
+                                                onDragStopped = {
+                                                    if (reorderedDuringDrag) {
+                                                        onReorder(reorderableItems.toList())
+                                                    }
+                                                    performHapticFeedbackSafely(
+                                                        view,
+                                                        HapticFeedbackConstantsCompat.GESTURE_END,
+                                                    )
+                                                },
+                                            )
+                                            .padding(DesignTokens.SpacingMedium),
+                                )
+                                Column(
+                                    modifier = Modifier.weight(1f).semantics(mergeDescendants = true) {
+                                        customActions = buildList {
+                                            if (index > 0) add(CustomAccessibilityAction(moveUp) { moveBy(-1) })
+                                            if (index < reorderableItems.lastIndex) add(CustomAccessibilityAction(moveDown) { moveBy(1) })
+                                        }
+                                    },
                                 ) {
-                                    Icon(
-                                        imageVector = MaterialSymbols.DragHandle,
-                                        contentDescription = stringResource(R.string.settings_action_reorder),
-                                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                        modifier =
-                                            Modifier
-                                                .size(DesignTokens.LargeIconSize)
-                                                .padding(end = DesignTokens.SpacingMedium)
-                                                .longPressDraggableHandle(
-                                                    onDragStarted = {
-                                                        reorderedDuringDrag = false
-                                                        performHapticFeedbackSafely(
-                                                            view,
-                                                            HapticFeedbackConstantsCompat.GESTURE_START,
-                                                        )
-                                                    },
-                                                    onDragStopped = {
-                                                        if (reorderedDuringDrag) {
-                                                            onReorder(reorderableItems.toList())
-                                                        }
-                                                        performHapticFeedbackSafely(
-                                                            view,
-                                                            HapticFeedbackConstantsCompat.GESTURE_END,
-                                                        )
-                                                    },
-                                                ),
+                                    Text(
+                                        text = action.displayLabel(),
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = MaterialTheme.colorScheme.onSurface,
                                     )
-                                    Column(modifier = Modifier.weight(1f)) {
-                                        Text(
-                                            text = action.displayLabel(),
-                                            style = MaterialTheme.typography.bodyMedium,
-                                            color = MaterialTheme.colorScheme.onSurface,
-                                        )
-                                        Text(
-                                            text = category,
-                                            style = MaterialTheme.typography.labelMedium,
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                        )
-                                    }
-                                    IconButton(onClick = { onRemove(action) }) {
-                                        Icon(
-                                            imageVector = MaterialSymbols.Delete,
-                                            contentDescription = stringResource(
-                                                R.string.notification_pinned_items_remove,
-                                                action.displayLabel(),
-                                            ),
-                                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                        )
-                                    }
+                                    Text(
+                                        text = category,
+                                        style = MaterialTheme.typography.labelMedium,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    )
+                                }
+                                AppIconButton(onClick = { onRemove(action) }, tooltip = stringResource(
+                                            R.string.notification_pinned_items_remove,
+                                            action.displayLabel(),
+                                        )) {
+                                    Icon(
+                                        imageVector = MaterialSymbols.DeleteOutline,
+                                        contentDescription = stringResource(
+                                            R.string.notification_pinned_items_remove,
+                                            action.displayLabel(),
+                                        ),
+                                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    )
                                 }
                             }
                         }
                     }
                 }
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End,
-                ) {
-                    TextButton(onClick = onDismiss) {
-                        Text(stringResource(R.string.common_close))
-                    }
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End,
+            ) {
+                AppTextButton(onClick = onDismiss) {
+                    Text(stringResource(R.string.common_close))
                 }
             }
         }
@@ -642,52 +562,10 @@ private fun AppSuggestionTabsPickerRow(
             buildAppSuggestionTabsSummary(enabledTabs, tabLabels)
         }
 
-    Row(
-        modifier =
-            Modifier
-                .fillMaxWidth()
-                .padding(
-                    start =
-                        DesignTokens.SpacingXXLarge +
-                            DesignTokens.IconSizeSmall +
-                            DesignTokens.ItemRowSpacing,
-                    top = DesignTokens.SpacingXXSmall,
-                    end = DesignTokens.SpacingXXLarge,
-                    bottom = DesignTokens.SpacingMedium,
-                )
-                .clip(MaterialTheme.shapes.extraLarge)
-                .border(
-                    width = 1.dp,
-                    color = AppColors.SettingsDivider,
-                    shape = MaterialTheme.shapes.extraLarge,
-                )
-                .clickable(onClick = onClick)
-                .padding(
-                    horizontal = DesignTokens.SpacingLarge,
-                    vertical = DesignTokens.SpacingMedium,
-                ),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium),
-    ) {
-        Column(
-            modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(2.dp),
-        ) {
-            Text(
-                text = stringResource(R.string.app_suggestions_enabled_tabs_picker_hint),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurface,
-            )
-            Text(
-                text = stringResource(R.string.settings_app_language_desc, enabledTabsSummary),
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
-        Icon(
-            imageVector = MaterialSymbols.UnfoldMore,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-    }
+    SegmentedTileRow(
+        title = stringResource(R.string.app_suggestions_enabled_tabs_picker_hint),
+        description = stringResource(R.string.settings_app_language_desc, enabledTabsSummary),
+        leading = { TonalIconBadge(icon = MaterialSymbols.Reorder) },
+        modifier = Modifier.clickable(role = Role.Button, onClick = onClick),
+    )
 }

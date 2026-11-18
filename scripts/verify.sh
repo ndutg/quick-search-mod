@@ -1,12 +1,14 @@
 #!/usr/bin/env bash
 # One-shot verification for a finished change. Run from anywhere in the repo.
 #
-#   scripts/verify.sh               compile standard flavor, unit tests, checks, debug APK
+#   scripts/verify.sh               compile standard flavor, run checks, build debug APK
 #   scripts/verify.sh --no-assemble same, but skip building the APK (and the device install)
 #   scripts/verify.sh --no-device   build the APK but don't install it on a connected device
 #
-# When one device is connected (or ANDROID_SERIAL picks one), the debug APK is installed and
-# launched there after a clean build. The install revokes the app's accessibility grant.
+# After a clean build, install and launch on all USB devices if any are connected, otherwise
+# all wireless devices, skipping Android TVs when ~/.local/bin/android-targets is installed.
+# ANDROID_SERIAL overrides this selection. Installation revokes accessibility.
+# Unit tests run when app/build.gradle.kts changes versionCode relative to HEAD.
 #
 # Extra arguments after the flags are passed to Gradle (e.g. --offline).
 # Output is kept short: Gradle's full log goes to build/verify-gradle.log, and on failure only
@@ -55,10 +57,24 @@ if [[ -n "$oversized" ]]; then
     failures+=("file size")
 fi
 
-tasks=(
-    :app:compileStandardDebugKotlin
-    :app:testStandardDebugUnitTest
-)
+read_version_code() {
+    sed -nE 's@^[[:space:]]*versionCode[[:space:]]*=[[:space:]]*([0-9]+)[[:space:]]*(//.*)?$@\1@p' "$@"
+}
+
+tasks=(:app:compileStandardDebugKotlin)
+app_gradle=app/build.gradle.kts
+head_version_code=$(git show "HEAD:$app_gradle" | read_version_code)
+version_code=$(read_version_code "$app_gradle")
+if [[ ! "$head_version_code" =~ ^[0-9]+$ || ! "$version_code" =~ ^[0-9]+$ ]]; then
+    echo "VERIFY FAILED: expected one numeric versionCode in $app_gradle and in HEAD"
+    exit 1
+fi
+if [[ "$head_version_code" != "$version_code" ]]; then
+    echo "==> Unit tests: versionCode changed ($head_version_code to $version_code)"
+    tasks+=(:app:testStandardDebugUnitTest)
+else
+    echo "==> Unit tests skipped: versionCode unchanged ($version_code)"
+fi
 if $assemble; then
     tasks+=(assembleStandardDebug)
 fi
@@ -95,23 +111,49 @@ if ! ./gradlew -q --console=plain "${tasks[@]}" ${gradle_args[@]+"${gradle_args[
     failures+=("gradle")
 fi
 
+# Device selection is shared with ~/.zshrc's run/release via ~/.local/bin/android-targets
+# (skips Android TVs, prefers USB, otherwise every wireless target, honors ANDROID_SERIAL).
+# Without that helper, fall back to: ANDROID_SERIAL, else USB first, else wireless.
+android_target_serials() {
+    if command -v android-targets >/dev/null; then
+        android-targets mobile
+        return
+    fi
+    if [[ -n "${ANDROID_SERIAL:-}" ]]; then
+        printf '%s\n' "$ANDROID_SERIAL"
+        return
+    fi
+    adb devices -l | awk '
+        NR > 1 && $2 == "device" {
+            usb = 0
+            for (i = 3; i <= NF; i++) if ($i ~ /^usb:/) usb = 1
+            if (usb) wired[++w] = $1; else wireless[++n] = $1
+        }
+        END {
+            if (w) for (i = 1; i <= w; i++) print wired[i]
+            else for (i = 1; i <= n; i++) print wireless[i]
+        }
+    '
+}
+
 installed=false
+installed_serials=()
 debug_package=com.tk.quicksearch.debug
 apk=app/build/outputs/apk/standard/debug/app-standard-debug.apk
 if $assemble && $device && ((${#failures[@]} == 0)) && command -v adb >/dev/null; then
-    connected=$(adb devices | awk 'NR > 1 && $2 == "device"' | wc -l | tr -d ' ')
-    if [[ -n "${ANDROID_SERIAL:-}" || "$connected" == 1 ]]; then
-        echo "==> Install and launch on device"
-        if adb install --user 0 -r "$apk" | cap 10 &&
-            adb shell am force-stop "$debug_package" &&
-            adb shell am start -W -n "$debug_package/com.tk.quicksearch.app.MainActivity" | cap 10; then
+    target_serials=$(android_target_serials)
+    while IFS= read -r device_serial; do
+        [[ -n "$device_serial" ]] || continue
+        echo "==> Install and launch on $device_serial"
+        if adb -s "$device_serial" install --user 0 -r "$apk" | cap 10 &&
+            adb -s "$device_serial" shell am force-stop "$debug_package" &&
+            adb -s "$device_serial" shell am start -W -n "$debug_package/com.tk.quicksearch.app.MainActivity" | cap 10; then
             installed=true
+            installed_serials+=("$device_serial")
         else
-            failures+=("device install")
+            failures+=("device install ($device_serial)")
         fi
-    elif ((connected > 1)); then
-        echo "==> Skipping device install: $connected devices connected, set ANDROID_SERIAL to pick one"
-    fi
+    done <<< "$target_serials"
 fi
 
 if ((${#failures[@]})); then
@@ -126,8 +168,10 @@ if $assemble; then
     echo "APK: $apk"
 fi
 if $installed; then
-    echo "Installed and launched $debug_package on the device."
-    if ! adb shell settings get secure enabled_accessibility_services | grep -q "$debug_package"; then
-        echo "Accessibility service grant is off; re-enable it in Settings > Accessibility if needed."
-    fi
+    for device_serial in "${installed_serials[@]}"; do
+        echo "Installed and launched $debug_package on $device_serial."
+        if ! adb -s "$device_serial" shell settings get secure enabled_accessibility_services | grep -q "$debug_package"; then
+            echo "Accessibility service grant is off on $device_serial; re-enable it in Settings > Accessibility if needed."
+        fi
+    done
 fi

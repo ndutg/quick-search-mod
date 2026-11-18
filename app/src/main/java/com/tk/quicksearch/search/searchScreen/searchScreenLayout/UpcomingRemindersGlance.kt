@@ -1,5 +1,8 @@
 package com.tk.quicksearch.search.searchScreen.searchScreenLayout
 
+import androidx.compose.material3.minimumInteractiveComponentSize
+import androidx.compose.ui.semantics.Role
+import com.tk.quicksearch.shared.ui.components.AppIconButton
 import android.text.format.DateFormat
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
@@ -12,17 +15,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -56,14 +53,12 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
 import com.tk.quicksearch.R
-import com.tk.quicksearch.reminders.ReminderEditorRequests
 import com.tk.quicksearch.search.calendar.calendarRelativeTimeLabel
 import com.tk.quicksearch.search.data.GlanceTiming
 import com.tk.quicksearch.search.data.ReminderRepository
@@ -78,6 +73,8 @@ import com.tk.quicksearch.search.reminders.reminderOverdueColor
 import com.tk.quicksearch.search.reminders.reminderScheduleLabel
 import com.tk.quicksearch.shared.ui.components.LocalShowUndoSnackbar
 import com.tk.quicksearch.shared.ui.components.AppDropdownMenu
+import com.tk.quicksearch.shared.ui.components.AppDropdownMenuDivider
+import com.tk.quicksearch.shared.ui.components.AppDropdownMenuItem
 import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
@@ -87,10 +84,13 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import com.tk.quicksearch.shared.ui.components.AppTextButton
 
 private val UpcomingReminderDismissSize = 28.dp
 private const val DAY_MILLIS = 24L * 60L * 60L * 1000L
 private const val REMINDER_NOW_WINDOW_MILLIS = 60L * 1000L
+private const val GLANCE_TICK_MILLIS = 60L * 1000L
+private const val GLANCE_TICK_SLACK_MILLIS = 50L
 private const val DONE_UNDO_WINDOW_MILLIS = 4_000L
 
 /**
@@ -105,7 +105,8 @@ internal class UpcomingRemindersGlance(
     val reminders: List<ReminderInfo>,
     /** Reminders in [reminders] just marked done, still shown so their row can offer Undo. */
     val pendingDoneIds: Set<Long>,
-    val nowMillis: Long,
+    /** Read inside the row, so the minute tick recomposes only the reminder rows. */
+    val nowMillis: () -> Long,
     val markDone: (ReminderInfo) -> Unit,
     val undoDone: (ReminderInfo) -> Unit,
     val snooze: (ReminderInfo) -> Unit,
@@ -140,27 +141,32 @@ internal fun rememberUpcomingRemindersGlance(enabled: Boolean): UpcomingReminder
         lifecycleOwner.lifecycle.addObserver(observer)
         onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
     }
-    LaunchedEffect(repository, refreshKey, changeCount, enabled) {
-        if (!enabled) {
-            reminders = emptyList()
-            notedTasks = emptyList()
-            return@LaunchedEffect
-        }
+    // Not keyed on [enabled]: typing a query hides the rows without restarting the reads.
+    LaunchedEffect(repository, refreshKey, changeCount) {
         // Home stays composed while another app is in front; only poll while it can be seen.
         lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            // Noted's tasks change only with a change signal or on resume, both of which restart
+            // this effect, so read them once here and only re-filter them as time passes.
+            val allNotedTasks =
+                withContext(Dispatchers.IO) {
+                    if (reminderPreferences.isShowUpcomingRemindersEnabled()) NotedGlanceTasks.all(context) else emptyList()
+                }
             while (true) {
                 nowMillis = System.currentTimeMillis()
                 reminders = withContext(Dispatchers.IO) { repository.getHomeCardReminders(nowMillis) }
                 notedTasks =
                     withContext(Dispatchers.IO) {
-                        NotedGlanceTasks.load(
+                        NotedGlanceTasks.visibleAt(
                             context,
+                            allNotedTasks,
                             nowMillis,
-                            isShown = reminderPreferences.isShowUpcomingRemindersEnabled(),
                             isTomorrowShown = reminderPreferences.isShowTomorrowRemindersEnabled(),
                         )
                     }
-                delay(10_000)
+                // Due times, lead times, mornings and evenings all fall on whole minutes, and the
+                // row labels count whole minutes from them, so waking on each minute is exact.
+                // Snooze ends arrive through the reminder alarm's change signal.
+                delay(GLANCE_TICK_MILLIS - System.currentTimeMillis() % GLANCE_TICK_MILLIS + GLANCE_TICK_SLACK_MILLIS)
             }
         }
     }
@@ -219,9 +225,9 @@ internal fun rememberUpcomingRemindersGlance(enabled: Boolean): UpcomingReminder
         }
     }
     return UpcomingRemindersGlance(
-        reminders = displayedReminders,
+        reminders = if (enabled) displayedReminders else emptyList(),
         pendingDoneIds = pendingDone.keys,
-        nowMillis = nowMillis,
+        nowMillis = { nowMillis },
         markDone = { reminder ->
             val index = displayedReminders.indexOfFirst { it.reminderId == reminder.reminderId }.coerceAtLeast(0)
             pendingDone = pendingDone + (reminder.reminderId to (index to reminder))
@@ -258,13 +264,13 @@ internal fun rememberUpcomingRemindersGlance(enabled: Boolean): UpcomingReminder
         },
         delete = { reminder ->
             act(
-                reminder, deletedMessage, MaterialSymbols.Delete,
+                reminder, deletedMessage, MaterialSymbols.DeleteOutline,
                 readBefore = { getPinnedReminderOrder() },
                 action = { deleteReminder(reminder.reminderId) },
                 undo = { pinnedOrder -> restore(reminder, pinnedOrder) },
             )
         },
-        notedTasks = displayedNotedTasks,
+        notedTasks = if (enabled) displayedNotedTasks else emptyList(),
         pendingDoneNotedKeys = pendingNotedDone.keys,
         markNotedDone = { task ->
             val index = displayedNotedTasks.indexOfFirst { it.key == task.key }.coerceAtLeast(0)
@@ -358,8 +364,8 @@ internal fun UpcomingReminderRow(
         }
 
     Row(
-        modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp).padding(
-            start = 7.dp,
+        modifier = Modifier.fillMaxWidth().heightIn(min = DesignTokens.GlanceRowMinHeight).padding(
+            start = DesignTokens.GlanceRowHorizontalPadding,
             top = DesignTokens.SpacingMedium,
             bottom = DesignTokens.SpacingMedium,
         ),
@@ -367,6 +373,7 @@ internal fun UpcomingReminderRow(
     ) {
         Row(
             modifier = Modifier.weight(1f).combinedClickable(
+                role = Role.Button,
                 enabled = !isPendingDone,
                 onClick = onClick,
                 onLongClick = { showMenu = true },
@@ -378,12 +385,12 @@ internal fun UpcomingReminderRow(
                 painter = painterResource(R.drawable.ic_reminder),
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.size(24.dp),
+                modifier = Modifier.size(DesignTokens.IconSize),
             )
-            Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+            Column(verticalArrangement = Arrangement.spacedBy(DesignTokens.TextColumnSpacing)) {
                 Text(
                     text = reminder.title,
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = MaterialTheme.typography.bodyLarge,
                     color =
                         if (isPendingDone) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurface,
                     textDecoration = if (isPendingDone) TextDecoration.LineThrough else null,
@@ -397,7 +404,7 @@ internal fun UpcomingReminderRow(
                         } else {
                             scheduleLabel
                         },
-                    style = MaterialTheme.typography.bodySmall,
+                    style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = GlanceTextMaxLines,
                     overflow = TextOverflow.Ellipsis,
@@ -407,9 +414,9 @@ internal fun UpcomingReminderRow(
                 expanded = showMenu,
                 onDismissRequest = { showMenu = false },
             ) {
-                DropdownMenuItem(
-                    text = { Text(text = stringResource(R.string.action_mark_as_done)) },
-                    leadingIcon = { Icon(imageVector = MaterialSymbols.Check, contentDescription = null) },
+                AppDropdownMenuItem(
+                    text = stringResource(R.string.action_mark_as_done),
+                    icon = MaterialSymbols.Check,
                     onClick = {
                         showMenu = false
                         onDone()
@@ -423,18 +430,18 @@ internal fun UpcomingReminderRow(
                 if (isNotedTask) {
                     // Snooze and Delete act on Quick Search reminders; a Noted task is changed in Noted.
                     if (canDismiss || isOverdue) {
-                        HorizontalDivider()
+                        AppDropdownMenuDivider()
                         DismissForNowMenuItem {
                             showMenu = false
                             onDismiss()
                         }
                     }
                 } else {
-                    HorizontalDivider()
+                    AppDropdownMenuDivider()
                     if (!canDismiss) {
-                        DropdownMenuItem(
-                            text = { Text(text = stringResource(R.string.reminder_notification_action_snooze)) },
-                            leadingIcon = { Icon(imageVector = MaterialSymbols.Snooze, contentDescription = null) },
+                        AppDropdownMenuItem(
+                            text = stringResource(R.string.reminder_notification_action_snooze),
+                            icon = MaterialSymbols.Snooze,
                             onClick = {
                                 showMenu = false
                                 onSnooze()
@@ -447,10 +454,10 @@ internal fun UpcomingReminderRow(
                             onDismiss()
                         }
                     }
-                    HorizontalDivider()
-                    DropdownMenuItem(
-                        text = { Text(text = stringResource(R.string.dialog_delete)) },
-                        leadingIcon = { Icon(imageVector = MaterialSymbols.Delete, contentDescription = null) },
+                    AppDropdownMenuDivider()
+                    AppDropdownMenuItem(
+                        text = stringResource(R.string.dialog_delete),
+                        icon = MaterialSymbols.DeleteOutline,
                         onClick = {
                             showMenu = false
                             onDelete()
@@ -470,38 +477,37 @@ internal fun UpcomingReminderRow(
             }
             val trackColor = MaterialTheme.colorScheme.outlineVariant
             val progressColor = AppColors.Accent
-            // Drop the 48dp touch-target padding so the ring hugs the compact pill.
-            CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides Dp.Unspecified) {
-                TextButton(
-                    onClick = onUndoDone,
-                    contentPadding = PaddingValues(horizontal = DesignTokens.SpacingMedium),
-                    modifier =
-                        Modifier
-                            // Overrides TextButton's 40dp default minimum height so the pill stays compact.
-                            .defaultMinSize(minWidth = 1.dp, minHeight = 1.dp)
-                            .height(UndoPillHeight)
-                            .drawWithContent {
-                                drawContent()
-                                drawUndoCountdownRing(remaining.value, trackColor, progressColor)
-                            },
-                ) {
-                    Text(
-                        text = stringResource(R.string.action_undo),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = AppColors.Accent,
-                    )
-                }
+            AppTextButton(
+                onClick = onUndoDone,
+                contentPadding = PaddingValues(horizontal = DesignTokens.SpacingMedium),
+                modifier =
+                    Modifier
+                        // Overrides TextButton's 40dp default minimum height so the pill stays compact.
+                        .defaultMinSize(minWidth = 1.dp, minHeight = 1.dp)
+                        .minimumInteractiveComponentSize()
+                        .height(UndoPillHeight)
+                        .drawWithContent {
+                            drawContent()
+                            drawUndoCountdownRing(remaining.value, trackColor, progressColor)
+                        },
+            ) {
+                Text(
+                    text = stringResource(R.string.action_undo),
+                    style = MaterialTheme.typography.labelLarge,
+                    color = AppColors.Accent,
+                )
             }
         } else {
-            IconButton(
+            AppIconButton(
                 onClick = onDone,
                 modifier = Modifier.size(UpcomingReminderDismissSize),
+                tooltip = stringResource(R.string.action_mark_as_done),
             ) {
                 Icon(
                     imageVector = MaterialSymbols.Check,
                     contentDescription = stringResource(R.string.action_mark_as_done),
                     tint = AppColors.Accent,
-                    modifier = Modifier.size(20.dp),
+                    modifier = Modifier.size(DesignTokens.IconSizeSmall),
                 )
             }
         }
@@ -510,9 +516,9 @@ internal fun UpcomingReminderRow(
 
 @Composable
 private fun DismissForNowMenuItem(onClick: () -> Unit) {
-    DropdownMenuItem(
-        text = { Text(text = stringResource(R.string.reminders_home_card_dismiss_for_now)) },
-        leadingIcon = { Icon(imageVector = MaterialSymbols.Close, contentDescription = null) },
+    AppDropdownMenuItem(
+        text = stringResource(R.string.reminders_home_card_dismiss_for_now),
+        icon = MaterialSymbols.Close,
         onClick = onClick,
     )
 }
@@ -546,7 +552,7 @@ internal fun notedTaskGlanceItem(task: NotedGlanceTask, glance: UpcomingReminder
         val context = LocalContext.current
         UpcomingReminderRow(
             reminder = task.reminder,
-            nowMillis = glance.nowMillis,
+            nowMillis = glance.nowMillis(),
             isPendingDone = task.key in glance.pendingDoneNotedKeys,
             onClick = { NotedLauncher.open(context, task.item) },
             onDone = { glance.markNotedDone(task) },

@@ -27,6 +27,7 @@ import com.tk.quicksearch.search.other.OtherSearchItemAction
 import com.tk.quicksearch.search.other.OtherSearchItemId
 import com.tk.quicksearch.search.other.OtherSearchItemRegistry
 import com.tk.quicksearch.search.utils.FileUtils
+import com.tk.quicksearch.shared.ui.components.AppMessages
 import com.tk.quicksearch.shared.ui.components.AppUndoSnackbarHost
 import com.tk.quicksearch.shared.ui.components.LocalUndoSnackbarAnchor
 import com.tk.quicksearch.shared.ui.components.UndoSnackbarAnchor
@@ -86,6 +87,7 @@ internal fun rememberRouteUndoActions(
             }
         }
     val undoSnackbar = rememberUndoSnackbarController(effectiveSnackbarHostState)
+    AppMessages.HostEffect(undoSnackbar, AppMessages.ScreenHostPriority)
     val showUndoSnackbarVisuals: (UndoSnackbarVisuals, () -> Unit) -> Unit = undoSnackbar::show
     val showUndoSnackbar: (String, () -> Unit) -> Unit = { message, onUndo -> undoSnackbar.show(message, onUndo = onUndo) }
 
@@ -201,17 +203,17 @@ internal fun rememberRouteUndoActions(
                 },
             )
         }
-    val onDeleteNoteWithUndo: (NoteInfo) -> Unit = noteDelete@{ note ->
-        val staged = viewModel.stageDeleteNote(note) ?: return@noteDelete
-        val label = staged.title.ifBlank { context.getString(R.string.notes_untitled) }
-        var wasUndone = false
-        showUndoSnackbar(
-            context.getString(R.string.toast_excluded_from_results, label),
-        ) {
-            wasUndone = true
-            viewModel.undoDeleteNote(staged.noteId)
-        }
+    val onDeleteNoteWithUndo: (NoteInfo) -> Unit = { note ->
         snackbarScope.launch {
+            val staged = viewModel.stageDeleteNote(note) ?: return@launch
+            val label = staged.title.ifBlank { context.getString(R.string.notes_untitled) }
+            var wasUndone = false
+            showUndoSnackbar(
+                context.getString(R.string.toast_excluded_from_results, label),
+            ) {
+                wasUndone = true
+                viewModel.undoDeleteNote(staged.noteId)
+            }
             kotlinx.coroutines.delay(2_500L)
             if (!wasUndone) {
                 viewModel.finalizeDeleteNote(staged.noteId)

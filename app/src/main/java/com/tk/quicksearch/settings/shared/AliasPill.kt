@@ -1,12 +1,14 @@
 package com.tk.quicksearch.settings.shared
 
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import com.tk.quicksearch.shared.ui.theme.DesignTokens
+import com.tk.quicksearch.shared.ui.theme.AppShapes
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -14,124 +16,95 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.tk.quicksearch.R
+import com.tk.quicksearch.shared.ui.components.AppIconButton
 import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
-import com.tk.quicksearch.shared.ui.theme.DesignTokens
 
-private val ALIAS_ICON_SIZE = 14.dp
-private val ALIAS_CLEAR_ICON_SIZE = 16.dp
-
+/**
+ * A tonal input chip for an alias. The label opens the editor, and the trailing close action
+ * clears the alias from the same container. An unset alias uses the label action by itself.
+ */
 @Composable
 fun AliasPill(
     text: AnnotatedString,
     onClick: (() -> Unit)?,
     modifier: Modifier = Modifier,
-    textStyle: TextStyle = MaterialTheme.typography.bodySmall,
-    textColor: Color = Color.Unspecified,
-    showBackground: Boolean = true,
     leadingIcon: ImageVector? = null,
-    iconTextSpacing: Dp = DesignTokens.SpacingXSmall,
     onClearClick: (() -> Unit)? = null,
 ) {
-    val resolvedTextColor =
-        if (textColor == Color.Unspecified) {
-            AppColors.DialogText
-        } else {
-            textColor
-        }
-    val shouldUseSurfaceClick = onClick != null && onClearClick == null
-    Surface(
-        modifier =
-            modifier
-                .then(
-                    if (shouldUseSurfaceClick) {
-                        Modifier
-                            .clip(DesignTokens.ShapeFull)
-                            .clickable(onClick = requireNotNull(onClick))
-                    } else {
-                        Modifier
-                    },
-                ),
-        shape = DesignTokens.ShapeFull,
-        border =
-            if (showBackground) {
-                BorderStroke(1.dp, AppColors.SettingsDivider)
-            } else {
-                null
-            },
-        color = Color.Transparent,
-        tonalElevation = DesignTokens.ElevationLevel0,
-    ) {
-        val contentPadding =
-            if (showBackground) {
-                PaddingValues(
-                    horizontal = DesignTokens.SpacingSmall,
-                    vertical = DesignTokens.SpacingXXSmall,
-                )
-            } else {
-                PaddingValues(
-                    start = 0.dp,
-                    top = DesignTokens.SpacingXXSmall,
-                    end = DesignTokens.SpacingSmall,
-                    bottom = DesignTokens.SpacingXXSmall,
-                )
-            }
-
+    val labelColor = MaterialTheme.colorScheme.onSurface
+    val content: @Composable () -> Unit = {
         Row(
             modifier =
                 Modifier
-                    .padding(contentPadding),
+                    .heightIn(min = DesignTokens.ButtonHeightExtraSmall)
+                    .padding(
+                        start = DesignTokens.SpacingSmall,
+                        end = if (onClearClick == null) DesignTokens.SpacingSmall else 0.dp,
+                    ),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingXSmall),
         ) {
-            Row(
-                modifier =
-                    if (onClick != null && !shouldUseSurfaceClick) {
-                        Modifier
-                            .clip(DesignTokens.ShapeFull)
-                            .clickable(onClick = onClick)
-                    } else {
-                        Modifier
-                    },
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(iconTextSpacing),
-            ) {
-                if (leadingIcon != null) {
-                    Icon(
-                        imageVector = leadingIcon,
-                        contentDescription = null,
-                        tint = resolvedTextColor,
-                        modifier = Modifier.size(ALIAS_ICON_SIZE),
-                    )
-                }
-
-                Text(
-                    text = text,
-                    style = textStyle,
-                    color = resolvedTextColor,
+            leadingIcon?.let { icon ->
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    tint = AppColors.Accent,
+                    modifier = Modifier.size(AliasChipIconSize),
                 )
             }
+            Text(
+                text = text,
+                style = MaterialTheme.typography.labelMedium,
+                color = labelColor,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        }
+    }
 
-            if (onClearClick != null) {
-                Icon(
-                    imageVector = MaterialSymbols.Close,
-                    contentDescription = null,
-                    tint = resolvedTextColor,
-                    modifier =
-                        Modifier
-                            .padding(start = DesignTokens.SpacingSmall)
-                            .size(ALIAS_CLEAR_ICON_SIZE)
-                            .clip(DesignTokens.ShapeFull)
-                            .clickable(onClick = onClearClick),
+    Box(modifier = modifier) {
+        Box(
+            modifier = Modifier
+                .matchParentSize()
+                .padding(vertical = (DesignTokens.MinTouchTarget - DesignTokens.ButtonHeightExtraSmall) / 2)
+                .background(AppColors.AccentTintLight, AppShapes.small),
+        )
+        Row(
+            modifier = Modifier.heightIn(min = DesignTokens.MinTouchTarget),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            if (onClick != null) {
+                Surface(
+                    onClick = onClick,
+                    modifier = Modifier.weight(1f, fill = false),
+                    shape = AppShapes.small,
+                    color = Color.Transparent,
+                    content = content,
                 )
+            } else {
+                Box(modifier = Modifier.weight(1f, fill = false)) { content() }
+            }
+            if (onClearClick != null) {
+                val removeLabel = stringResource(R.string.action_remove)
+                AppIconButton(onClick = onClearClick, tooltip = removeLabel) {
+                    Icon(
+                        imageVector = MaterialSymbols.Close,
+                        contentDescription = removeLabel,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.size(AliasChipIconSize),
+                    )
+                }
             }
         }
     }
 }
+
+private val AliasChipIconSize = DesignTokens.ButtonIconSizeExtraSmall

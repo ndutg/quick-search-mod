@@ -1,5 +1,9 @@
 package com.tk.quicksearch.appNotifications
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.ui.semantics.Role
+import com.tk.quicksearch.shared.ui.components.AppButton
+import com.tk.quicksearch.shared.ui.components.AppIconButton
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,10 +16,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -27,7 +29,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -141,31 +142,19 @@ internal fun AppNotificationKeywordsDrawer(
     }
 }
 
-/** Solid pill that keeps every notification from the app. */
+/** Filled button that keeps every notification from the app. */
 @Composable
 private fun WantAllPillButton(
     text: String,
     onClick: () -> Unit,
 ) {
-    Surface(
-        onClick = onClick,
-        shape = DesignTokens.ShapeFull,
-        color = MaterialTheme.colorScheme.primary,
-        contentColor = MaterialTheme.colorScheme.onPrimary,
-    ) {
-        Text(
-            text = text,
-            style = MaterialTheme.typography.labelLarge,
-            fontWeight = FontWeight.SemiBold,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(horizontal = DesignTokens.SpacingLarge, vertical = DesignTokens.SpacingSmall),
-        )
+    AppButton(onClick = onClick) {
+        Text(text = text, textAlign = TextAlign.Center)
     }
 }
 
 private val KeywordRowHeight = 52.dp
 private const val KeywordsIntroWidthFraction = 0.9f
-private val KeywordRowIconButtonSize = 40.dp
 
 /**
  * One compact line of the keywords list: text, then an icon button at the end. Every row has the
@@ -183,7 +172,7 @@ private fun KeywordRow(
 ) {
     Row(
         modifier = Modifier.fillMaxWidth().heightIn(min = KeywordRowHeight)
-            .then(if (rowClickable) Modifier.clickable(onClick = onClick) else Modifier)
+            .then(if (rowClickable) Modifier.clickable(role = Role.Button, onClick = onClick) else Modifier)
             .padding(start = DesignTokens.SpacingMedium),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -195,8 +184,14 @@ private fun KeywordRow(
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.weight(1f).padding(vertical = DesignTokens.SpacingSmall),
         )
-        IconButton(onClick = onClick, modifier = Modifier.size(KeywordRowIconButtonSize)) {
-            Icon(imageVector = icon, contentDescription = iconDescription, tint = iconTint)
+        if (rowClickable) {
+            Box(modifier = Modifier.size(DesignTokens.MinTouchTarget), contentAlignment = Alignment.Center) {
+                Icon(imageVector = icon, contentDescription = null, tint = iconTint)
+            }
+        } else {
+            AppIconButton(onClick = onClick, tooltip = iconDescription) {
+                Icon(imageVector = icon, contentDescription = iconDescription, tint = iconTint)
+            }
         }
     }
 }

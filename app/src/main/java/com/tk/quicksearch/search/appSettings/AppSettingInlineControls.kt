@@ -1,11 +1,13 @@
 package com.tk.quicksearch.search.appSettings
 
+import androidx.compose.foundation.layout.heightIn
+import com.tk.quicksearch.shared.ui.components.SliderWithValue
+import com.tk.quicksearch.shared.ui.theme.DesignTokens
+import com.tk.quicksearch.shared.ui.theme.AppColors
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
@@ -14,21 +16,28 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
+import com.tk.quicksearch.search.core.AccentColorMode
+import com.tk.quicksearch.search.core.AppTheme
 import com.tk.quicksearch.search.core.AppThemeMode
 import com.tk.quicksearch.search.core.BackgroundSource
 import com.tk.quicksearch.search.core.HomeTextColor
 import com.tk.quicksearch.search.data.preferences.UiPreferences
+import com.tk.quicksearch.settings.appearanceSettings.AccentColorChoices
 import com.tk.quicksearch.settings.appearanceSettings.FONT_SIZE_STEPS
+import com.tk.quicksearch.settings.searchEngineSettings.SearchEngineCompactRowChoices
+import com.tk.quicksearch.settings.searchEngineSettings.SearchEngineStyleChoices
+import com.tk.quicksearch.shared.ui.components.ChoiceOption
+import com.tk.quicksearch.shared.ui.components.ConnectedChoiceGroup
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.LocalAppIsDarkTheme
 import com.tk.quicksearch.shared.util.WallpaperUtils
 import com.tk.quicksearch.shared.util.hapticToggle
@@ -52,6 +61,20 @@ data class AppSettingInlineControls(
     val onAppThemeModeChange: (AppThemeMode) -> Unit = {},
     val topMatchesLimit: Int = UiPreferences.DEFAULT_TOP_MATCHES_LIMIT,
     val onTopMatchesLimitChange: (Int) -> Unit = {},
+    val hasEnabledSearchEngines: Boolean = false,
+    val searchEngineCompactMode: Boolean = false,
+    val onSearchEngineCompactModeChange: (Boolean) -> Unit = {},
+    val searchEngineCompactRowCount: Int = 1,
+    val onSearchEngineCompactRowCountChange: (Int) -> Unit = {},
+    val recentQueriesDisplayCount: Int = UiPreferences.DEFAULT_RECENT_QUERIES_DISPLAY_COUNT,
+    val onRecentQueriesDisplayCountChange: (Int) -> Unit = {},
+    val appTheme: AppTheme = AppTheme.MONOCHROME,
+    val deviceThemeEnabled: Boolean = false,
+    val wallpaperAccentAvailable: Boolean = false,
+    val accentColorMode: AccentColorMode = AccentColorMode.NONE,
+    val customAccentColorArgb: Int = UiPreferences.DEFAULT_CUSTOM_ACCENT_COLOR_ARGB,
+    val onAccentColorModeChange: (AccentColorMode) -> Unit = {},
+    val onCustomAccentColorChange: (Int) -> Unit = {},
     val aiModel: AiModelInlineState = AiModelInlineState(),
 )
 
@@ -62,9 +85,11 @@ internal val AppSettingResult.hasInlineControl: Boolean
         toggleKey == AppSettingsToggleKey.FONT_SIZE ||
             toggleKey == AppSettingsToggleKey.APP_ICON_SIZE ||
             toggleKey == AppSettingsToggleKey.HOME_TEXT_COLOR ||
+            toggleKey == AppSettingsToggleKey.ACCENT_COLOR ||
+            toggleKey == AppSettingsToggleKey.SEARCH_ENGINE_COMPACT_MODE ||
             id == THEME_MODE_SETTING_ID ||
             id == TOP_MATCHES_COUNT_SETTING_ID ||
-            destination == AppSettingsDestination.AI_MODEL
+            destination == AppSettingsRouteAction.AI_MODEL
 
 @Composable
 internal fun AppSettingInlineControlContent(setting: AppSettingResult) {
@@ -75,11 +100,40 @@ internal fun AppSettingInlineControlContent(setting: AppSettingResult) {
         setting.toggleKey == AppSettingsToggleKey.APP_ICON_SIZE ->
             IconSizeInlineSlider(controls.appIconSizeStep, controls.onAppIconSizeStepChange)
         setting.toggleKey == AppSettingsToggleKey.HOME_TEXT_COLOR -> HomeTextColorInlineChips(controls)
+        setting.toggleKey == AppSettingsToggleKey.ACCENT_COLOR ->
+            AccentColorChoices(
+                accentColorMode = controls.accentColorMode,
+                customAccentColorArgb = controls.customAccentColorArgb,
+                wallpaperAccentAvailable = controls.wallpaperAccentAvailable,
+                appTheme = controls.appTheme,
+                deviceThemeEnabled = controls.deviceThemeEnabled,
+                onAccentColorModeChange = controls.onAccentColorModeChange,
+                onCustomAccentColorChange = controls.onCustomAccentColorChange,
+                modifier = Modifier.padding(top = DesignTokens.SpacingSmall),
+            )
+        setting.toggleKey == AppSettingsToggleKey.SEARCH_ENGINE_COMPACT_MODE -> {
+            Column(
+                modifier = Modifier.padding(top = DesignTokens.SpacingSmall),
+                verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
+            ) {
+                SearchEngineStyleChoices(
+                    compact = controls.searchEngineCompactMode,
+                    onSelect = controls.onSearchEngineCompactModeChange,
+                    enabled = controls.hasEnabledSearchEngines,
+                )
+                if (controls.hasEnabledSearchEngines && controls.searchEngineCompactMode) {
+                    SearchEngineCompactRowChoices(
+                        rowCount = controls.searchEngineCompactRowCount,
+                        onSelect = controls.onSearchEngineCompactRowCountChange,
+                    )
+                }
+            }
+        }
         setting.id == THEME_MODE_SETTING_ID ->
             ThemeModeInlineChips(controls)
         setting.id == TOP_MATCHES_COUNT_SETTING_ID ->
             TopMatchesCountInlineSlider(controls.topMatchesLimit, controls.onTopMatchesLimitChange)
-        setting.destination == AppSettingsDestination.AI_MODEL -> AiModelInlineContent(controls.aiModel)
+        setting.destination == AppSettingsRouteAction.AI_MODEL -> AiModelInlineContent(controls.aiModel)
     }
 }
 
@@ -160,6 +214,33 @@ private fun TopMatchesCountInlineSlider(
     )
 }
 
+@Composable
+internal fun SearchHistoryCountSlider() {
+    val view = LocalView.current
+    val controls = LocalAppSettingInlineControls.current
+    val options = UiPreferences.RECENT_QUERIES_DISPLAY_COUNT_OPTIONS
+    val savedIndex = options.indexOf(controls.recentQueriesDisplayCount).coerceAtLeast(0)
+    var selectedIndex by remember(savedIndex) { mutableIntStateOf(savedIndex) }
+    InlineSliderRow(
+        value = selectedIndex.toFloat(),
+        onValueChange = { value ->
+            val index = value.roundToInt().coerceIn(0, options.lastIndex)
+            if (index != selectedIndex) {
+                selectedIndex = index
+                hapticToggle(view)()
+            }
+        },
+        valueRange = 0f..options.lastIndex.toFloat(),
+        steps = options.size - 2,
+        label = options[selectedIndex].toString(),
+        onValueChangeFinished = {
+            if (selectedIndex != savedIndex) {
+                controls.onRecentQueriesDisplayCountChange(options[selectedIndex])
+            }
+        },
+    )
+}
+
 /** Full-width slider for inline app-setting rows, with a track that stays visible on result cards. */
 @Composable
 internal fun InlineSliderRow(
@@ -168,28 +249,31 @@ internal fun InlineSliderRow(
     valueRange: ClosedFloatingPointRange<Float>,
     steps: Int,
     label: String,
+    onValueChangeFinished: (() -> Unit)? = null,
 ) {
-    Row(
-        modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(6.dp),
-    ) {
+    SliderWithValue(
+        modifier = Modifier.fillMaxWidth().padding(top = DesignTokens.SpacingSmall),
+        valueSpacing = DesignTokens.SpacingSmall,
+        valueLabel = {
+            Text(
+                text = label,
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        },
+    ) { sliderModifier ->
         Slider(
             value = value,
             onValueChange = onValueChange,
+            onValueChangeFinished = onValueChangeFinished,
             valueRange = valueRange,
             steps = steps,
             colors =
                 SliderDefaults.colors(
-                    inactiveTrackColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.16f),
+                    inactiveTrackColor = MaterialTheme.colorScheme.onSurface.copy(alpha = AppColors.TintTonalAlpha),
                     inactiveTickColor = MaterialTheme.colorScheme.onSurfaceVariant,
                 ),
-            modifier = Modifier.weight(1f).height(36.dp),
-        )
-        Text(
-            text = label,
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = sliderModifier.heightIn(min = DesignTokens.MinTouchTarget),
         )
     }
 }
@@ -210,50 +294,38 @@ private fun HomeTextColorInlineChips(controls: AppSettingInlineControls) {
                 ?: defaultColor
     }
     val selected = controls.homeTextColorOverride ?: wallpaperDefaultColor
-    InlineChipRow {
-        AppSettingChoiceChip(
-            label = stringResource(R.string.widget_text_icon_color_white),
-            selected = selected == HomeTextColor.WHITE,
-            onClick = { controls.onHomeTextColorChange(HomeTextColor.WHITE) },
-            compact = true,
-            modifier = Modifier.weight(1f),
-        )
-        AppSettingChoiceChip(
-            label = stringResource(R.string.widget_text_icon_color_black),
-            selected = selected == HomeTextColor.BLACK,
-            onClick = { controls.onHomeTextColorChange(HomeTextColor.BLACK) },
-            compact = true,
-            modifier = Modifier.weight(1f),
-        )
-    }
+    ConnectedChoiceGroup(
+        options =
+            listOf(
+                ChoiceOption(
+                    value = HomeTextColor.WHITE,
+                    label = stringResource(R.string.widget_text_icon_color_white),
+                    icon = MaterialSymbols.LightMode,
+                ),
+                ChoiceOption(
+                    value = HomeTextColor.BLACK,
+                    label = stringResource(R.string.widget_text_icon_color_black),
+                    icon = MaterialSymbols.DarkMode,
+                ),
+            ),
+        selected = selected,
+        onSelect = { color -> if (color != selected) controls.onHomeTextColorChange(color) },
+        modifier = Modifier.padding(top = DesignTokens.SpacingSmall),
+    )
 }
 
+/** Plain labels: the row shares its width with the trailing chevron, too narrow for three icons. */
 @Composable
 private fun ThemeModeInlineChips(controls: AppSettingInlineControls) {
-    InlineChipRow {
-        listOf(
-            AppThemeMode.LIGHT to R.string.common_theme_light,
-            AppThemeMode.DARK to R.string.common_theme_dark,
-            AppThemeMode.SYSTEM to R.string.common_theme_system,
-        ).forEach { (mode, labelRes) ->
-            AppSettingChoiceChip(
-                label = stringResource(labelRes),
-                selected = controls.appThemeMode == mode,
-                onClick = { controls.onAppThemeModeChange(mode) },
-                compact = true,
-                modifier = Modifier.weight(1f),
-            )
-        }
-    }
-}
-
-/** One line of equal-width compact chips. */
-@Composable
-private fun InlineChipRow(content: @Composable RowScope.() -> Unit) {
-    Row(
-        modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
-        horizontalArrangement = Arrangement.spacedBy(6.dp),
-    ) {
-        content()
-    }
+    ConnectedChoiceGroup(
+        options =
+            listOf(
+                ChoiceOption(AppThemeMode.LIGHT, stringResource(R.string.common_theme_light)),
+                ChoiceOption(AppThemeMode.DARK, stringResource(R.string.common_theme_dark)),
+                ChoiceOption(AppThemeMode.SYSTEM, stringResource(R.string.common_theme_system)),
+            ),
+        selected = controls.appThemeMode,
+        onSelect = { mode -> if (mode != controls.appThemeMode) controls.onAppThemeModeChange(mode) },
+        modifier = Modifier.padding(top = DesignTokens.SpacingSmall),
+    )
 }

@@ -1,27 +1,20 @@
 package com.tk.quicksearch.search.contacts.dialogs
 
-import android.content.ContentUris
-import android.content.Intent
-import android.net.Uri
-import android.provider.ContactsContract
+import com.tk.quicksearch.shared.ui.components.AppIconButton
+import com.tk.quicksearch.shared.ui.theme.AppShapes
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -35,22 +28,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.PopupProperties
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.common.AddToHomeHandler
 import com.tk.quicksearch.search.contacts.components.ContactActionButton
 import com.tk.quicksearch.search.contacts.components.ContactAvatar
-import com.tk.quicksearch.search.contacts.components.ContactMethodIcon
 import com.tk.quicksearch.search.contacts.components.getActionButtonLabel
 import com.tk.quicksearch.search.contacts.models.ContactCardAction
 import com.tk.quicksearch.search.models.ContactInfo
 import com.tk.quicksearch.search.models.ContactMethod
-import com.tk.quicksearch.search.models.ContactMethodMimeTypes
 import com.tk.quicksearch.search.utils.PhoneNumberUtils
 import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.util.PackageConstants.WHATSAPP_BUSINESS_PACKAGE
@@ -58,14 +49,11 @@ import com.tk.quicksearch.shared.util.PackageConstants.WHATSAPP_PACKAGE
 import com.tk.quicksearch.shared.ui.components.AppBottomPopup
 import com.tk.quicksearch.shared.util.hapticConfirm
 import com.tk.quicksearch.shared.util.cachedDefaultHomeAppStatus
-import com.tk.quicksearch.shared.ui.theme.LocalAppIsDarkTheme
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.ui.theme.AppColors
-import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.draw.clip
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.ui.platform.LocalClipboard
@@ -221,9 +209,10 @@ internal fun ContactActionsPopup(
 
     val dialogBackground = AppColors.DialogBackground
     val numberSwipeThresholdPx = with(LocalDensity.current) { NUMBER_SWIPE_THRESHOLD.toPx() }
+    val numberSwipeDirection = if (LocalLayoutDirection.current == LayoutDirection.Ltr) 1 else -1
     val switchNumberOnSwipe =
         if (reorderedPhoneNumbers.size > 1) {
-            Modifier.pointerInput(reorderedPhoneNumbers) {
+            Modifier.pointerInput(reorderedPhoneNumbers, numberSwipeDirection) {
                 var dragAmount = 0f
                 detectHorizontalDragGestures(
                     onDragStart = { dragAmount = 0f },
@@ -238,7 +227,7 @@ internal fun ContactActionsPopup(
                     },
                     onHorizontalDrag = { change, amount ->
                         change.consume()
-                        dragAmount += amount
+                        dragAmount += amount * numberSwipeDirection
                     },
                 )
             }
@@ -247,15 +236,14 @@ internal fun ContactActionsPopup(
         }
     AppBottomPopup(
         onDismiss = onDismiss,
-        // Swiping left or right anywhere on the popup switches between the contact's numbers.
+        // Swiping anywhere on the popup switches between the contact's numbers in reading order.
         modifier = switchNumberOnSwipe,
-        containerColor = dialogBackground,
+        animateSizeChanges = true,
         contentCardColor = dialogBackground,
         contentSpacing = DesignTokens.SpacingSmall,
-        headerSpacing = DesignTokens.SpacingMedium,
         contentTopPadding = 0.dp,
         contentBottomPadding = 0.dp,
-        contentHorizontalPadding = 4.dp,
+        contentHorizontalPadding = 0.dp,
         leadingContent =
             if (state is ContactActionsPopupState.ContactActions) {
                 {
@@ -263,7 +251,7 @@ internal fun ContactActionsPopup(
                         photoUri = state.contactInfo.photoUri,
                         displayName = state.contactInfo.displayName,
                         onClick = { state.onAvatarClick(state.contactInfo) },
-                        modifier = Modifier.size(40.dp),
+                        modifier = Modifier.size(DesignTokens.Spacing48),
                     )
                 }
             } else {
@@ -274,8 +262,6 @@ internal fun ContactActionsPopup(
                 is ContactActionsPopupState.ContactActions ->
                     Text(
                         text = state.contactInfo.displayName,
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.colorScheme.onSurface,
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis,
@@ -284,8 +270,6 @@ internal fun ContactActionsPopup(
                 is ContactActionsPopupState.ReplaceAction ->
                     Text(
                         text = replaceActionTitle,
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.padding(start = DesignTokens.SpacingSmall),
                     )
@@ -294,33 +278,49 @@ internal fun ContactActionsPopup(
         aboveCardContent = {
             selectedPhoneNumber?.let { phoneNumber ->
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(AppShapes.extraLarge)
+                        .background(MaterialTheme.colorScheme.surfaceContainerHighest)
+                        .padding(DesignTokens.SpacingXSmall),
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     if (reorderedPhoneNumbers.size > 1 && selectedPhoneIndex > 0) {
-                        IconButton(
+                        AppIconButton(
                             onClick = {
                                 selectedPhoneIndex = (selectedPhoneIndex - 1).coerceAtLeast(0)
                             },
-                            modifier = Modifier.size(32.dp),
+                            modifier = Modifier.size(DesignTokens.Spacing48),
+                            tooltip = stringResource(R.string.contacts_action_previous_number),
                         ) {
                             Icon(
                                 imageVector = MaterialSymbols.ChevronLeft,
                                 contentDescription = stringResource(R.string.contacts_action_previous_number),
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.size(20.dp),
+                                modifier = Modifier.size(DesignTokens.IconSizeSmall),
                             )
                         }
                     } else {
-                        Spacer(modifier = Modifier.size(32.dp))
+                        Spacer(modifier = Modifier.size(DesignTokens.Spacing48))
                     }
 
+                    @OptIn(ExperimentalFoundationApi::class)
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier
+                            .weight(1f)
+                            .heightIn(min = DesignTokens.Spacing48)
+                            .combinedClickable(
+                                indication = null,
+                                interactionSource = remember { MutableInteractionSource() },
+                                onClick = {},
+                                onLongClick = {
+                                    clipboardScope.launch { clipboard.writeText(phoneNumber) }
+                                },
+                            )
+                            .wrapContentHeight(Alignment.CenterVertically),
                     ) {
-                        @OptIn(ExperimentalFoundationApi::class)
                         Text(
                             text = PhoneNumberUtils.formatPhoneNumberForDisplay(phoneNumber),
                             style = MaterialTheme.typography.titleMedium,
@@ -328,15 +328,6 @@ internal fun ContactActionsPopup(
                             textAlign = TextAlign.Center,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
-                            modifier =
-                                Modifier.combinedClickable(
-                                    indication = null,
-                                    interactionSource = remember { MutableInteractionSource() },
-                                    onClick = {},
-                                    onLongClick = {
-                                        clipboardScope.launch { clipboard.writeText(phoneNumber) }
-                                    },
-                                ),
                         )
                         selectedPhoneNumberLabel?.takeIf { it.isNotBlank() }?.let { label ->
                             Text(
@@ -353,24 +344,25 @@ internal fun ContactActionsPopup(
                     if (reorderedPhoneNumbers.size > 1 &&
                         selectedPhoneIndex < reorderedPhoneNumbers.size - 1
                     ) {
-                        IconButton(
+                        AppIconButton(
                             onClick = {
                                 selectedPhoneIndex =
                                     (selectedPhoneIndex + 1).coerceAtMost(
                                         reorderedPhoneNumbers.size - 1,
                                     )
                             },
-                            modifier = Modifier.size(32.dp),
+                            modifier = Modifier.size(DesignTokens.Spacing48),
+                            tooltip = stringResource(R.string.contacts_action_next_number),
                         ) {
                             Icon(
                                 imageVector = MaterialSymbols.ChevronRight,
                                 contentDescription = stringResource(R.string.contacts_action_next_number),
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.size(20.dp),
+                                modifier = Modifier.size(DesignTokens.IconSizeSmall),
                             )
                         }
                     } else {
-                        Spacer(modifier = Modifier.size(32.dp))
+                        Spacer(modifier = Modifier.size(DesignTokens.Spacing48))
                     }
                 }
             }
@@ -378,7 +370,7 @@ internal fun ContactActionsPopup(
         maxInnerCardHeight = maxInnerCardHeight,
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth().padding(bottom = DesignTokens.SpacingLarge),
+            modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
         ) {
         when (state) {

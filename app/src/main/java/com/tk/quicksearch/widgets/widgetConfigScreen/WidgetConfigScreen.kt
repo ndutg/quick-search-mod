@@ -1,34 +1,24 @@
 package com.tk.quicksearch.widgets.widgetConfigScreen
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.Button
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.apps.notificationDots.NotificationDotsPermission
 import com.tk.quicksearch.search.core.SearchViewModel
+import com.tk.quicksearch.shared.ui.components.SegmentedGroup
 import com.tk.quicksearch.shared.ui.components.TipBanner
 import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
+import com.tk.quicksearch.widgets.widgetConfigScreen.components.WidgetConfigScaffold
 import com.tk.quicksearch.widgets.atAGlanceWidget.AtAGlanceWidgetItemsSection
 import com.tk.quicksearch.widgets.customButtonsWidget.CustomWidgetButtonsSection
 import com.tk.quicksearch.widgets.utils.WidgetButtonSlotConfig
@@ -53,7 +43,6 @@ import com.tk.quicksearch.widgets.widgetConfigScreen.components.WidgetTextIconCo
 import com.tk.quicksearch.widgets.widgetConfigScreen.components.WidgetThemeSection
 import com.tk.quicksearch.widgets.widgetConfigScreen.components.WidgetToggleSection
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WidgetConfigScreen(
     state: WidgetPreferences,
@@ -76,74 +65,16 @@ fun WidgetConfigScreen(
         onStateChange(updated.enforceVariantConstraints(widgetVariant))
     }
 
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(titleResId),
-                        style = MaterialTheme.typography.titleLarge,
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = onCancel) {
-                        Icon(
-                            imageVector = MaterialSymbols.Close,
-                            contentDescription =
-                                stringResource(
-                                    R.string
-                                        .dialog_cancel,
-                                ),
-                        )
-                    }
-                },
-            )
-        },
-        bottomBar = {
-            Surface(shadowElevation = WidgetConfigConstants.SURFACE_ELEVATION) {
-                androidx.compose.foundation.layout.Box(
-                    modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(
-                                start =
-                                    WidgetConfigConstants
-                                        .BOTTOM_BAR_HORIZONTAL_PADDING,
-                                end =
-                                    WidgetConfigConstants
-                                        .BOTTOM_BAR_HORIZONTAL_PADDING,
-                                top =
-                                    WidgetConfigConstants
-                                        .BOTTOM_BAR_VERTICAL_PADDING,
-                                bottom =
-                                    WidgetConfigConstants
-                                        .BOTTOM_BAR_BOTTOM_PADDING,
-                            ),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Button(
-                        onClick = onApply,
-                        enabled = isSaveEnabled,
-                        modifier =
-                            Modifier
-                                .fillMaxWidth()
-                                .height(
-                                    WidgetConfigConstants
-                                        .BOTTOM_BUTTON_HEIGHT,
-                                ),
-                    ) {
-                        Text(
-                            text = stringResource(saveLabelResId),
-                            style = MaterialTheme.typography.labelLarge,
-                        )
-                    }
-                }
-            }
-        },
+    WidgetConfigScaffold(
+        title = stringResource(titleResId),
+        onCancel = onCancel,
+        onSave = onApply,
+        saveEnabled = isSaveEnabled,
+        saveLabel = stringResource(saveLabelResId),
     ) { innerPadding ->
         if (!isLoaded) {
             WidgetLoadingState(innerPadding = innerPadding)
-            return@Scaffold
+            return@WidgetConfigScaffold
         }
 
         Column(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
@@ -206,7 +137,6 @@ fun WidgetConfigScreen(
                         icon = MaterialSymbols.Info,
                         onContentClick = { NotificationDotsPermission.openNotificationListenerSettings(context) },
                         showDismissButton = false,
-                        showContentRipple = false,
                     )
                 }
                 if (
@@ -236,17 +166,35 @@ fun WidgetConfigScreen(
                             searchViewModel = searchViewModel,
                         )
                     }
-                    NoteWidgetBackgroundSection(state = constrainedState, onStateChange = onConstrainedStateChange)
-                    NoteWidgetTextColorSection(state = constrainedState, onStateChange = onConstrainedStateChange)
+                    SegmentedGroup {
+                        NoteWidgetBackgroundSection(
+                            state = constrainedState,
+                            index = 0,
+                            count = 2,
+                            onStateChange = onConstrainedStateChange,
+                        )
+                        NoteWidgetTextColorSection(
+                            state = constrainedState,
+                            index = 1,
+                            count = 2,
+                            onStateChange = onConstrainedStateChange,
+                        )
+                    }
                 } else if (isMediaControls) {
-                    MediaControlsThemeSection(
-                        state = constrainedState,
-                        onStateChange = onConstrainedStateChange,
-                    )
-                    MediaControlsTextColorSection(
-                        state = constrainedState,
-                        onStateChange = onConstrainedStateChange,
-                    )
+                    SegmentedGroup {
+                        MediaControlsThemeSection(
+                            state = constrainedState,
+                            index = 0,
+                            count = 2,
+                            onStateChange = onConstrainedStateChange,
+                        )
+                        MediaControlsTextColorSection(
+                            state = constrainedState,
+                            index = 1,
+                            count = 2,
+                            onStateChange = onConstrainedStateChange,
+                        )
+                    }
                 } else {
                     WidgetThemeSection(
                         state = constrainedState,
@@ -264,24 +212,40 @@ fun WidgetConfigScreen(
                     WidgetTextSizeSection(state = constrainedState, onStateChange = onConstrainedStateChange)
                 }
                 if (widgetVariant == WidgetVariant.STANDARD) {
-                    WidgetSearchIconSection(
-                        state = constrainedState,
-                        onStateChange = onConstrainedStateChange,
-                    )
-                    WidgetMicIconSection(state = constrainedState, onStateChange = onConstrainedStateChange)
-                    WidgetToggleSection(
-                        state = constrainedState,
-                        hasCustomButtons = constrainedState.hasCustomButtons,
-                        onStateChange = onConstrainedStateChange,
-                    )
-                    WidgetTextIconColorSection(
-                        state = constrainedState,
-                        onStateChange = onConstrainedStateChange,
-                    )
-                    WidgetIconSizeSection(
-                        state = constrainedState,
-                        onStateChange = onConstrainedStateChange,
-                    )
+                    // The search bar's own options as one group of tiles.
+                    SegmentedGroup {
+                        WidgetSearchIconSection(
+                            state = constrainedState,
+                            index = 0,
+                            count = STANDARD_SEARCH_BAR_TILES,
+                            onStateChange = onConstrainedStateChange,
+                        )
+                        WidgetMicIconSection(
+                            state = constrainedState,
+                            index = 1,
+                            count = STANDARD_SEARCH_BAR_TILES,
+                            onStateChange = onConstrainedStateChange,
+                        )
+                        WidgetToggleSection(
+                            state = constrainedState,
+                            hasCustomButtons = constrainedState.hasCustomButtons,
+                            index = 2,
+                            count = STANDARD_SEARCH_BAR_TILES,
+                            onStateChange = onConstrainedStateChange,
+                        )
+                        WidgetTextIconColorSection(
+                            state = constrainedState,
+                            index = 3,
+                            count = STANDARD_SEARCH_BAR_TILES,
+                            onStateChange = onConstrainedStateChange,
+                        )
+                        WidgetIconSizeSection(
+                            state = constrainedState,
+                            index = 4,
+                            count = STANDARD_SEARCH_BAR_TILES,
+                            onStateChange = onConstrainedStateChange,
+                        )
+                    }
                 }
                 if (!isMediaControls && !isNote && !isAtAGlance) {
                     WidgetInternalPaddingSection(
@@ -293,3 +257,5 @@ fun WidgetConfigScreen(
         }
     }
 }
+
+private const val STANDARD_SEARCH_BAR_TILES = 5

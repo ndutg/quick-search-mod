@@ -3,15 +3,12 @@ package com.tk.quicksearch.search.data
 import android.content.Context
 import com.tk.quicksearch.reminders.ReminderRepeat
 import com.tk.quicksearch.reminders.ReminderScheduler
-import com.tk.quicksearch.search.data.preferences.CalendarPreferences
-import com.tk.quicksearch.search.data.preferences.NicknamePreferences
 import com.tk.quicksearch.search.data.preferences.ReminderPreferences
 import com.tk.quicksearch.search.models.ReminderInfo
 import com.tk.quicksearch.search.noted.NotedGlanceTasks
 import com.tk.quicksearch.search.utils.SearchRankingUtils
 import com.tk.quicksearch.search.utils.SearchTextNormalizer
 import com.tk.quicksearch.shared.time.ScheduleRepeat
-import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,52 +26,6 @@ class ReminderRepository(context: Context) {
     private val appContext = context.applicationContext
     private val preferences = ReminderPreferences(appContext)
 
-    init {
-        // TODO: Remove this migration once most users have updated past the release that added reminders.
-        migrateCustomCalendarEvents()
-    }
-
-    /**
-     * Calendar events created inside Quick Search are replaced by reminders. Moves them, with their pinned
-     * state, into reminders and clears the old store. Hidden events come back visible, since reminders
-     * can't be hidden. A no-op once that store is empty, and it
-     * also picks up events restored from an older backup.
-     */
-    private fun migrateCustomCalendarEvents() {
-        val calendarPreferences = CalendarPreferences(appContext)
-        if (calendarPreferences.getCustomEventsJson().isBlank()) return
-        // Several repositories can be created at once; the lock keeps events from migrating twice.
-        synchronized(lock) {
-            val raw = calendarPreferences.getCustomEventsJson()
-            if (raw.isBlank()) return
-            migrateCustomCalendarEvents(calendarPreferences, raw)
-        }
-    }
-
-    private fun migrateCustomCalendarEvents(calendarPreferences: CalendarPreferences, raw: String) {
-        val events = parseLegacyCustomEvents(raw)
-        val pinnedEventIds = calendarPreferences.getPinnedEventIds()
-        val nicknamePreferences = NicknamePreferences(appContext)
-        val nowMillis = System.currentTimeMillis()
-        val zoneId = ZoneId.systemDefault()
-
-        val migrated =
-            events.map { event ->
-                val reminder =
-                    legacyCustomEventToReminder(event, preferences.nextReminderId(), nowMillis, zoneId)
-                if (event.eventId in pinnedEventIds) preferences.pinReminder(reminder.reminderId)
-                calendarPreferences.unpinEvent(event.eventId)
-                calendarPreferences.removeExcludedEvent(event.eventId)
-                nicknamePreferences.setCalendarEventNickname(event.eventId, null)
-                reminder
-            }
-        if (migrated.isNotEmpty()) {
-            mutate { reminders -> reminders + migrated }
-            migrated.forEach { ReminderScheduler.schedule(appContext, it, nowMillis) }
-        }
-        calendarPreferences.setCustomEventsJson("")
-    }
-
     fun getAllReminders(): List<ReminderInfo> = readReminders()
 
     fun getReminderById(reminderId: Long): ReminderInfo? =
@@ -89,6 +40,7 @@ class ReminderRepository(context: Context) {
     fun searchReminders(
         query: String,
         includePastReminders: Boolean,
+        resultLimit: Int = Int.MAX_VALUE,
     ): List<ReminderInfo> {
         val normalizedQuery = SearchTextNormalizer.normalizeForSearch(query.trim())
         if (normalizedQuery.isBlank()) return emptyList()
@@ -101,6 +53,7 @@ class ReminderRepository(context: Context) {
                 if (SearchRankingUtils.isOtherMatch(priority)) null else reminder to priority
             }
             .sortedWith(compareBy<Pair<ReminderInfo, Int>> { it.second }.thenBy { it.first.dueMillis })
+            .take(resultLimit)
             .map { it.first }
             .toList()
     }
@@ -358,7 +311,13 @@ class ReminderRepository(context: Context) {
         notifyChanged()
     }
 
-    private fun readReminders(): List<ReminderInfo> = parseReminders(preferences.getRemindersJson())
+    private fun readReminders(): List<ReminderInfo> {
+        val raw = preferences.getRemindersJson()
+        // Preferences hand back the same string until the next write, so this is usually an
+        // identity check; only a changed value is parsed again.
+        parsedCache?.let { (cachedRaw, reminders) -> if (cachedRaw === raw || cachedRaw == raw) return reminders }
+        return parseReminders(raw).also { parsedCache = raw to it }
+    }
 
     private fun writeReminders(reminders: List<ReminderInfo>) {
         preferences.setRemindersJson(serializeReminders(reminders))
@@ -366,6 +325,12 @@ class ReminderRepository(context: Context) {
 
     companion object {
         const val SNOOZE_MILLIS = 30L * 60L * 1000L
+
+        /** Most reminders a regular search returns; the collapsed card shows only the first. */
+        const val SEARCH_RESULT_LIMIT = 25
+
+        /** The last reminders JSON read and its parsed reminders, shared by every repository. */
+        @Volatile private var parsedCache: Pair<String, List<ReminderInfo>>? = null
 
         /** When [reminder] joins At a Glance: from the morning for an undated one, else ahead of its time. */
         fun glanceVisibleFromMillis(reminder: ReminderInfo): Long =
@@ -395,11 +360,6 @@ class ReminderRepository(context: Context) {
         private const val FIELD_DISMISSED_FROM_HOME_DATE = "dismissedFromHomeDate"
         private const val FIELD_REPEAT_INTERVAL = "repeatInterval"
         private const val FIELD_REPEAT_UNIT = "repeatUnit"
-
-        private const val LEGACY_FIELD_EVENT_ID = "eventId"
-        private const val LEGACY_FIELD_TITLE = "title"
-        private const val LEGACY_FIELD_DATE_TIME_MILLIS = "dateTimeMillis"
-        private const val LEGACY_FIELD_ALL_DAY = "allDay"
 
         private val lock = Any()
         private val _changes = MutableStateFlow(0)
@@ -466,55 +426,5 @@ class ReminderRepository(context: Context) {
             return array.toString()
         }
 
-        internal data class LegacyCustomEvent(
-            val eventId: Long,
-            val title: String,
-            val dateTimeMillis: Long,
-            val allDay: Boolean,
-        )
-
-        internal fun parseLegacyCustomEvents(raw: String): List<LegacyCustomEvent> {
-            val array = runCatching { JSONArray(raw) }.getOrNull() ?: return emptyList()
-            return (0 until array.length()).mapNotNull { index ->
-                val obj = array.optJSONObject(index) ?: return@mapNotNull null
-                val eventId = obj.optLong(LEGACY_FIELD_EVENT_ID, 0L)
-                val title = obj.optString(LEGACY_FIELD_TITLE).orEmpty()
-                val dateTimeMillis = obj.optLong(LEGACY_FIELD_DATE_TIME_MILLIS, 0L)
-                if (eventId == 0L || title.isBlank() || dateTimeMillis <= 0L) return@mapNotNull null
-                LegacyCustomEvent(
-                    eventId = eventId,
-                    title = title,
-                    dateTimeMillis = dateTimeMillis,
-                    allDay = obj.optBoolean(LEGACY_FIELD_ALL_DAY, true),
-                )
-            }
-        }
-
-        /**
-         * All-day events become reminders without a time. Events already in the past are marked done and
-         * kept off Home, so the migration doesn't surface a pile of overdue reminders.
-         */
-        internal fun legacyCustomEventToReminder(
-            event: LegacyCustomEvent,
-            reminderId: Long,
-            nowMillis: Long,
-            zoneId: ZoneId,
-        ): ReminderInfo {
-            val dateTime = Instant.ofEpochMilli(event.dateTimeMillis).atZone(zoneId)
-            val reminder =
-                ReminderInfo(
-                    reminderId = reminderId,
-                    title = event.title.trim(),
-                    date = dateTime.toLocalDate(),
-                    timeMinutes = if (event.allDay) null else dateTime.hour * 60 + dateTime.minute,
-                )
-            val isPast =
-                if (event.allDay) {
-                    reminder.date.isBefore(Instant.ofEpochMilli(nowMillis).atZone(zoneId).toLocalDate())
-                } else {
-                    reminder.dueMillis(zoneId) <= nowMillis
-                }
-            return if (isPast) reminder.copy(isDone = true, isDismissedFromHome = true) else reminder
-        }
     }
 }

@@ -1,5 +1,12 @@
 package com.tk.quicksearch.search.bookmarks
 
+import androidx.compose.ui.semantics.Role
+import com.tk.quicksearch.shared.ui.theme.AppShapes
+import com.tk.quicksearch.search.searchScreen.components.ExpandButtonSegment
+import com.tk.quicksearch.search.searchScreen.shared.segmentedRowsActive
+import com.tk.quicksearch.search.searchScreen.shared.resultRowsContainerPadding
+import com.tk.quicksearch.search.searchScreen.shared.ResultSegment
+import com.tk.quicksearch.search.searchScreen.shared.ResultRowDivider
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -11,9 +18,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -46,10 +51,8 @@ import com.tk.quicksearch.search.searchScreen.components.ExpandableResultsCard
 import com.tk.quicksearch.search.searchScreen.components.rememberQueryHighlightedText
 import com.tk.quicksearch.search.searchScreen.components.resultRowVerticalPadding
 import com.tk.quicksearch.search.searchScreen.components.topPredictedRowContainer
-import com.tk.quicksearch.search.searchScreen.components.topPredictedRowContentPadding
 import com.tk.quicksearch.search.searchScreen.shared.compactEdgeToEdge
 import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
-import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.util.hapticConfirm
 import kotlinx.coroutines.Dispatchers
@@ -87,6 +90,7 @@ fun BookmarksResultsSection(
     val shouldUseInternalScroll = isExpanded && allowInternalScroll
 
     ExpandableResultsCard(
+        segmented = true,
         resultCount = bookmarks.size,
         hasAdditionalResults = bookmarks.size > collapsed.size,
         isExpanded = isExpanded,
@@ -106,34 +110,34 @@ fun BookmarksResultsSection(
                     if (shouldUseInternalScroll) Modifier.verticalScroll(scrollState) else Modifier,
                 ),
         ) {
+            val segmentCount = displayed.size + if (cardState.shouldShowExpandButton) 1 else 0
+            val segmented = segmentedRowsActive()
             Column(
                 modifier =
                     Modifier.fillMaxWidth()
-                        .padding(horizontal = DesignTokens.SpacingMedium, vertical = 4.dp),
+                        .padding(
+                        horizontal = resultRowsContainerPadding(DesignTokens.SpacingMedium),
+                        vertical = resultRowsContainerPadding(4.dp),
+                    ),
             ) {
                 displayed.forEachIndexed { index, bookmark ->
                     key(bookmark.bookmarkId) {
+                        ResultSegment(index = index, count = segmentCount) {
                         BookmarkRow(
                             bookmark = bookmark,
                             onClick = params.onBookmarkClick,
                             isPredicted = false,
                         )
+                        }
                         if (index < displayed.lastIndex) {
-                            HorizontalDivider(
-                                modifier = Modifier.compactEdgeToEdge().fillMaxWidth(),
-                                color =
-                                    overlayDividerColor
-                                        ?: if (params.showWallpaperBackground) {
-                                            AppColors.WallpaperDivider
-                                        } else {
-                                            MaterialTheme.colorScheme.outlineVariant
-                                        },
-                            )
+                            ResultRowDivider(params.showWallpaperBackground, color = overlayDividerColor)
                         }
                     }
                 }
 
-                if (cardState.shouldShowExpandButton) {
+                if (cardState.shouldShowExpandButton && segmented) {
+                    ExpandButtonSegment(index = segmentCount - 1, count = segmentCount, onClick = params.onExpandClick, textResId = R.string.action_expand_more_bookmarks)
+                } else if (cardState.shouldShowExpandButton) {
                     ExpandButtonDivider(params.showWallpaperBackground)
                     ExpandButton(
                         onClick = params.onExpandClick,
@@ -158,30 +162,29 @@ internal fun BookmarkRow(
             Modifier.fillMaxWidth()
                 .heightIn(min = ROW_MIN_HEIGHT_DP.dp)
                 .topPredictedRowContainer(isTopPredicted = isPredicted)
-                .clickable {
+                .clickable(role = Role.Button) {
                     hapticConfirm(rowView)()
                     onClick(bookmark)
                 }
-                .topPredictedRowContentPadding()
-                .padding(vertical = resultRowVerticalPadding(12.dp)),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                .padding(vertical = resultRowVerticalPadding(DesignTokens.SpacingMedium)),
+        horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        BookmarkFavicon(bookmark = bookmark, modifier = Modifier.padding(start = 7.dp))
+        BookmarkFavicon(bookmark = bookmark, modifier = Modifier.padding(start = DesignTokens.ResultIconStartInset))
         Column(
             modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(2.dp),
+            verticalArrangement = Arrangement.spacedBy(DesignTokens.TextColumnSpacing),
         ) {
             Text(
                 text = rememberQueryHighlightedText(bookmark.name),
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
             Text(
                 text = remember(bookmark.url) { BookmarkUrls.displayHost(bookmark.url) },
-                style = MaterialTheme.typography.bodySmall,
+                style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
@@ -198,17 +201,24 @@ fun BookmarkFavicon(
     size: Dp = 24.dp,
 ) {
     val context = LocalContext.current
+    val faviconStore = remember(context) { BookmarkFaviconStore(context) }
+    // An icon already decoded shows on the first frame, without the globe or a dispatcher hop.
+    val cachedFavicon =
+        remember(bookmark.bookmarkId, bookmark.faviconVersion) {
+            faviconStore.cachedBitmap(bookmark.bookmarkId, bookmark.faviconVersion)?.asImageBitmap()
+        }
     val favicon by
-        produceState<ImageBitmap?>(null, bookmark.bookmarkId, bookmark.faviconVersion) {
+        produceState<ImageBitmap?>(cachedFavicon, bookmark.bookmarkId, bookmark.faviconVersion) {
             value =
-                if (!bookmark.hasFavicon) {
-                    null
-                } else {
-                    withContext(Dispatchers.IO) {
-                        BookmarkFaviconStore(context)
-                            .loadBitmap(bookmark.bookmarkId, bookmark.faviconVersion)
-                            ?.asImageBitmap()
-                    }
+                when {
+                    !bookmark.hasFavicon -> null
+                    cachedFavicon != null -> cachedFavicon
+                    else ->
+                        withContext(Dispatchers.IO) {
+                            faviconStore
+                                .loadBitmap(bookmark.bookmarkId, bookmark.faviconVersion)
+                                ?.asImageBitmap()
+                        }
                 }
         }
     Box(modifier = modifier.size(size), contentAlignment = Alignment.Center) {
@@ -217,7 +227,7 @@ fun BookmarkFavicon(
             Image(
                 bitmap = bitmap,
                 contentDescription = null,
-                modifier = Modifier.size(size).clip(RoundedCornerShape(6.dp)),
+                modifier = Modifier.size(size).clip(AppShapes.favicon),
             )
         } else {
             Icon(

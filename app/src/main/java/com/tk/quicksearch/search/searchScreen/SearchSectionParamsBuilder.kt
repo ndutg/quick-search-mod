@@ -24,7 +24,6 @@ import com.tk.quicksearch.searchEngines.getId
 import com.tk.quicksearch.search.searchScreen.dialogs.NicknameDialogState
 import com.tk.quicksearch.search.searchScreen.dialogs.TriggerDialogState
 import com.tk.quicksearch.search.searchScreen.searchScreenLayout.SectionRenderingState
-import com.tk.quicksearch.shared.featureFlags.FeatureFlags
 import java.util.Locale
 
 /** Helper function to build all the section parameters needed by SearchScreenContent */
@@ -204,6 +203,7 @@ internal fun buildSectionParams(
                         message = message,
                         actionLabel = actionLabel,
                         onActionClick = onActionClick,
+                        showWallpaperBackground = state.showWallpaperBackground,
                     )
                 },
                 showWallpaperBackground = state.showWallpaperBackground,
@@ -453,6 +453,7 @@ internal fun buildSectionParams(
                         message = message,
                         actionLabel = actionLabel,
                         onActionClick = onActionClick,
+                        showWallpaperBackground = state.showWallpaperBackground,
                     )
                 },
                 showWallpaperBackground = state.showWallpaperBackground,
@@ -463,6 +464,33 @@ internal fun buildSectionParams(
             val suggestionExcludedKeys = state.suggestionExcludedApps.map { it.launchCountKey() }.toSet()
             state.allApps.filter { app ->
                 app.hasLaunchIntent && !suggestionExcludedKeys.contains(app.launchCountKey())
+            }
+        }
+    // Kept out of appsParams so rebuilding it (any of its many keys changing) does not hand every
+    // app tile new callbacks, which recomposes the whole grid.
+    val onAppNicknameClick: (AppInfo) -> Unit =
+        remember(onUpdateNicknameDialogState, getAppNickname) {
+            { app ->
+                onUpdateNicknameDialogState(
+                    NicknameDialogState.App(
+                        app = app,
+                        currentNickname =
+                            getAppNickname(app.launchCountKey()),
+                        itemName = app.appName,
+                    ),
+                )
+            }
+        }
+    val onAppTriggerClick: (AppInfo) -> Unit =
+        remember(onUpdateTriggerDialogState, getAppTrigger) {
+            { app ->
+                onUpdateTriggerDialogState(
+                    TriggerDialogState.App(
+                        app = app,
+                        currentTrigger = getAppTrigger(app.launchCountKey()),
+                        itemName = app.appName,
+                    ),
+                )
             }
         }
     val appsParams =
@@ -515,25 +543,8 @@ internal fun buildSectionParams(
                 onPinApp = onPinApp,
                 onUnpinApp = onUnpinApp,
                 onReorderPinnedApps = onReorderPinnedApps,
-                onNicknameClick = { app ->
-                    onUpdateNicknameDialogState(
-                        NicknameDialogState.App(
-                            app = app,
-                            currentNickname =
-                                getAppNickname(app.launchCountKey()),
-                            itemName = app.appName,
-                        ),
-                    )
-                },
-                onTriggerClick = { app ->
-                    onUpdateTriggerDialogState(
-                        TriggerDialogState.App(
-                            app = app,
-                            currentTrigger = getAppTrigger(app.launchCountKey()),
-                            itemName = app.appName,
-                        ),
-                    )
-                },
+                onNicknameClick = onAppNicknameClick,
+                onTriggerClick = onAppTriggerClick,
                 getAppNickname = getAppNickname,
                 getAppTrigger = getAppTrigger,
                 rowCount = derivedState.visibleRowCount,
@@ -634,6 +645,7 @@ internal fun buildSectionParams(
                         message = message,
                         actionLabel = actionLabel,
                         onActionClick = onActionClick,
+                        showWallpaperBackground = state.showWallpaperBackground,
                     )
                 },
                 showWallpaperBackground = state.showWallpaperBackground,

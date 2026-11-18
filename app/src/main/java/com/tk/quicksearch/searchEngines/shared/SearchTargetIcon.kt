@@ -3,16 +3,19 @@ package com.tk.quicksearch.searchEngines.shared
 import android.graphics.BitmapFactory
 import android.util.Base64
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.produceState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.graphics.ImageBitmap
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import com.tk.quicksearch.shared.ui.theme.AppColors
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.graphics.asImageBitmap
@@ -31,6 +34,7 @@ import com.tk.quicksearch.searchEngines.getIconColorPolicy
 import com.tk.quicksearch.searchEngines.isInstallOnlyEngine
 import com.tk.quicksearch.searchEngines.SearchEngineIconColorPolicy
 import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
+import com.tk.quicksearch.shared.ui.theme.AppShapes
 
 /**
  * Configuration for rendering search target icons with different styles.
@@ -83,7 +87,7 @@ fun SearchTargetIcon(
                     modifier =
                         modifier.size(iconSize).then(
                             if (appIconShape == AppIconShape.CIRCLE) {
-                                Modifier.clip(CircleShape)
+                                Modifier.clip(AppShapes.full)
                             } else {
                                 Modifier
                             },
@@ -103,7 +107,7 @@ fun SearchTargetIcon(
                         painter = painterResource(id = drawableResId),
                         contentDescription = targetEngine.getContentDescription(),
                         modifier = modifier.size(iconSize),
-                        tint = if (isLightMode) Color.Black else Color.White,
+                        tint = AppColors.indicatorBase(lightFill = !isLightMode),
                     )
                 } else {
                     when (style) {
@@ -215,7 +219,7 @@ fun SearchTargetIcon(
                     modifier =
                         modifier.size(iconSize).then(
                             if (appIconShape == AppIconShape.CIRCLE) {
-                                Modifier.clip(CircleShape)
+                                Modifier.clip(AppShapes.full)
                             } else {
                                 Modifier
                             },
@@ -233,21 +237,28 @@ fun SearchTargetIcon(
         }
 
         is SearchTarget.Custom -> {
-            val faviconBitmap =
-                remember(target.custom.faviconBase64) {
-                    val encoded = target.custom.faviconBase64 ?: return@remember null
-                    val bytes = runCatching { Base64.decode(encoded, Base64.DEFAULT) }.getOrNull()
-                        ?: return@remember null
-                    BitmapFactory.decodeByteArray(bytes, 0, bytes.size)?.asImageBitmap()
+            val encoded = target.custom.faviconBase64
+            // Key the state as well as the producer so an edited engine never flashes its old icon.
+            val faviconBitmap by androidx.compose.runtime.key(encoded) {
+                produceState<ImageBitmap?>(initialValue = null, key1 = encoded) {
+                    value = withContext(Dispatchers.IO) {
+                        encoded?.let {
+                            runCatching {
+                                val bytes = Base64.decode(it, Base64.DEFAULT)
+                                BitmapFactory.decodeByteArray(bytes, 0, bytes.size)?.asImageBitmap()
+                            }.getOrNull()
+                        }
+                    }
                 }
+            }
             if (faviconBitmap != null) {
                 Image(
-                    bitmap = faviconBitmap,
+                    bitmap = requireNotNull(faviconBitmap),
                     contentDescription = target.custom.name,
                     modifier =
                         modifier
                             .size(iconSize)
-                            .clip(RoundedCornerShape(iconSize * 0.2f)),
+                            .clip(AppShapes.faviconScaled),
                     contentScale = ContentScale.Fit,
                 )
             } else {

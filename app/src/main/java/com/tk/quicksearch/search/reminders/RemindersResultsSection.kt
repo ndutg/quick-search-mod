@@ -1,5 +1,11 @@
 package com.tk.quicksearch.search.reminders
 
+import androidx.compose.ui.semantics.Role
+import com.tk.quicksearch.search.searchScreen.components.ExpandButtonSegment
+import com.tk.quicksearch.search.searchScreen.shared.segmentedRowsActive
+import com.tk.quicksearch.search.searchScreen.shared.resultRowsContainerPadding
+import com.tk.quicksearch.search.searchScreen.shared.ResultSegment
+import com.tk.quicksearch.search.searchScreen.shared.ResultRowDivider
 import com.tk.quicksearch.reminders.ReminderRepeat
 import com.tk.quicksearch.search.searchScreen.shared.compactEdgeToEdge
 import android.text.format.DateFormat
@@ -14,8 +20,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -49,9 +53,10 @@ import com.tk.quicksearch.search.searchScreen.components.ExpandButtonDivider
 import com.tk.quicksearch.search.searchScreen.components.ExpandableResultsCard
 import com.tk.quicksearch.search.searchScreen.components.rememberQueryHighlightedText
 import com.tk.quicksearch.search.searchScreen.components.topPredictedRowContainer
-import com.tk.quicksearch.search.searchScreen.components.topPredictedRowContentPadding
 import com.tk.quicksearch.search.searchScreen.components.resultRowVerticalPadding
 import com.tk.quicksearch.shared.ui.components.AppDropdownMenu
+import com.tk.quicksearch.shared.ui.components.AppDropdownMenuDivider
+import com.tk.quicksearch.shared.ui.components.AppDropdownMenuItem
 import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
@@ -108,6 +113,7 @@ fun RemindersResultsSection(
         fillExpandedHeight = fillExpandedHeight,
         showWallpaperBackground = showWallpaperBackground,
         overlayCardColor = overlayCardColor,
+        segmented = true,
     ) { contentModifier, cardState ->
         val displayReminders = if (cardState.displayAsExpanded) reminders else collapsedReminders
         Column(
@@ -116,10 +122,15 @@ fun RemindersResultsSection(
                     if (shouldUseInternalScroll) Modifier.verticalScroll(scrollState) else Modifier,
                 ),
         ) {
+            val segmentCount = displayReminders.size + if (cardState.shouldShowExpandButton) 1 else 0
+            val segmented = segmentedRowsActive()
             Column(
                 modifier =
                     Modifier.fillMaxWidth()
-                        .padding(horizontal = DesignTokens.SpacingMedium, vertical = 4.dp)
+                        .padding(
+                        horizontal = resultRowsContainerPadding(DesignTokens.SpacingMedium),
+                        vertical = resultRowsContainerPadding(4.dp),
+                    )
                         .padding(
                             bottom =
                                 if (cardState.shouldFillExpandedHeight) DesignTokens.SpacingSmall else 0.dp,
@@ -127,6 +138,7 @@ fun RemindersResultsSection(
             ) {
                 displayReminders.forEachIndexed { index, reminder ->
                     key(reminder.reminderId) {
+                        ResultSegment(index = index, count = segmentCount) {
                         ReminderRow(
                             reminder = reminder,
                             isPinned = pinnedReminderIds.contains(reminder.reminderId),
@@ -138,22 +150,16 @@ fun RemindersResultsSection(
                             isPredicted = false,
                             showPinnedItemMenu = showPinnedItemMenu,
                         )
+                        }
                         if (index < displayReminders.lastIndex) {
-                            HorizontalDivider(
-                                modifier = Modifier.compactEdgeToEdge().fillMaxWidth(),
-                                color =
-                                    overlayDividerColor
-                                        ?: if (showWallpaperBackground) {
-                                            AppColors.WallpaperDivider
-                                        } else {
-                                            MaterialTheme.colorScheme.outlineVariant
-                                        },
-                            )
+                            ResultRowDivider(showWallpaperBackground, color = overlayDividerColor)
                         }
                     }
                 }
 
-                if (cardState.shouldShowExpandButton) {
+                if (cardState.shouldShowExpandButton && segmented) {
+                    ExpandButtonSegment(index = segmentCount - 1, count = segmentCount, onClick = onExpandClick, textResId = R.string.action_expand_more_reminders)
+                } else if (cardState.shouldShowExpandButton) {
                     ExpandButtonDivider(showWallpaperBackground)
                     ExpandButton(
                         onClick = onExpandClick,
@@ -190,41 +196,41 @@ internal fun ReminderRow(
                 .heightIn(min = ROW_MIN_HEIGHT_DP.dp)
                 .topPredictedRowContainer(isTopPredicted = isPredicted)
                 .combinedClickable(
+                    role = Role.Button,
                     onClick = {
                         hapticConfirm(rowView)()
                         if (notedItem != null) NotedLauncher.open(context, notedItem) else onClick(reminder)
                     },
                     onLongClick = { showMenu = true },
                 )
-                .topPredictedRowContentPadding()
-                .padding(vertical = resultRowVerticalPadding(12.dp)),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                .padding(vertical = resultRowVerticalPadding(DesignTokens.SpacingMedium)),
+        horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         if (notedItem != null) {
-            NotedAppIcon(iconPackPackage = null, modifier = Modifier.padding(start = 7.dp).size(24.dp))
+            NotedAppIcon(iconPackPackage = null, modifier = Modifier.padding(start = DesignTokens.ResultIconStartInset).size(24.dp))
         } else {
             Icon(
                 painter = painterResource(R.drawable.ic_reminder),
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(start = 7.dp).size(24.dp),
+                modifier = Modifier.padding(start = DesignTokens.ResultIconStartInset).size(24.dp),
             )
         }
         Column(
             modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(2.dp),
+            verticalArrangement = Arrangement.spacedBy(DesignTokens.TextColumnSpacing),
         ) {
             Text(
                 text = rememberQueryHighlightedText(reminder.title),
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
             )
             Text(
                 text = reminderScheduleLabel(reminder),
-                style = MaterialTheme.typography.bodySmall,
+                style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
@@ -284,17 +290,17 @@ internal fun ReminderRow(
                     }
                     addItem(
                         R.string.dialog_delete,
-                        { Icon(imageVector = MaterialSymbols.Delete, contentDescription = null) },
+                        { Icon(imageVector = MaterialSymbols.DeleteOutline, contentDescription = null) },
                     ) { onDelete(reminder) }
                 }
 
             menuItems.forEachIndexed { index, item ->
                 if (index > 0) {
-                    HorizontalDivider()
+                    AppDropdownMenuDivider()
                 }
-                DropdownMenuItem(
-                    text = { Text(text = stringResource(item.textResId)) },
-                    leadingIcon = { item.icon() },
+                AppDropdownMenuItem(
+                    text = stringResource(item.textResId),
+                    leadingIcon = item.icon,
                     onClick = item.onClick,
                 )
             }
@@ -310,14 +316,14 @@ internal fun ReminderRow(
 fun ReminderRelativeDateText(reminder: ReminderInfo) {
     val isOverdue = reminder.isOverdue()
     Row(
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingXSmall),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         if (reminder.isDone) ReminderDoneIcon()
         Text(
             text =
                 if (isOverdue) stringResource(R.string.reminder_status_overdue) else reminderRelativeDateLabel(reminder),
-            style = MaterialTheme.typography.bodySmall,
+            style = MaterialTheme.typography.bodyMedium,
             color = if (isOverdue) reminderOverdueColor() else MaterialTheme.colorScheme.onSurfaceVariant,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
@@ -326,7 +332,7 @@ fun ReminderRelativeDateText(reminder: ReminderInfo) {
 }
 
 @Composable
-fun reminderOverdueColor(): Color = MaterialTheme.colorScheme.error.copy(alpha = 0.85f)
+fun reminderOverdueColor(): Color = MaterialTheme.colorScheme.error.copy(alpha = AppColors.ContentStrongAlpha)
 
 /** Matches calendar events: "In 2 hours" for timed reminders, "Tomorrow" for time-less ones. */
 @Composable
@@ -341,7 +347,9 @@ fun reminderRelativeDateLabel(reminder: ReminderInfo): String =
 @Composable
 fun reminderScheduleLabel(reminder: ReminderInfo): String {
     val context = LocalContext.current
-    val dateText = SimpleDateFormat("EEE, MMM d", Locale.getDefault()).format(Date(reminder.dayStartMillis))
+    val locale = Locale.getDefault()
+    val dateFormat = remember(locale) { SimpleDateFormat("EEE, MMM d", locale) }
+    val dateText = dateFormat.format(Date(reminder.dayStartMillis))
     val schedule =
         if (reminder.hasTime) {
             "$dateText • ${DateFormat.getTimeFormat(context).format(Date(reminder.dueMillis))}"
@@ -358,6 +366,6 @@ fun ReminderDoneIcon(modifier: Modifier = Modifier) {
         imageVector = MaterialSymbols.Check,
         contentDescription = stringResource(R.string.reminder_status_done),
         tint = MaterialTheme.colorScheme.onSurfaceVariant,
-        modifier = modifier.size(14.dp),
+        modifier = modifier.size(DesignTokens.ButtonIconSizeExtraSmall),
     )
 }

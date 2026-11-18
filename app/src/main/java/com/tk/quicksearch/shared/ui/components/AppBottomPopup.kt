@@ -1,18 +1,20 @@
 package com.tk.quicksearch.shared.ui.components
 
+import com.tk.quicksearch.shared.ui.theme.AppShapes
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.spring
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,39 +22,36 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
+import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import com.tk.quicksearch.R
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
+import com.tk.quicksearch.shared.ui.theme.AppMotion
 
 /**
- * A bottom-anchored popup dialog with a header and scrollable dark content card.
+ * A bottom-anchored popup dialog with a header and scrollable content card.
  *
  * Use this as the shell for any feature that needs a bottom popup with a titled header and a list
  * of actions or options. Pass feature-specific content via the [content] slot.
@@ -69,16 +68,18 @@ import kotlin.math.roundToInt
  * @param contentBottomPadding Padding below the scrollable content, inside the card.
  * @param contentHorizontalPadding Padding on both sides of the scrollable content, inside the card.
  * @param contentTopPadding Padding above scrollable content when there is no fixed top content.
+ * @param bottomPadding Space between the popup's content and its bottom edge.
+ * @param animateSizeChanges Animate content-driven height changes while keeping the bottom anchored.
  * @param showCloseButton Whether the header shows a close button after the title.
  * @param bottomOverlay Optional content drawn over the popup's bottom edge, clipped to its shape.
- * @param content Content rendered inside the scrollable dark card.
+ * @param content Content rendered inside the scrollable card.
  */
 @Composable
 fun AppBottomPopup(
     onDismiss: () -> Unit,
     title: @Composable () -> Unit,
     modifier: Modifier = Modifier,
-    containerColor: Color = AppColors.getDrawerContainerColor(),
+    containerColor: Color = AppColors.DialogBackground,
     contentCardColor: Color = AppColors.getSettingsCardContainerColor(),
     leadingContent: (@Composable () -> Unit)? = null,
     aboveCardContent: (@Composable () -> Unit)? = null,
@@ -88,13 +89,14 @@ fun AppBottomPopup(
     innerCardHeight: Dp? = null,
     drawerHeight: Dp? = null,
     contentSpacing: Dp = 24.dp,
-    headerSpacing: Dp = 16.dp,
+    bottomPadding: Dp = DesignTokens.SpacingXXLarge,
     contentTopPadding: Dp = 20.dp,
     contentBottomPadding: Dp = 24.dp,
     contentHorizontalPadding: Dp = 16.dp,
     contentScrollable: Boolean = true,
     bottomOverlay: (@Composable BoxScope.() -> Unit)? = null,
     showCloseButton: Boolean = true,
+    animateSizeChanges: Boolean = false,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     val defaultMaxCardHeight = LocalConfiguration.current.screenHeightDp.dp * 0.72f
@@ -112,21 +114,24 @@ fun AppBottomPopup(
                 decorFitsSystemWindows = false,
             ),
     ) {
-        Box(
+        BoxWithConstraints(
             modifier = Modifier
                 .fillMaxWidth()
                 .fillMaxHeight()
-                .clickable(
-                    indication = null,
-                    interactionSource = remember { MutableInteractionSource() },
-                    onClick = onDismiss,
-                ),
+                .safeDrawingPadding(),
             contentAlignment = Alignment.BottomCenter,
         ) {
+            // The scrim is a sibling of the sheet. Back and the header close action handle dismissal
+            // for accessibility without adding an invisible focus stop to the dialog.
+            Box(Modifier.matchParentSize().pointerInput(onDismiss) {
+                detectTapGestures(onTap = { onDismiss() })
+            })
             Surface(
                 modifier =
                     modifier
+                        .widthIn(max = DesignTokens.ItemMenuMaxWidth)
                         .fillMaxWidth()
+                        .heightIn(max = maxHeight)
                         .offset { IntOffset(0, offsetY.value.roundToInt()) }
                         .draggable(
                             orientation = Orientation.Vertical,
@@ -140,13 +145,13 @@ fun AppBottomPopup(
                                     onDismiss()
                                 } else {
                                     coroutineScope.launch {
-                                        offsetY.animateTo(0f, spring())
+                                        offsetY.animateTo(0f, AppMotion.defaultSpatial())
                                     }
                                 }
                             },
                         )
-                        .padding(start = 8.dp, end = 8.dp, top = 8.dp, bottom = 24.dp),
-                shape = MaterialTheme.shapes.extraLarge,
+                        .padding(DesignTokens.SpacingSmall),
+                shape = AppShapes.extraLarge,
                 color = containerColor,
                 contentColor = MaterialTheme.colorScheme.onSurface,
             ) {
@@ -154,54 +159,48 @@ fun AppBottomPopup(
                     Column(
                         modifier =
                             Modifier
-                                .fillMaxWidth()
-                                .clickable(
-                                    indication = null,
-                                    interactionSource = remember { MutableInteractionSource() },
-                                    onClick = {},
+                                .then(
+                                    if (animateSizeChanges) {
+                                        Modifier.animateContentSize(
+                                            animationSpec = AppMotion.defaultSpatial(),
+                                            alignment = Alignment.BottomCenter,
+                                        )
+                                    } else {
+                                        Modifier
+                                    },
                                 )
-                                .padding(horizontal = 12.dp, vertical = 24.dp)
+                                .fillMaxWidth()
+                                .padding(
+                                    start = DesignTokens.ContentHorizontalPadding,
+                                    top = DesignTokens.SpacingLarge,
+                                    end = DesignTokens.ContentHorizontalPadding,
+                                    bottom = bottomPadding,
+                                )
                                 .then(
                                     if (drawerHeight != null) Modifier.height(drawerHeight)
                                     else Modifier,
                                 ),
                         verticalArrangement = Arrangement.spacedBy(contentSpacing),
                     ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(headerSpacing),
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            if (leadingContent != null) {
-                                leadingContent()
-                            }
-                            Box(modifier = Modifier.weight(1f)) {
-                                title()
-                            }
-                            if (showCloseButton) {
-                                IconButton(onClick = onDismiss, modifier = Modifier.size(40.dp)) {
-                                    Icon(
-                                        imageVector = MaterialSymbols.Close,
-                                        contentDescription = stringResource(R.string.dialog_cancel),
-                                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    )
-                                }
-                            }
-                        }
+                        AppDrawerHeader(
+                            onClose = onDismiss.takeIf { showCloseButton },
+                            leadingContent = leadingContent,
+                            title = title,
+                        )
 
                         aboveCardContent?.invoke()
 
                         Card(
                             modifier =
-                                Modifier.fillMaxWidth().then(
+                                Modifier.fillMaxWidth().weight(1f, fill = drawerHeight != null).then(
                                     when {
-                                        drawerHeight != null -> Modifier.weight(1f)
+                                        drawerHeight != null -> Modifier
                                         innerCardHeight != null -> Modifier.height(innerCardHeight)
                                         else -> Modifier.heightIn(max = resolvedMaxCardHeight)
                                     },
                                 ),
                             colors = CardDefaults.cardColors(containerColor = contentCardColor),
-                            shape = MaterialTheme.shapes.large,
+                            shape = AppShapes.large,
                         ) {
                             if (fixedTopContent == null) {
                                 val scrollState = rememberScrollState()
@@ -219,7 +218,7 @@ fun AppBottomPopup(
                                                 end = contentHorizontalPadding,
                                                 bottom = contentBottomPadding,
                                             ),
-                                    verticalArrangement = Arrangement.spacedBy(20.dp),
+                                    verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingXLarge),
                                     horizontalAlignment = Alignment.CenterHorizontally,
                                     content = content,
                                 )
@@ -236,10 +235,10 @@ fun AppBottomPopup(
                                             Modifier
                                                 .fillMaxWidth()
                                                 .padding(
-                                                    start = 16.dp,
-                                                    top = 20.dp,
-                                                    end = 16.dp,
-                                                    bottom = 12.dp,
+                                                    start = DesignTokens.SpacingLarge,
+                                                    top = DesignTokens.SpacingXLarge,
+                                                    end = DesignTokens.SpacingLarge,
+                                                    bottom = DesignTokens.SpacingMedium,
                                                 ),
                                         horizontalAlignment = Alignment.CenterHorizontally,
                                     ) {
@@ -259,12 +258,12 @@ fun AppBottomPopup(
                                                     else Modifier,
                                                 )
                                                 .padding(
-                                                    start = 16.dp,
-                                                    top = 12.dp,
-                                                    end = 16.dp,
+                                                    start = DesignTokens.SpacingLarge,
+                                                    top = DesignTokens.SpacingMedium,
+                                                    end = DesignTokens.SpacingLarge,
                                                     bottom = contentBottomPadding,
                                                 ),
-                                        verticalArrangement = Arrangement.spacedBy(20.dp),
+                                        verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingXLarge),
                                         horizontalAlignment = Alignment.CenterHorizontally,
                                         content = content,
                                     )

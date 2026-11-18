@@ -1,6 +1,12 @@
 package com.tk.quicksearch.search.notes
 
-import com.tk.quicksearch.search.searchScreen.shared.compactEdgeToEdge
+import com.tk.quicksearch.settings.NoteDeleteConfirmationDialog
+import androidx.compose.ui.semantics.Role
+import com.tk.quicksearch.search.searchScreen.components.ExpandButtonSegment
+import com.tk.quicksearch.search.searchScreen.shared.segmentedRowsActive
+import com.tk.quicksearch.search.searchScreen.shared.resultRowsContainerPadding
+import com.tk.quicksearch.search.searchScreen.shared.ResultSegment
+import com.tk.quicksearch.search.searchScreen.shared.ResultRowDivider
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -12,12 +18,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
@@ -44,14 +47,13 @@ import com.tk.quicksearch.search.searchScreen.components.ExpandButton
 import com.tk.quicksearch.search.searchScreen.components.ExpandButtonDivider
 import com.tk.quicksearch.search.searchScreen.components.ExpandableResultsCard
 import com.tk.quicksearch.search.searchScreen.components.topPredictedRowContainer
-import com.tk.quicksearch.search.searchScreen.components.topPredictedRowContentPadding
 import com.tk.quicksearch.search.searchScreen.components.resultRowVerticalPadding
 import com.tk.quicksearch.search.searchScreen.components.LocalSearchResultQuery
 import com.tk.quicksearch.search.searchScreen.components.rememberQueryHighlightedText
-import com.tk.quicksearch.shared.ui.components.AppAlertDialog
 import com.tk.quicksearch.shared.ui.components.AppDropdownMenu
+import com.tk.quicksearch.shared.ui.components.AppDropdownMenuDivider
+import com.tk.quicksearch.shared.ui.components.AppDropdownMenuItem
 import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
-import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.widgets.customButtonsWidget.CustomWidgetButtonAction
 import com.tk.quicksearch.shared.util.hapticConfirm
@@ -97,6 +99,7 @@ fun NotesResultsSection(
         fillExpandedHeight = fillExpandedHeight,
         showWallpaperBackground = showWallpaperBackground,
         overlayCardColor = overlayCardColor,
+        segmented = true,
     ) { contentModifier, cardState ->
         val displayNotes =
             if (cardState.displayAsExpanded) {
@@ -114,9 +117,14 @@ fun NotesResultsSection(
                     },
                 ),
         ) {
+            val segmentCount = displayNotes.size + if (cardState.shouldShowExpandButton) 1 else 0
+            val segmented = segmentedRowsActive()
             Column(
                 modifier =
-                    Modifier.padding(horizontal = DesignTokens.SpacingMedium, vertical = 4.dp)
+                    Modifier.padding(
+                        horizontal = resultRowsContainerPadding(DesignTokens.SpacingMedium),
+                        vertical = resultRowsContainerPadding(4.dp),
+                    )
                         .padding(
                             bottom =
                                 if (cardState.shouldFillExpandedHeight) {
@@ -130,6 +138,7 @@ fun NotesResultsSection(
                     key(note.noteId) {
                         val isPredicted = predictedNoteId != null && predictedNoteId == note.noteId
                         val showPredictedOnRow = isPredicted && !useCardLevelPrediction
+                        ResultSegment(index = index, count = segmentCount) {
                         NoteRow(
                             note = note,
                             isPinned = pinnedNoteIds.contains(note.noteId),
@@ -142,22 +151,16 @@ fun NotesResultsSection(
                             isPredicted = showPredictedOnRow,
                             showPinnedItemMenu = showPinnedItemMenu,
                         )
+                        }
                         if (index < displayNotes.lastIndex && !showPredictedOnRow) {
-                            HorizontalDivider(
-                                modifier = Modifier.compactEdgeToEdge().fillMaxWidth(),
-                                color =
-                                    overlayDividerColor
-                                        ?: if (showWallpaperBackground) {
-                                            AppColors.WallpaperDivider
-                                        } else {
-                                            MaterialTheme.colorScheme.outlineVariant
-                                        },
-                            )
+                            ResultRowDivider(showWallpaperBackground, color = overlayDividerColor)
                         }
                     }
                 }
 
-                if (cardState.shouldShowExpandButton) {
+                if (cardState.shouldShowExpandButton && segmented) {
+                    ExpandButtonSegment(index = segmentCount - 1, count = segmentCount, onClick = onExpandClick, textResId = R.string.action_expand_more_notes)
+                } else if (cardState.shouldShowExpandButton) {
                     ExpandButtonDivider(showWallpaperBackground)
                     ExpandButton(
                         onClick = onExpandClick,
@@ -219,37 +222,37 @@ internal fun NoteRow(
                 Modifier.fillMaxWidth()
                     .topPredictedRowContainer(isTopPredicted = isPredicted)
                     .combinedClickable(
+                        role = Role.Button,
                         onClick = {
                             hapticConfirm(rowView)()
                             onClick(note)
                         },
                         onLongClick = { showMenu = true },
                     )
-                    .topPredictedRowContentPadding()
-                    .padding(vertical = resultRowVerticalPadding(12.dp)),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    .padding(vertical = resultRowVerticalPadding(DesignTokens.SpacingMedium)),
+            horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium),
             verticalAlignment = Alignment.Top,
         ) {
             Icon(
                 imageVector = MaterialSymbols.Description,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(start = 7.dp, top = 1.dp).size(24.dp),
+                modifier = Modifier.padding(start = DesignTokens.ResultIconStartInset, top = 1.dp).size(24.dp),
             )
             Column(
                 modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(4.dp),
+                verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingXSmall),
             ) {
                 Text(
                     text = rememberQueryHighlightedText(title, query),
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
                 Text(
                     text = rememberQueryHighlightedText(subtitle, query),
-                    style = MaterialTheme.typography.bodySmall,
+                    style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = if (matchingPreview != null) 5 else 3,
                     overflow = TextOverflow.Ellipsis,
@@ -261,54 +264,40 @@ internal fun NoteRow(
                 onDismissRequest = { showMenu = false },
             ) {
                 if (showPinnedItemMenu && isPinned) {
-                    DropdownMenuItem(
-                        text = { Text(stringResource(R.string.action_unpin_app)) },
-                        onClick = {
-                            showMenu = false
-                            onTogglePin(note)
-                        },
+                    AppDropdownMenuItem(
+                        text = stringResource(R.string.action_unpin_app),
                         leadingIcon = {
                             Icon(
                                 painter = painterResource(R.drawable.ic_unpin),
                                 contentDescription = null,
                             )
                         },
+                        onClick = {
+                            showMenu = false
+                            onTogglePin(note)
+                        },
                     )
-                    HorizontalDivider()
-                    DropdownMenuItem(
-                        text = { Text(stringResource(R.string.action_move_up)) },
+                    AppDropdownMenuDivider()
+                    AppDropdownMenuItem(
+                        text = stringResource(R.string.action_move_up),
+                        icon = MaterialSymbols.ArrowUpward,
                         onClick = {
                             showMenu = false
                             onMovePinned(note, true)
                         },
-                        leadingIcon = { Icon(MaterialSymbols.ArrowUpward, contentDescription = null) },
                     )
-                    HorizontalDivider()
-                    DropdownMenuItem(
-                        text = { Text(stringResource(R.string.action_move_down)) },
+                    AppDropdownMenuDivider()
+                    AppDropdownMenuItem(
+                        text = stringResource(R.string.action_move_down),
+                        icon = MaterialSymbols.ArrowDownward,
                         onClick = {
                             showMenu = false
                             onMovePinned(note, false)
                         },
-                        leadingIcon = { Icon(MaterialSymbols.ArrowDownward, contentDescription = null) },
                     )
                 } else {
-                DropdownMenuItem(
-                    text = {
-                        Text(
-                            stringResource(
-                                if (isPinned) {
-                                    R.string.action_unpin_app
-                                } else {
-                                    R.string.action_pin_app
-                                },
-                            ),
-                        )
-                    },
-                    onClick = {
-                        showMenu = false
-                        onTogglePin(note)
-                    },
+                AppDropdownMenuItem(
+                    text = stringResource(if (isPinned) { R.string.action_unpin_app } else { R.string.action_pin_app }),
                     leadingIcon = {
                         Icon(
                             painter =
@@ -322,33 +311,23 @@ internal fun NoteRow(
                             contentDescription = null,
                         )
                     },
-                )
-                HorizontalDivider()
-                DropdownMenuItem(
-                    text = {
-                        Text(
-                            stringResource(
-                                if (hasTrigger) {
-                                    R.string.action_edit_trigger
-                                } else {
-                                    R.string.action_add_trigger
-                                },
-                            ),
-                        )
+                    onClick = {
+                        showMenu = false
+                        onTogglePin(note)
                     },
+                )
+                AppDropdownMenuDivider()
+                AppDropdownMenuItem(
+                    text = stringResource(if (hasTrigger) { R.string.action_edit_trigger } else { R.string.action_add_trigger }),
+                    icon = MaterialSymbols.Bolt,
                     onClick = {
                         showMenu = false
                         onTriggerClick(note)
                     },
-                    leadingIcon = { Icon(MaterialSymbols.Bolt, contentDescription = null) },
                 )
-                HorizontalDivider()
-                DropdownMenuItem(
-                    text = { Text(stringResource(if (isPinnedToNotifications) R.string.action_unpin_from_notifications else R.string.action_pin_to_notifications)) },
-                    onClick = {
-                        showMenu = false
-                        PinnedNotifications.toggle(context, notificationAction)
-                    },
+                AppDropdownMenuDivider()
+                AppDropdownMenuItem(
+                    text = stringResource(if (isPinnedToNotifications) R.string.action_unpin_from_notifications else R.string.action_pin_to_notifications),
                     leadingIcon = {
                         if (isPinnedToNotifications) {
                             Icon(
@@ -362,44 +341,31 @@ internal fun NoteRow(
                             )
                         }
                     },
+                    onClick = {
+                        showMenu = false
+                        PinnedNotifications.toggle(context, notificationAction)
+                    },
                 )
-                HorizontalDivider()
-                DropdownMenuItem(
-                    text = { Text(stringResource(R.string.dialog_delete)) },
+                AppDropdownMenuDivider()
+                AppDropdownMenuItem(
+                    text = stringResource(R.string.dialog_delete),
+                    icon = MaterialSymbols.DeleteOutline,
                     onClick = {
                         showMenu = false
                         showDeleteConfirm = true
                     },
-                    leadingIcon = { Icon(MaterialSymbols.Delete, contentDescription = null) },
                 )
                 }
             }
         }
 
         if (showDeleteConfirm) {
-            AppAlertDialog(
-                onDismissRequest = { showDeleteConfirm = false },
-                title = {
-                    Text(text = stringResource(R.string.notes_delete_confirm_title))
+            NoteDeleteConfirmationDialog(
+                onConfirm = {
+                    showDeleteConfirm = false
+                    onDelete(note)
                 },
-                text = {
-                    Text(text = stringResource(R.string.notes_delete_confirm_message))
-                },
-                confirmButton = {
-                    TextButton(
-                        onClick = {
-                            showDeleteConfirm = false
-                            onDelete(note)
-                        },
-                    ) {
-                        Text(text = stringResource(R.string.dialog_delete))
-                    }
-                },
-                dismissButton = {
-                    TextButton(onClick = { showDeleteConfirm = false }) {
-                        Text(text = stringResource(R.string.dialog_cancel))
-                    }
-                },
+                onDismiss = { showDeleteConfirm = false },
             )
         }
     }

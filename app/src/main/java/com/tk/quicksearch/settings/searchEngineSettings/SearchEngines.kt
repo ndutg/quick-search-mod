@@ -1,31 +1,28 @@
 package com.tk.quicksearch.settings.searchEngineSettings
 
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.selection.toggleable
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
-import com.tk.quicksearch.settings.shared.SettingsCard
 import com.tk.quicksearch.settings.shared.SettingsCardItem
-import com.tk.quicksearch.settings.shared.SettingsNavigationRow
-import com.tk.quicksearch.shared.ui.theme.AppColors
+import com.tk.quicksearch.settings.shared.SettingsNestedCheckbox
+import com.tk.quicksearch.shared.ui.components.SegmentedTile
+import com.tk.quicksearch.settings.shared.SettingsSegmentNavigationRow
+import com.tk.quicksearch.shared.ui.components.SegmentedTileContentPadding
+import com.tk.quicksearch.shared.ui.components.SegmentedTileToggleHorizontalPadding
 import com.tk.quicksearch.search.core.SearchEngine
 import com.tk.quicksearch.search.core.SearchTarget
 import com.tk.quicksearch.settings.shared.SettingsToggleRow
-import com.tk.quicksearch.tools.aiSearch.LlmTextModel
 import com.tk.quicksearch.searchEngines.getId
 import com.tk.quicksearch.searchEngines.isInAppBrowserPackage
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
@@ -45,22 +42,8 @@ fun SearchEngines(
     shortcutCodes: Map<String, String> = emptyMap(),
     setAliasCode: ((SearchTarget, String) -> Unit)? = null,
     shortcutEnabled: Map<String, Boolean> = emptyMap(),
-    setAliasEnabled: ((SearchTarget, Boolean) -> Unit)? = null,
-    isSearchEngineCompactMode: Boolean = true,
-    onToggleSearchEngineCompactMode: ((Boolean) -> Unit)? = null,
     amazonDomain: String? = null,
     onSetAmazonDomain: ((String?) -> Unit)? = null,
-    onSetLlmApiKeyForDetectedProvider: ((String?) -> Unit)? = null,
-    activeLlmApiKeyLast4: String? = null,
-    isSavingLlmApiKey: Boolean = false,
-    personalContext: String = "",
-    onSetPersonalContext: ((String?) -> Unit)? = null,
-    activeLlmModel: String,
-    activeLlmGroundingEnabled: Boolean,
-    activeLlmAvailableModels: List<LlmTextModel>,
-    onSetActiveLlmModel: ((String?) -> Unit)? = null,
-    onSetActiveLlmGroundingEnabled: ((Boolean) -> Unit)? = null,
-    onRefreshAvailableLlmModels: (() -> Unit)? = null,
     onOpenAiSearchConfigure: (() -> Unit)? = null,
     isSearchEngineAliasSuffixEnabled: Boolean = true,
     onToggleSearchEngineAliasSuffixEnabled: ((Boolean) -> Unit)? = null,
@@ -68,8 +51,6 @@ fun SearchEngines(
     onToggleAliasTriggerAfterSpaceEnabled: ((Boolean) -> Unit)? = null,
     showTitle: Boolean = true,
     aiSearchAvailable: Boolean = false,
-    aiSearchSetupExpanded: Boolean = true,
-    onToggleAiSearchSetupExpanded: (() -> Unit)? = null,
     showAddSearchEngineButton: Boolean = true,
     onAddCustomSearchEngine: ((String, String, String, String?) -> Unit)? = null,
     onUpdateCustomSearchEngine: ((String, String, String, String?, String?) -> Unit)? = null,
@@ -90,7 +71,7 @@ fun SearchEngines(
             text = stringResource(R.string.settings_app_shortcuts_filter_search_engines),
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.onSurface,
-            modifier = modifier.padding(bottom = DesignTokens.SectionTitleBottomPadding),
+            modifier = modifier.padding(bottom = DesignTokens.SectionTitleBottomPadding).semantics { heading() },
         )
 
         if (hasEnabledEngines) {
@@ -110,26 +91,20 @@ fun SearchEngines(
             triggerAfterSpaceEnabled = isAliasTriggerAfterSpaceEnabled,
             onToggleTriggerAfterSpace = onToggleAliasTriggerAfterSpaceEnabled,
         )
-        Spacer(modifier = Modifier.height(6.dp))
+        Spacer(modifier = Modifier.height(DesignTokens.SpacingSmall))
     }
 
     if (!aiSearchAvailable && onOpenAiSearchConfigure != null) {
-        SettingsCard(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = DesignTokens.SectionTopPadding),
-        ) {
-            SettingsNavigationRow(
+        Box(modifier = Modifier.padding(bottom = DesignTokens.SectionTopPadding)) {
+            SettingsSegmentNavigationRow(
                 item = SettingsCardItem(
                     title = stringResource(R.string.settings_direct_search_setup_nav_title),
                     description = stringResource(R.string.settings_direct_search_setup_nav_desc),
                     iconResId = R.drawable.direct_search,
                     actionOnPress = onOpenAiSearchConfigure,
                 ),
-                contentPadding = PaddingValues(
-                    horizontal = DesignTokens.SpacingXXLarge,
-                    vertical = DesignTokens.SpacingLarge,
-                ),
+                index = 0,
+                count = 1,
             )
         }
     }
@@ -154,8 +129,6 @@ fun SearchEngines(
         shortcutCodes = shortcutCodes,
         setAliasCode = setAliasCode,
         shortcutEnabled = shortcutEnabled,
-        setAliasEnabled = setAliasEnabled,
-        isSearchEngineCompactMode = isSearchEngineCompactMode,
         isSearchEngineAliasSuffixEnabled = isSearchEngineAliasSuffixEnabled,
         amazonDomain = amazonDomain,
         onSetAmazonDomain = onSetAmazonDomain,
@@ -166,7 +139,7 @@ fun SearchEngines(
     )
 
     if (!showAiSearchAtTop && onToggleSearchEngineAliasSuffixEnabled != null) {
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(DesignTokens.SpacingLarge))
         SearchEngineAliasSuffixCard(
             enabled = isSearchEngineAliasSuffixEnabled,
             onToggle = onToggleSearchEngineAliasSuffixEnabled,
@@ -183,48 +156,32 @@ private fun SearchEngineAliasSuffixCard(
     triggerAfterSpaceEnabled: Boolean = true,
     onToggleTriggerAfterSpace: ((Boolean) -> Unit)? = null,
 ) {
-    SettingsCard(
-        modifier =
-            Modifier
-                .fillMaxWidth()
-                .padding(bottom = 12.dp),
+    // One tile: the switch row, with its trigger-after-space option nested below while it is on.
+    SegmentedTile(
+        index = 0,
+        count = 1,
+        modifier = Modifier.padding(bottom = DesignTokens.SpacingMedium),
     ) {
-        SettingsToggleRow(
-            title = stringResource(R.string.settings_search_engine_alias_suffix_title),
-            subtitle = stringResource(R.string.settings_search_engine_alias_suffix_desc),
-            checked = enabled,
-            onCheckedChange = onToggle,
-            isFirstItem = true,
-            isLastItem = !enabled || onToggleTriggerAfterSpace == null,
-            showDivider = enabled && onToggleTriggerAfterSpace != null,
-        )
-        if (enabled && onToggleTriggerAfterSpace != null) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .toggleable(
-                        value = triggerAfterSpaceEnabled,
-                        role = Role.Checkbox,
-                        onValueChange = onToggleTriggerAfterSpace,
-                    )
-                    .padding(
-                        start = DesignTokens.SpacingXXLarge,
-                        end = DesignTokens.SpacingXXLarge,
-                        top = DesignTokens.SpacingMedium,
-                        bottom = DesignTokens.SpacingLarge,
-                    ),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Checkbox(
-                    modifier = Modifier.scale(0.85f),
+        Column {
+            SettingsToggleRow(
+                title = stringResource(R.string.settings_search_engine_alias_suffix_title),
+                subtitle = stringResource(R.string.settings_search_engine_alias_suffix_desc),
+                checked = enabled,
+                onCheckedChange = onToggle,
+                showDivider = false,
+            )
+            if (enabled && onToggleTriggerAfterSpace != null) {
+                SettingsNestedCheckbox(
+                    label = stringResource(R.string.alias_trigger_after_space),
                     checked = triggerAfterSpaceEnabled,
-                    onCheckedChange = null,
-                )
-                Text(
-                    text = stringResource(R.string.alias_trigger_after_space),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.padding(start = DesignTokens.SpacingMedium),
+                    onCheckedChange = onToggleTriggerAfterSpace,
+                    modifier =
+                        Modifier
+                            .padding(
+                                start = SegmentedTileToggleHorizontalPadding,
+                                end = SegmentedTileToggleHorizontalPadding,
+                                bottom = SegmentedTileContentPadding,
+                            ),
                 )
             }
         }

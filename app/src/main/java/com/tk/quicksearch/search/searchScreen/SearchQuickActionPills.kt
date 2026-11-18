@@ -1,22 +1,20 @@
 package com.tk.quicksearch.search.searchScreen
 
+import com.tk.quicksearch.shared.ui.components.AppMessages
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.Dp
 import com.tk.quicksearch.R
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.tools.setAlarm.SetAlarmHandler
@@ -36,8 +34,23 @@ internal fun SearchQuickActionPills(
     onKeyboardSwitchToggle: () -> Unit,
     /** Clears the query once an alarm, timer, or reminder has actually been set. */
     onQuickActionCompleted: () -> Unit,
+    topPadding: Dp = DesignTokens.SpacingMedium,
+    bottomPadding: Dp = DesignTokens.SpacingMedium,
 ) {
     val context = LocalContext.current
+    val buttonCount =
+            listOf(
+                    keyboardSwitchText != null,
+                    shouldShowPhoneCallAction,
+                    detectedAlarmTime != null,
+                    detectedAlarmTime != null,
+                    detectedTimerSeconds != null,
+                    detectedTimerSeconds != null,
+                    detectedTimerSeconds != null,
+                    detectedReminderSchedule != null,
+            ).count { it }
+    // Three or more buttons drop their icons so the labels keep a readable size on one row.
+    val showIcons = buttonCount < 3
             AnimatedVisibility(
                     visible =
                             keyboardSwitchText != null ||
@@ -45,29 +58,35 @@ internal fun SearchQuickActionPills(
                                     detectedAlarmTime != null ||
                                     detectedTimerSeconds != null ||
                                     detectedReminderSchedule != null,
-                    enter = fadeIn() + expandVertically(expandFrom = Alignment.Top),
-                    exit = fadeOut() + shrinkVertically(shrinkTowards = Alignment.Top),
+                    enter = fadeIn(),
+                    exit = fadeOut(),
             ) {
                 Row(
                         modifier =
                                 Modifier.fillMaxWidth()
                                         .padding(
-                                                top = DesignTokens.SpacingSmall,
-                                                bottom = DesignTokens.SpacingSmall,
+                                                start = DesignTokens.ContentHorizontalPadding,
+                                                end = DesignTokens.ContentHorizontalPadding,
+                                                top = topPadding,
+                                                bottom = bottomPadding,
                                         ),
-                        horizontalArrangement = Arrangement.Center,
+                        horizontalArrangement =
+                                Arrangement.spacedBy(DesignTokens.SpacingSmall, Alignment.CenterHorizontally),
                         verticalAlignment = Alignment.CenterVertically,
                 ) {
                     if (keyboardSwitchText != null) {
                         KeyboardSwitchPill(
-                                text = keyboardSwitchText,
+                                modifier = Modifier.weight(1f, fill = false),
+                                showIcon = showIcons,
+text = keyboardSwitchText,
                                 onClick = onKeyboardSwitchToggle,
                         )
                     }
                     if (shouldShowPhoneCallAction) {
-                        Spacer(modifier = Modifier.size(DesignTokens.SpacingSmall))
                         PhoneCallPill(
-                                onClick = {
+                                modifier = Modifier.weight(1f, fill = false),
+                                showIcon = showIcons,
+onClick = {
                                     context.startActivity(
                                             Intent(Intent.ACTION_DIAL).apply {
                                                 data = Uri.parse("tel:${Uri.encode(query)}")
@@ -77,26 +96,21 @@ internal fun SearchQuickActionPills(
                         )
                     }
                     if (detectedAlarmTime != null) {
-                        if (keyboardSwitchText != null || shouldShowPhoneCallAction) {
-                            Spacer(modifier = Modifier.size(DesignTokens.SpacingSmall))
-                        }
                         SetAlarmPill(
-                                onClick = {
+                                modifier = Modifier.weight(1f, fill = false),
+                                showIcon = showIcons,
+onClick = {
                                     if (SetAlarmHandler.launchSetAlarm(context, detectedAlarmTime)) {
                                         onQuickActionCompleted()
                                     } else {
-                                        android.widget.Toast.makeText(
-                                                        context,
-                                                        context.getString(R.string.set_alarm_no_clock_app),
-                                                        android.widget.Toast.LENGTH_SHORT,
-                                                )
-                                                .show()
+                                        AppMessages.show(context, context.getString(R.string.set_alarm_no_clock_app))
                                     }
                                 },
                         )
-                        Spacer(modifier = Modifier.size(DesignTokens.SpacingSmall))
                         CreateReminderPill(
-                                useShortLabel = true,
+                                modifier = Modifier.weight(1f, fill = false),
+                                showIcon = showIcons,
+useShortLabel = true,
                                 onClick = {
                                     val now = java.time.LocalDateTime.now()
                                     val today = now.toLocalDate().atTime(detectedAlarmTime)
@@ -115,54 +129,42 @@ internal fun SearchQuickActionPills(
                         )
                     }
                     if (detectedTimerSeconds != null) {
-                        if (keyboardSwitchText != null ||
-                                        shouldShowPhoneCallAction ||
-                                        detectedAlarmTime != null
-                        ) {
-                            Spacer(modifier = Modifier.size(DesignTokens.SpacingSmall))
-                        }
                         StartTimerPill(
-                                onClick = {
+                                modifier = Modifier.weight(1f, fill = false),
+                                showIcon = showIcons,
+onClick = {
                                     val started =
                                             StartTimerHandler.launchStartTimer(
                                                     context,
                                                     detectedTimerSeconds,
                                             )
-                                    android.widget.Toast.makeText(
-                                                    context,
-                                                    context.getString(
+                                    AppMessages.show(context, context.getString(
                                                             if (started) {
                                                                 R.string.start_timer_started
                                                             } else {
                                                                 R.string.set_alarm_no_clock_app
                                                             }
-                                                    ),
-                                                    android.widget.Toast.LENGTH_SHORT,
-                                            )
-                                            .show()
+                                                    ))
                                     if (started) onQuickActionCompleted()
                                 },
                         )
-                        Spacer(modifier = Modifier.size(DesignTokens.SpacingSmall))
                         SetAlarmPill(
-                                onClick = {
+                                modifier = Modifier.weight(1f, fill = false),
+                                showIcon = showIcons,
+onClick = {
                                     val alarmTime =
                                             StartTimerHandler.alarmTimeFor(detectedTimerSeconds)
                                     if (SetAlarmHandler.launchSetAlarm(context, alarmTime)) {
                                         onQuickActionCompleted()
                                     } else {
-                                        android.widget.Toast.makeText(
-                                                        context,
-                                                        context.getString(R.string.set_alarm_no_clock_app),
-                                                        android.widget.Toast.LENGTH_SHORT,
-                                                )
-                                                .show()
+                                        AppMessages.show(context, context.getString(R.string.set_alarm_no_clock_app))
                                     }
                                 },
                         )
-                        Spacer(modifier = Modifier.size(DesignTokens.SpacingSmall))
                         CreateReminderPill(
-                                useShortLabel = true,
+                                modifier = Modifier.weight(1f, fill = false),
+                                showIcon = showIcons,
+useShortLabel = true,
                                 onClick = {
                                     ReminderEditorRequests.openNew(
                                             initialDateTimeMillis =
@@ -178,15 +180,10 @@ internal fun SearchQuickActionPills(
                         )
                     }
                     if (detectedReminderSchedule != null) {
-                        if (keyboardSwitchText != null ||
-                                        shouldShowPhoneCallAction ||
-                                        detectedAlarmTime != null ||
-                                        detectedTimerSeconds != null
-                        ) {
-                            Spacer(modifier = Modifier.size(DesignTokens.SpacingSmall))
-                        }
                         CreateReminderPill(
-                                onClick = {
+                                modifier = Modifier.weight(1f, fill = false),
+                                showIcon = showIcons,
+onClick = {
                                     val schedule = detectedReminderSchedule
                                     val dateTime = schedule.date.atTime(
                                             schedule.time ?: java.time.LocalTime.MIDNIGHT,

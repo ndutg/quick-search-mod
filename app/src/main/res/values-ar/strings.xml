@@ -13,7 +13,6 @@
     <!-- ============================================================================
          App &amp; Search Entry
          ============================================================================ -->
-    <string name="app_name">Quick Search</string>
     <string name="direct_answer_contact_name">AI Answer</string>
     <string name="direct_search_enter_query">يرجى إدخال عبارة بحث للبدء.</string>
     <string name="direct_search_ask_follow_up">اطرح سؤالاً تابعًا</string>
@@ -26,14 +25,11 @@
     <string name="quick_search_help_intro">اكتب سؤالاً بعد ‎@help للحصول على إجابات حول ميزات Quick Search وإعداداته.</string>
     <string name="gemini_web_search_quota_fallback_tip">تم بلوغ حصة بحث الويب في Gemini، لذلك تم إنشاء هذه الإجابة بدون بحث الويب.</string>
     <string name="direct_search_powered_by">بدعم من</string>
-    <string name="empty_state_subtitle">شغّل تطبيقاً أو خصّص بحثك لعرض الاقتراحات.</string>
-    <string name="empty_state_title">لا يوجد ما يمكن عرضه (حتى الآن)</string>
     <string name="error_action_not_available">الإجراء غير متاح</string>
     <string name="error_gemini_empty_response">استجابة فارغة من Gemini</string>
     <string name="error_gemini_load_models_failed">تعذر تحميل نماذج Gemini</string>
     <string name="error_gemini_request_failed">فشل الطلب (%1$d)</string>
     <string name="error_unknown">خطأ غير معروف</string>
-    <string name="gemini_model_flash_latest">Gemini Flash (Latest)</string>
     <string name="keyboard_switch_back">لوحة المفاتيح العادية</string>
     <string name="keyboard_switch_to_number">لوحة مفاتيح الأرقام</string>
     <string name="no_results_found">لم يتم العثور على نتائج. جرب النقر على أحد محركات البحث أدناه للبحث في الويب.</string>
@@ -87,6 +83,7 @@
     <string name="action_unlock_app">إلغاء القفل</string>
     <string name="app_lock_prompt_lock">قفل %1$s</string>
     <string name="app_lock_prompt_unlock">إلغاء قفل %1$s</string>
+    <string name="app_lock_unlock_device_credential">فتح القفل ببيانات اعتماد الجهاز</string>
     <string name="app_lock_unavailable">افتح Quick Search لإلغاء قفل هذا التطبيق</string>
     <string name="action_change_icon">تغيير الأيقونة</string>
     <string name="icon_picker_search">البحث عن الأيقونات</string>
@@ -115,6 +112,9 @@
     <string name="action_open_folder">فتح المجلد</string>
     <string name="action_open_keyboard">فتح لوحة المفاتيح</string>
     <string name="action_open_settings">فتح الإعدادات</string>
+    <string name="keyboard_shortcut_open_top_result">فتح أفضل نتيجة أو البحث</string>
+    <string name="keyboard_shortcut_previous_result">تحديد النتيجة السابقة</string>
+    <string name="keyboard_shortcut_next_result">تحديد النتيجة التالية</string>
     <string name="settings_gestures_title">الإيماءات</string>
     <string name="settings_gestures_desc">تخصيص إجراءات السحب</string>
     <string name="settings_gesture_swipe_right">السحب لليمين</string>
@@ -149,7 +149,6 @@
     <string name="settings_gesture_view_all_apps">عرض جميع التطبيقات</string>
     <string name="settings_gesture_lock_screen">قفل الشاشة</string>
     <string name="settings_gesture_lock_screen_requires_accessibility">يتطلب إذن تسهيل الاستخدام</string>
-    <string name="accessibility_lock_screen_service_label">Quick Search</string>
     <string name="accessibility_lock_screen_service_description">يتيح لتطبيق Quick Search قفل الشاشة بإيماءة النقر المزدوج على الشاشة الرئيسية، والاستجابة للنقر على النتوء، وفتحه بالسحب من الحافة أو بزر عائم في أي تطبيق، وعرض SpeedBump للتطبيقات التي تُفتح خارج Quick Search. يتحقق فقط من التطبيق المفتوح ولا يقرأ محتوى الشاشة.</string>
     <string name="accessibility_service_stopped_hint">أوقف Android خدمة تسهيل الاستخدام في Quick Search. أوقفها ثم شغّلها مرة أخرى في إعدادات تسهيل الاستخدام.</string>
     <string name="accessibility_permission_disclaimer_title">إخلاء مسؤولية إذن إمكانية الوصول</string>
@@ -266,6 +265,7 @@
     <string name="desc_navigate_back">رجوع</string>
     <string name="desc_navigate_forward">الانتقال للأمام</string>
     <string name="desc_open_settings">فتح إعدادات Quick Search</string>
+    <string name="desc_open_device_settings">فتح إعدادات الجهاز</string>
     <string name="desc_selected">تم التحديد</string>
     <string name="desc_voice_search_icon">بدء البحث الصوتي</string>
 
@@ -278,7 +278,6 @@
     <string name="app_suggestions_tabs_dialog_message">اختر تبويبات اقتراحات التطبيقات التي تظهر على الشاشة الرئيسية.</string>
     <string name="app_suggestions_tabs_dialog_title">تبويبات اقتراحات التطبيقات</string>
     <string name="app_suggestions_enabled_tabs_picker_hint">اختر التبويبات</string>
-    <string name="app_suggestions_tab_required_toast">يجب إبقاء تبويب واحد على الأقل مفعل لاقتراحات التطبيقات</string>
     <string name="app_suggestions_toggle_desc">إظهار أو إخفاء التطبيقات المقترحة على الشاشة الرئيسية</string>
     <string name="app_suggestions_toggle_title">اقتراحات التطبيقات</string>
     <string name="show_all_apps_button_toggle_desc">إظهار زر \"جميع التطبيقات\" أسفل اقتراحات التطبيقات</string>
@@ -324,7 +323,6 @@
     <string name="section_media">عناصر التحكم بالوسائط</string>
     <string name="section_settings">إعدادات الجهاز</string>
     <string name="search_section_menu_title">البحث في</string>
-    <string name="top_match_title">أفضل مطابقة</string>
     <string name="top_matches_count_label">عدد التطابقات</string>
     <string name="top_matches_priority_desc">تغيير أولوية العناصر وتعطيلها في أفضل التطابقات</string>
     <string name="top_matches_priority_dialog_info">اضغط مع الاستمرار ثم اسحب لتغيير الأولوية، واستخدم مفتاح التبديل لتفعيل أو تعطيل أنواع نتائج معينة.</string>
@@ -363,17 +361,13 @@
     <string name="error_uninstall_self">لا يمكنك إلغاء تثبيت Quick Search من هنا.</string>
     <string name="failed_to_refresh_apps">فشل تحديث التطبيقات</string>
     <string name="settings_app_apk_size_format">حجم APK: %1$.2f ميغابايت</string>
-    <string name="settings_app_columns_4">4</string>
-    <string name="settings_app_columns_5">5</string>
     <string name="settings_app_columns_title">عدد التطبيقات في كل صف</string>
     <string name="settings_app_result_rows_title">صفوف نتائج التطبيقات</string>
-    <string name="settings_app_icon_size_percent">%1$d%%</string>
     <string name="settings_app_icon_size_title">حجم أيقونات التطبيقات</string>
     <string name="settings_app_info_install_date">تاريخ التثبيت</string>
     <string name="settings_app_info_last_update">التحديث الأخير</string>
     <string name="settings_app_info_minimum_sdk">الحد الأدنى SDK</string>
     <string name="settings_app_info_not_available">غير متاح</string>
-    <string name="settings_app_info_package_name">اسم الحزمة</string>
     <string name="settings_app_info_target_sdk">الهدف SDK</string>
     <string name="settings_app_info_version">الإصدار</string>
     <string name="settings_app_info_version_code">رمز الإصدار</string>
@@ -419,8 +413,12 @@
     <string name="settings_app_shortcuts_add_success">تمت إضافة الاختصار.</string>
     <string name="settings_app_shortcuts_add_success_with_app_name">تمت إضافة اختصار جديد إلى %1$s</string>
     <plurals name="settings_app_shortcuts_card_count">
+        <item quantity="zero">%d اختصار</item>
         <item quantity="one">%d اختصار</item>
-        <item quantity="other">%d اختصارات</item>
+        <item quantity="two">اختصاران</item>
+        <item quantity="few">%d اختصارات</item>
+        <item quantity="many">%d اختصارًا</item>
+        <item quantity="other">%d اختصار</item>
     </plurals>
     <string name="settings_app_shortcuts_collapse_all">طي الكل</string>
     <string name="settings_app_shortcuts_create_not_supported">لا تدعم التطبيقات إنشاء الاختصارات على هذا الجهاز.</string>
@@ -443,7 +441,6 @@
     <string name="settings_app_shortcuts_shortcut_name_label">اسم الاختصار</string>
     <string name="settings_app_shortcuts_update_failed">تعذر تحديث الاختصار.</string>
     <string name="settings_app_shortcuts_update_success">تم تحديث الاختصار.</string>
-    <string name="settings_app_shortcuts_url_label">URL</string>
     <string name="shortcut_song_search_label">البحث عن الأغاني</string>
     <string name="shortcut_watch_later_label">المشاهدة لاحقاً</string>
 
@@ -453,17 +450,12 @@
     <string name="contact_method_call_label">اتصال</string>
     <string name="contact_method_email_label">بريد إلكتروني</string>
     <string name="contact_method_fallback_label">أخرى</string>
-    <string name="contact_method_google_meet_label">Google Meet</string>
     <string name="contact_method_message_label">رسالة</string>
-    <string name="contact_method_signal_message_label">Signal</string>
     <string name="contact_method_signal_video_call_label">مكالمة فيديو عبر Signal</string>
     <string name="contact_method_signal_voice_call_label">مكالمة صوتية عبر Signal</string>
-    <string name="contact_method_telegram_message_label">Telegram</string>
     <string name="contact_method_telegram_video_call_label">مكالمة فيديو عبر Telegram</string>
     <string name="contact_method_telegram_voice_call_label">مكالمة صوتية عبر Telegram</string>
     <string name="contact_method_view_in_contacts_label">عرض في تطبيق جهات الاتصال</string>
-    <string name="contact_method_whatsapp_message_label">WhatsApp</string>
-    <string name="contact_method_whatsapp_business_label">WhatsApp Business</string>
     <string name="contact_method_whatsapp_video_call_label">مكالمة فيديو عبر WhatsApp</string>
     <string name="contact_method_whatsapp_voice_call_label">مكالمة صوتية عبر WhatsApp</string>
     <string name="contact_button_sms">رسالة SMS</string>
@@ -482,10 +474,7 @@
     <string name="contacts_action_hint_message">نصيحة: اضغط مع الاستمرار على أي إجراء هنا لتخصيصه لجهات الاتصال الفردية.</string>
     <string name="contacts_action_next_number">رقم الهاتف التالي</string>
     <string name="contacts_action_previous_number">رقم الهاتف السابق</string>
-    <string name="contacts_action_signal">مراسلة عبر Signal</string>
     <string name="contacts_action_sms">إرسال رسالة</string>
-    <string name="contacts_action_telegram">مراسلة عبر Telegram</string>
-    <string name="contacts_action_whatsapp">مراسلة عبر WhatsApp</string>
     <string name="contacts_no_methods_available">لا توجد طرق اتصال متاحة</string>
     <string name="contacts_refreshed_successfully">تم تحديث جهات الاتصال بنجاح</string>
     <string name="contacts_section_permission_subtitle">إذن جهات الاتصال مطلوب لإجراء البحث في جهات الاتصال</string>
@@ -504,6 +493,7 @@
     <string name="error_telegram_chat_failed">فشل فتح محادثة Telegram</string>
     <string name="error_telegram_not_installed">تطبيق Telegram غير مثبت</string>
     <string name="error_whatsapp_call_failed">فشلت مكالمة WhatsApp. يرجى التأكد من تثبيت تطبيق WhatsApp.</string>
+    <string name="error_whatsapp_call_unavailable_opened_chat">لا يمكن لـ WhatsApp الاتصال بجهة الاتصال هذه مباشرةً. تم فتح الدردشة بدلاً من ذلك.</string>
     <string name="error_whatsapp_chat_failed">فشل فتح محادثة WhatsApp</string>
     <string name="error_whatsapp_not_installed">تطبيق WhatsApp غير مثبت</string>
     <string name="error_whatsapp_video_call_failed">فشل بدء مكالمة فيديو WhatsApp</string>
@@ -533,8 +523,12 @@
     <string name="action_folder_info">معلومات المجلد</string>
     <string name="file_info_contents">المحتويات</string>
     <plurals name="file_info_item_count">
+        <item quantity="zero">%d عنصر</item>
         <item quantity="one">%d عنصر</item>
-        <item quantity="other">%d عناصر</item>
+        <item quantity="two">عنصران</item>
+        <item quantity="few">%d عناصر</item>
+        <item quantity="many">%d عنصرًا</item>
+        <item quantity="other">%d عنصر</item>
     </plurals>
     <string name="file_path_sd_card">بطاقة SD</string>
     <string name="file_info_size">الحجم</string>
@@ -568,55 +562,85 @@
     <!-- ============================================================================
          Calendar
          ============================================================================ -->
-    <string name="app_settings_create_calendar_event_desc">إنشاء حدث جديد وإضافته</string>
-    <string name="app_settings_create_calendar_event_title">حدث تقويم جديد</string>
     <string name="calendar_create_event_name_hint">اسم الحدث</string>
     <string name="calendar_create_event_select_date">اختر التاريخ</string>
-    <string name="calendar_create_event_sync_notice">لن تتم مزامنة this الحدث مع تقويم جهازك</string>
-    <string name="calendar_create_event_title">حدث جديد</string>
-    <string name="calendar_edit_event_title">تعديل الحدث</string>
     <string name="calendar_relative_ago_format">منذ %1$s</string>
     <plurals name="calendar_relative_days">
+        <item quantity="zero">%d يوم</item>
         <item quantity="one">%d يوم</item>
-        <item quantity="other">%d أيام</item>
+        <item quantity="two">يومان</item>
+        <item quantity="few">%d أيام</item>
+        <item quantity="many">%d يومًا</item>
+        <item quantity="other">%d يوم</item>
     </plurals>
     <plurals name="calendar_relative_hours">
+        <item quantity="zero">%d ساعة</item>
         <item quantity="one">%d ساعة</item>
-        <item quantity="other">%d ساعات</item>
+        <item quantity="two">ساعتان</item>
+        <item quantity="few">%d ساعات</item>
+        <item quantity="many">%d ساعة</item>
+        <item quantity="other">%d ساعة</item>
     </plurals>
     <string name="calendar_relative_in_format">بعد %1$s</string>
-    <string name="calendar_relative_in_minutes">بعد %1$d دقيقة</string>
     <plurals name="calendar_relative_minutes">
+        <item quantity="zero">%d دقيقة</item>
         <item quantity="one">%d دقيقة</item>
-        <item quantity="other">%d دقائق</item>
+        <item quantity="two">دقيقتان</item>
+        <item quantity="few">%d دقائق</item>
+        <item quantity="many">%d دقيقة</item>
+        <item quantity="other">%d دقيقة</item>
     </plurals>
     <string name="calendar_relative_now">الآن</string>
     <plurals name="calendar_relative_months">
+        <item quantity="zero">%d شهر</item>
         <item quantity="one">%d شهر</item>
-        <item quantity="other">%d أشهر</item>
+        <item quantity="two">شهران</item>
+        <item quantity="few">%d أشهر</item>
+        <item quantity="many">%d شهرًا</item>
+        <item quantity="other">%d شهر</item>
     </plurals>
     <string name="calendar_relative_today">اليوم</string>
     <string name="calendar_relative_tomorrow">غداً</string>
     <plurals name="calendar_relative_years">
+        <item quantity="zero">%d سنة</item>
         <item quantity="one">%d سنة</item>
-        <item quantity="other">%d سنوات</item>
+        <item quantity="two">سنتان</item>
+        <item quantity="few">%d سنوات</item>
+        <item quantity="many">%d سنة</item>
+        <item quantity="other">%d سنة</item>
     </plurals>
     <string name="calendar_relative_yesterday">أمس</string>
     <string name="calendar_repeats_daily">يومياً</string>
     <plurals name="calendar_repeats_every_days">
+        <item quantity="zero">كل %d يوم</item>
         <item quantity="one">كل %d يوم</item>
+        <item quantity="two">كل يومين</item>
+        <item quantity="few">كل %d أيام</item>
+        <item quantity="many">كل %d يومًا</item>
         <item quantity="other">كل %d يوم</item>
     </plurals>
     <plurals name="calendar_repeats_every_months">
+        <item quantity="zero">كل %d شهر</item>
         <item quantity="one">كل %d شهر</item>
+        <item quantity="two">كل شهرين</item>
+        <item quantity="few">كل %d أشهر</item>
+        <item quantity="many">كل %d شهرًا</item>
         <item quantity="other">كل %d شهر</item>
     </plurals>
     <plurals name="calendar_repeats_every_weeks">
+        <item quantity="zero">كل %d أسبوع</item>
         <item quantity="one">كل %d أسبوع</item>
+        <item quantity="two">كل أسبوعين</item>
+        <item quantity="few">كل %d أسابيع</item>
+        <item quantity="many">كل %d أسبوعًا</item>
         <item quantity="other">كل %d أسبوع</item>
     </plurals>
     <plurals name="calendar_repeats_every_years">
+        <item quantity="zero">كل %d سنة</item>
         <item quantity="one">كل %d سنة</item>
+        <item quantity="two">كل سنتين</item>
+        <item quantity="few">كل %d سنوات</item>
+        <item quantity="many">كل %d سنة</item>
         <item quantity="other">كل %d سنة</item>
     </plurals>
     <string name="calendar_repeats_generic">متكرر</string>
@@ -654,7 +678,6 @@
     <string name="notes_editor_notification_note_title">ملاحظة إشعار</string>
     <string name="notes_empty_note_subtext">ملاحظة فارغة</string>
     <string name="notes_quick_note_title">ملاحظة سريعة</string>
-    <string name="notes_quick_note_toggle_desc">فتح الملاحظة السريعة عبر السحب</string>
     <string name="notes_title_hint">العنوان</string>
     <string name="notes_untitled">بدون عنوان</string>
     <string name="settings_notes_view_all_desc">عرض جميع الملاحظات</string>
@@ -691,7 +714,6 @@
     <string name="settings_shortcut_location">الموقع</string>
     <string name="settings_shortcut_mobile_data">بيانات الهاتف</string>
     <string name="settings_shortcut_network">الشبكة والإنترنت</string>
-    <string name="settings_shortcut_nfc">NFC</string>
     <string name="settings_shortcut_notification_listener">الوصول إلى الإشعارات</string>
     <string name="settings_shortcut_notification_history">سجل الإشعارات</string>
     <string name="notification_history_permission_desc">اسمح بالوصول إلى الإشعارات لجمع الإشعارات هنا. تظهر في هذه القائمة الإشعارات المستلمة بعد منح الوصول فقط.</string>
@@ -709,7 +731,6 @@
     <string name="settings_shortcut_storage">مساحة التخزين</string>
     <string name="settings_shortcut_usage_access">إذن الوصول إلى بيانات الاستخدام</string>
     <string name="settings_shortcut_voice_input">Digital Assistant</string>
-    <string name="settings_shortcut_vpn">VPN</string>
     <string name="settings_shortcut_wifi">Wi-Fi</string>
     <string name="settings_unable_to_open_settings">تعذر فتح الإعدادات</string>
 
@@ -724,8 +745,6 @@
     <string name="settings_features_export_failed">تعذر حفظ مستند الميزات.</string>
     <string name="settings_features_saved_to_downloads">تم الحفظ في التنزيلات</string>
     <string name="settings_features_sections_title">المحتويات</string>
-    <string name="settings_search_description_change_app_theme">تغيير سمة التطبيق</string>
-    <string name="settings_search_description_change_font_size">تغيير حجم الخط في التطبيق</string>
     <string name="settings_search_description_change_icon_pack">تغيير حزمة الأيقونات</string>
     <string name="settings_search_description_change_layout">تغيير خيارات مظهر التطبيق</string>
     <string name="settings_search_description_change_wallpaper">تغيير مظهر الخلفية</string>
@@ -738,16 +757,22 @@
     <string name="customize_search_engines">تخصيص محركات البحث</string>
     <string name="settings_app_theme_aurora">Aurora</string>
     <string name="settings_app_theme_forest">Forest</string>
-    <string name="settings_app_theme_monochrome">Mono</string>
+    <string name="settings_app_theme_monochrome">الافتراضي</string>
+    <string name="settings_app_theme_colorful">ملوّن</string>
     <string name="settings_app_theme_sunset">Sunset</string>
+    <string name="settings_app_theme_custom_dialog_title">اختر لونًا</string>
+    <string name="settings_app_theme_amber">كهرماني</string>
+    <string name="settings_app_theme_teal">أزرق مخضر</string>
+    <string name="settings_app_theme_lavender">خزامى</string>
+    <string name="settings_app_theme_indigo">نيلي</string>
+    <string name="settings_app_theme_slate">أردوازي</string>
+    <string name="settings_app_theme_rose">وردي</string>
+    <string name="settings_app_theme_mocha">موكا</string>
     <string name="settings_app_theme_title">السمة</string>
     <string name="settings_appearance_desc">تغيير الخلفية، أنماط محرك البحث، الوضع بيد واحدة، إلخ.</string>
     <string name="settings_appearance_title">المظهر</string>
     <string name="settings_assistant_voice_mode_desc">بدء الكتابة الصوتية عند تشغيل التطبيق كمساعد رقمي</string>
     <string name="settings_assistant_voice_mode_title">الكتابة الصوتية للمساعد</string>
-    <string name="settings_beta_features_disabled">تم تعطيل الميزات التجريبية</string>
-    <string name="settings_beta_features_enabled">تم تفعيل الميزات التجريبية الجديدة</string>
-    <string name="settings_beta_features_unavailable">لا تتوفر أي ميزات تجريبية جديدة</string>
     <string name="settings_beta_tag">نسخة تجريبية</string>
     <string name="settings_bottom_searchbar_desc">وضع شريط البحث في أسفل الشاشة</string>
     <string name="settings_bottom_searchbar_title">شريط البحث السفلي</string>
@@ -763,11 +788,10 @@
     <string name="settings_default_assistant_title">المساعد الافتراضي</string>
     <string name="settings_default_launcher_desc">تعيين هذا التطبيق كمشغل افتراضي للشاشة الرئيسية.</string>
     <string name="settings_default_launcher_title">المشغل الافتراضي</string>
-    <string name="settings_amoled_theme_desc">استخدم خلفية سوداء حقيقية لسمة Mono</string>
+    <string name="settings_amoled_theme_desc">استخدم خلفية سوداء حقيقية في الوضع الداكن</string>
     <string name="settings_amoled_theme_title">سمة AMOLED</string>
     <string name="settings_device_theme_blocked_toast">معطل عند تفعيل سمة Material You</string>
     <string name="settings_device_theme_desc">استخدام الألوان الديناميكية لجهازك كسمة للتطبيق</string>
-    <string name="settings_device_theme_title">Material You</string>
     <string name="settings_edit_label">تعديل</string>
     <string name="settings_font_size_big">كبير</string>
     <string name="settings_font_size_extra_small">صغير جدًا</string>
@@ -827,6 +851,8 @@
     <string name="settings_unified_pinned_items_desc">عرض العناصر المثبتة كقائمة موحدة واحدة في الشاشة الرئيسية.</string>
     <string name="settings_show_status_bar_title">إظهار شريط الحالة</string>
     <string name="settings_show_status_bar_desc">إظهار شريط حالة Android أعلى الشاشة.</string>
+    <string name="settings_search_chrome_blur_title">خلفية ضبابية</string>
+    <string name="settings_search_chrome_blur_desc">تمويه ما خلف شريط البحث.</string>
     <string name="settings_pinned_sections_order_title">ترتيب الأقسام المثبتة</string>
     <string name="settings_pinned_sections_order_desc">إعادة ترتيب الأقسام المثبتة في الشاشة الرئيسية</string>
     <string name="settings_pinned_sections_order_dialog_info">اضغط مطولًا واسحب لتغيير ترتيب الأقسام المثبتة في الشاشة الرئيسية.</string>
@@ -856,8 +882,6 @@
     <string name="settings_refresh_contacts_title">تحديث جهات الاتصال</string>
     <string name="settings_refresh_data_note">يتم تحديث البيانات تلقائياً. يمكنك استخدام هذه الأزرار للتحديث اليدوي الفوري.</string>
     <string name="settings_refresh_data_title">تحديث البيانات</string>
-    <string name="settings_refresh_icon_packs">تحديث حزم الأيقونات</string>
-    <string name="settings_refreshing_icon_packs">تحديث قائمة حزم الأيقونات…</string>
     <string name="settings_scroll_to_top">التمرير لأعلى</string>
     <string name="settings_search_hints_desc">تفعيل أو تعطيل تلميحات البحث الدوارة</string>
     <string name="settings_search_hints_title">تلميحات البحث</string>
@@ -869,8 +893,6 @@
     <string name="settings_themed_icons_desc">تغيير ألوان الأيقونات لتطابق السمة الحالية</string>
     <string name="settings_themed_icons_title">أيقونات التطبيقات المتوافقة مع السمة</string>
     <string name="settings_tools_desc">الآلة الحاسبة، محول الوحدات، القاموس والمزيد</string>
-    <string name="settings_tools_gemini_api_desc">إضافة مفتاح API لتفعيل المزيد من الأدوات.</string>
-    <string name="settings_tools_gemini_api_title">تكوين مزود AI</string>
     <string name="settings_tools_info_examples_header">أمثلة للبحث السريع في شريط البحث</string>
     <string name="settings_tools_title">الأدوات</string>
     <string name="settings_at_a_glance_title">نظرة سريعة</string>
@@ -878,7 +900,6 @@
     <string name="custom_info_edit_title">تعديل التفاصيل</string>
     <string name="custom_info_prompt">المطالبة</string>
     <string name="custom_info_set_date_time">تحديد التاريخ والوقت</string>
-    <string name="custom_info_desc">إجابات الذكاء الاصطناعي على مطالباتك في الشاشة الرئيسية، في الأوقات التي تختارها</string>
     <string name="settings_ai_api_key_required_message">تتطلب هذه الميزة مفتاح API لمزود AI.</string>
     <string name="settings_ai_api_key_required_title">مفتاح API مطلوب</string>
     <string name="settings_ai_api_key_setup_action">إعداد المفتاح</string>
@@ -887,7 +908,7 @@
     <string name="custom_info_send_notification">إرسال إشعار</string>
     <string name="custom_info_preview">معاينة</string>
     <string name="custom_info_saved">تم الحفظ</string>
-    <string name="custom_info_delete_confirm_title">هل تريد حذف %1$s؟</string>
+    <string name="dialog_delete_item_title">هل تريد حذف %1$s؟</string>
     <string name="custom_info_delete_confirm_message">سيتم حذف هذه المعلومات المخصصة وجدولها نهائياً.</string>
     <string name="settings_at_a_glance_desc">معلومات مفيدة تظهر على شاشتك الرئيسية في الأوقات المناسبة</string>
     <string name="settings_at_a_glance_alarms_title">المنبهات</string>
@@ -935,11 +956,19 @@
     <string name="app_notifications_add_keyword">إضافة “%1$s”</string>
     <string name="app_notifications_recent_matches">المطابقات الأخيرة</string>
     <plurals name="app_notifications_age_minutes">
+        <item quantity="zero">%d د</item>
         <item quantity="one">%d د</item>
+        <item quantity="two">%d د</item>
+        <item quantity="few">%d د</item>
+        <item quantity="many">%d د</item>
         <item quantity="other">%d د</item>
     </plurals>
     <plurals name="app_notifications_age_hours">
+        <item quantity="zero">%d س</item>
         <item quantity="one">%d س</item>
+        <item quantity="two">%d س</item>
+        <item quantity="few">%d س</item>
+        <item quantity="many">%d س</item>
         <item quantity="other">%d س</item>
     </plurals>
     <string name="app_notifications_choose_apps">اختيار تطبيق</string>
@@ -956,13 +985,13 @@
     <string name="settings_use_system_font_desc">اتباع خط النظام الافتراضي للجهاز</string>
     <string name="settings_use_system_font_title">استخدام خط النظام</string>
     <string name="settings_accent_color_from_wallpaper">الخلفية</string>
-    <string name="settings_accent_color_none">بدون</string>
     <string name="settings_accent_color_picker_title">لون السمة</string>
     <string name="settings_accent_color_wallpaper_required_toast">أعد خلفية الشاشة أولاً</string>
+    <string name="settings_accent_color_default_theme_required_toast">انتقل إلى السمة الافتراضي أولاً</string>
     <string name="settings_wallpaper_accent_desc">اشتقاق لون السمة من الخلفية أو اختيار لون مخصص</string>
     <string name="settings_wallpaper_accent_title">لون السمة</string>
     <string name="settings_wallpaper_blur_label">تمويه</string>
-    <string name="settings_wallpaper_card_title">خلفية الشاشة</string>
+    <string name="settings_wallpaper_card_title">الخلفية</string>
     <string name="settings_wallpaper_transparency_label">الشفافية</string>
 
     <!-- ============================================================================
@@ -977,14 +1006,8 @@
     <string name="settings_add_search_engine_error_multiple_placeholders">يرجى استخدام {{query}} مرة واحدة فقط.</string>
     <string name="settings_add_search_engine_error_placeholder">يجب أن يحتوي الرابط على {{query}}</string>
     <string name="settings_add_search_engine_error_required">يرجى إدخال قالب رابط URL.</string>
-    <string name="settings_ai_provider_groq">Groq</string>
-    <string name="settings_ai_provider_meta">Meta AI</string>
-    <string name="settings_ai_provider_opencode">OpenCode</string>
-    <string name="settings_ai_provider_openai">OpenAI</string>
     <string name="settings_alias_label">الاسم المستعار:</string>
-    <string name="settings_amazon_domain_default">amazon.com</string>
     <string name="settings_amazon_domain_label">النطاق:</string>
-    <string name="settings_api_key_saved_last4">تم حفظ مفتاح ينتهي بـ ****%1$s</string>
     <string name="settings_api_key_setup_desc">إعداد مفاتيح API للوصول إلى النماذج من مزود AI المعني.</string>
     <string name="settings_api_key_setup_nav_desc">إضافة أو إزالة مفاتيح API للمزودين</string>
     <string name="settings_configure_api_key_title">إعداد مفتاح API</string>
@@ -993,7 +1016,6 @@
     <string name="custom_provider_models_load_failed">تعذّر تحميل النماذج من هذا المزوّد: %1$s</string>
     <string name="settings_custom_provider_advanced_payload_desc">يتم دمجها في كل طلب يتم إرساله عبر هذا الموفر.</string>
     <string name="settings_custom_provider_advanced_payload_error">أدخل كائن JSON صالحًا.</string>
-    <string name="settings_custom_provider_advanced_payload_hint" translatable="false">Example: { \"tools\": [{ \"type\": \"openrouter:web_search\" }] }</string>
     <string name="settings_custom_provider_advanced_payload_title">حمولة الطلب المتقدمة</string>
     <string name="settings_free_api_key_tip_description">خطوات الحصول على مفتاح Gemini API مجانًا.</string>
     <string name="settings_open_free_api_key_guide">فتح دليل مفتاح API المجاني</string>
@@ -1001,7 +1023,6 @@
     <string name="settings_direct_search_how_to">احصل على مفتاح API مجاناً</string>
     <string name="settings_direct_search_model_label">النموذج</string>
     <string name="settings_select_model">اختيار نموذج</string>
-    <string name="settings_ai_model_with_provider">%1$s · %2$s</string>
     <string name="ai_error_selected_model_unavailable">النموذج المحدد غير متاح. يُرجى اختيار نموذج آخر من الإعدادات.</string>
     <string name="settings_loading_models">جارٍ تحميل النماذج…</string>
     <string name="settings_direct_search_personal_context">السياق الشخصي</string>
@@ -1016,7 +1037,6 @@
     <string name="settings_gemini_api_key_paste_hint">انقر هنا للصق المفتاح</string>
     <string name="settings_gemini_api_key_reset">إعادة تعيين المفتاح</string>
     <string name="settings_gemini_api_key_saving">جارٍ الحفظ…</string>
-    <string name="settings_gemini_guide_url" translatable="false">https://medium.com/@tejakarlapudi.apps/setting-up-gemini-api-key-in-quick-search-25ee92aa4311</string>
     <string name="settings_model_picker_search_hint">ابحث عن النماذج</string>
     <string name="settings_model_picker_more_models_hint">يتم عرض أحدث النماذج. ابحث للعثور على غيرها.</string>
     <string name="settings_search_engine_alias_suffix_desc">تفعيل محرك البحث عند إضافة الاسم المستعار في نهاية عبارة البحث. سيعمل الاسم المستعار دائماً في بداية العبارة.</string>
@@ -1055,7 +1075,6 @@
     <string name="settings_backup_export_option_pinned_items_title">العناصر المثبتة</string>
     <string name="settings_backup_export_option_api_keys">مفاتيح API</string>
     <string name="settings_backup_export_selection_title">تصدير البيانات</string>
-    <string name="settings_backup_export_success">تم تصدير الإعدادات بنجاح.</string>
     <string name="settings_backup_import_button">استيراد</string>
     <string name="settings_backup_import_failed">تعذر استيراد الإعدادات.</string>
     <string name="settings_backup_import_success">تم استيراد الإعدادات بنجاح.</string>
@@ -1063,9 +1082,8 @@
     <string name="settings_backup_import_warning_title">استيراد الإعدادات؟</string>
     <string name="settings_backup_restore_desc">تصدير أو استيراد إعدادات التطبيق</string>
     <string name="settings_backup_restore_title">النسخ الاحتياطي والاستعادة</string>
-    <string name="settings_feedback_developer_desc">تطوير %1$s</string>
     <string name="settings_feedback_developer_name">Teja Karlapudi</string>
-    <string name="settings_feedback_developer_title">%1$s v%2$s</string>
+    <string name="settings_feedback_developer_made_by">تطوير</string>
     <string name="settings_feedback_github_desc">عرض الكود المصدري للمشروع على GitHub</string>
     <string name="settings_feedback_github_title">المساهمة والتطوير</string>
     <string name="settings_feedback_rate_desc">اترك تقييم 5 نجوم إذا وجدت هذا التطبيق مفيداً 🙏</string>
@@ -1111,7 +1129,6 @@
     <string name="date_calculator_category_time_ranges">النطاقات الزمنية</string>
     <string name="date_calculator_info_title">حاسبة التاريخ والوقت</string>
     <string name="date_calculator_invalid_date">التاريخ أو الوقت غير صالح أو غير معروف</string>
-    <string name="date_calculator_toggle_action_desc">تفعيل أو تعطيل حاسبة التاريخ والوقت</string>
     <string name="date_calculator_toggle_desc">أمثلة الاستخدام</string>
     <string name="dictionary_example_label">مثال: %1$s</string>
     <string name="dictionary_definition_not_found">لم يتم العثور على تعريف لـ “%1$s”</string>
@@ -1148,7 +1165,6 @@
     <string name="unit_converter_enter_conversion_hint">أدخل قيمة لتحويلها (مثل: 5lbs إلى kgs)</string>
     <string name="unit_converter_info_title">محول الوحدات</string>
     <string name="unit_converter_invalid_or_unsupported_query">تحويل غير صالح أو غير مدعوم</string>
-    <string name="unit_converter_toggle_action_desc">تفعيل أو تعطيل محول الوحدات</string>
     <string name="world_clock_error_not_recognized">تعذر العثور على التوقيت المطلوب. يرجى تجربة اسم مدينة، أو دولة، أو منطقة زمنية، أو وقت محدد.</string>
     <string name="world_clock_toggle_desc">مثال: الوقت في طوكيو</string>
     <string name="world_clock_toggle_title">الساعة العالمية</string>
@@ -1168,6 +1184,14 @@
     <string name="shortcut_voice_search_short_label">البحث الصوتي</string>
     <string name="voice_input_not_available">الكتابة الصوتية غير متاحة حالياً.</string>
     <string name="widget_background_color_custom_dialog_title">لون مخصص</string>
+    <string name="color_picker_hex">لون سداسي عشري (#RRGGBB)</string>
+    <string name="color_picker_hue">تدرّج اللون</string>
+    <string name="color_picker_saturation">التشبّع</string>
+    <string name="color_picker_brightness">السطوع</string>
+    <string name="color_picker_increase_saturation">زيادة التشبّع</string>
+    <string name="color_picker_decrease_saturation">تقليل التشبّع</string>
+    <string name="color_picker_increase_brightness">زيادة السطوع</string>
+    <string name="color_picker_decrease_brightness">تقليل السطوع</string>
     <string name="widget_border_color">لون الحدود</string>
     <string name="widget_custom_button_add_desc">إضافة زر مخصص</string>
     <string name="widget_custom_buttons_dialog_hint">ابحث عن التطبيقات، واختصارات التطبيقات، وجهات الاتصال، والملفات، والمجلدات، والملاحظات، وإعدادات الجهاز.</string>
@@ -1237,6 +1261,15 @@
     <string name="widget_toggle_show_label">نص Quick Search</string>
     <string name="widget_toggle_show_empty_date">إظهار التاريخ عند عدم وجود عناصر</string>
     <string name="widgets_panel_title">عناصر واجهة المستخدم</string>
+    <string name="widget_edit_layout">تعديل تخطيط الأداة</string>
+    <string name="widget_move_left">نقل إلى اليسار</string>
+    <string name="widget_move_right">نقل إلى اليمين</string>
+    <string name="widget_increase_width">زيادة العرض</string>
+    <string name="widget_decrease_width">تقليل العرض</string>
+    <string name="widget_increase_height">زيادة الارتفاع</string>
+    <string name="widget_decrease_height">تقليل الارتفاع</string>
+    <string name="widgets_panel_lock_layout">قفل التخطيط</string>
+    <string name="widgets_panel_unlock_layout">إلغاء قفل التخطيط</string>
     <string name="widgets_picker_empty">لم يتم العثور على أي عناصر واجهة مستخدم.</string>
     <string name="widgets_picker_loading">جارٍ تحميل عناصر واجهة المستخدم...</string>
     <string name="widgets_picker_preview_unavailable">المعاينة غير متوفرة</string>
@@ -1251,14 +1284,13 @@
     <string name="permissions_calling_desc">مطلوب للاتصال بجهات الاتصال الخاصة بك مباشرة دون فتح لوحة الاتصال.</string>
     <string name="settings_notifications_permission_title">نشر الإشعارات</string>
     <string name="permissions_notifications_desc">مطلوب لإشعارات التذكيرات ولتثبيت نتائج البحث في لوحة الإشعارات</string>
-    <string name="permissions_notification_access_desc">مطلوب لتفعيل نقاط الإشعارات وميزة سجل الإشعارات</string>
+    <string name="permissions_notification_access_desc">مطلوب لتفعيل نقاط الإشعارات وسجل الإشعارات وميزات نظرة سريعة المفيدة.</string>
     <string name="permissions_accessibility_lock_screen_title">إمكانية الوصول</string>
     <string name="permissions_accessibility_lock_screen_desc">لتفعيل الإيماءات والزر العائم وSpeedBump.</string>
     <string name="permissions_contacts_desc">مطلوب للبحث في جهات الاتصال الخاصة بك.</string>
     <string name="permissions_files_desc">مطلوب للبحث في ملفاتك ومستنداتك المختلفة.</string>
     <string name="permissions_files_title">إذن الوصول إلى الملفات</string>
     <string name="permissions_granted">ممنوح</string>
-    <string name="permissions_mandatory_indicator">*</string>
     <string name="permissions_reminder_dialog_message">إذا غيرت رأيك لاحقاً بشأن إذن %1$s، يمكنك منحه في أي وقت من إعدادات التطبيق.</string>
     <string name="permissions_reminder_dialog_title">الأذونات غير ممنوحة</string>
     <string name="permissions_screen_subtitle">جميع الأذونات اختيارية. فهي تفتح ميزات إضافية فقط، وتظل بياناتك على جهازك.</string>
@@ -1266,6 +1298,10 @@
     <string name="permissions_open_source_desc">اطّلع بالضبط على كيفية استخدام هذه الأذونات.</string>
     <string name="permissions_open_source_action">انقر لعرض الكود.</string>
     <string name="permissions_screen_optional_emphasis">اختيارية</string>
+    <string name="permissions_trust_optional">كل الأذونات اختيارية</string>
+    <string name="permissions_trust_on_device">تبقى بياناتك على الجهاز</string>
+    <string name="permissions_trust_open_source">مفتوح المصدر بالكامل</string>
+    <string name="permissions_trust_view_code">عرض الكود</string>
     <string name="permissions_usage_desc">مطلوب لعرض تطبيقاتك المستخدمة مؤخراً في قسم الاقتراحات.</string>
     <string name="setup_action_next">التالي</string>
     <string name="setup_action_skip_permissions">المتابعة بدون أذونات</string>
@@ -1293,33 +1329,12 @@
     <string name="browser_in_app_name">In-App Browser</string>
     <string name="open_with_engine">فتح باستخدام %1$s</string>
     <string name="search_engine_ai_mode">AI mode</string>
-    <string name="search_engine_amazon">Amazon</string>
-    <string name="search_engine_bing">Bing</string>
     <string name="search_engine_brave">Brave Search</string>
-    <string name="search_engine_chatgpt">ChatGPT</string>
-    <string name="search_engine_claude">Claude</string>
     <string name="search_engine_custom">Custom Search</string>
-    <string name="search_engine_duckduckgo">DuckDuckGo</string>
-    <string name="search_engine_fdroid">F-Droid</string>
-    <string name="search_engine_facebook_marketplace">Facebook Marketplace</string>
-    <string name="search_engine_gemini">Gemini</string>
-    <string name="search_engine_google">Google</string>
     <string name="search_engine_google_drive">Google Drive</string>
     <string name="search_engine_google_maps">Google Maps</string>
     <string name="search_engine_google_photos">Google Photos</string>
-    <string name="search_engine_google_play">Google Play</string>
-    <string name="search_engine_grok">Grok</string>
-    <string name="search_engine_onboarding_description">When you type your search query and tap on any of these search engines, it will trigger search within these apps. You can modify them by long pressing.</string>
-    <string name="search_engine_perplexity">Perplexity</string>
-    <string name="search_engine_reddit">Reddit</string>
-    <string name="search_engine_spotify">Spotify</string>
-    <string name="search_engine_startpage">Startpage</string>
-    <string name="search_engine_waze">Waze</string>
     <string name="search_engine_wikipedia">Wikipedia</string>
-    <string name="search_engine_x">X</string>
-    <string name="search_engine_you_com">You.com</string>
-    <string name="search_engine_youtube">YouTube</string>
-    <string name="search_engine_youtube_music">YouTube Music</string>
     <string name="search_on_engine">البحث في %1$s</string>
 
     <!-- ============================================================================
@@ -1370,9 +1385,7 @@
     <string name="widget_custom_button_change_colour">تغيير اللون</string>
     <string name="widget_custom_button_choose_colour">اختيار لون المجلد</string>
     <string name="search_engine_google_translate">ترجمة Google</string>
-    <string name="search_engine_kagi">Kagi</string>
     <string name="search_engine_kagi_assistant">Kagi Assistant</string>
-    <string name="search_engine_muse">Muse</string>
     <string name="tasker_integration_title">إجراءات Tasker</string>
     <string name="tasker_integration_description">إنشاء إجراءات Tasker باستخدام نوايا البث (broadcast intents).</string>
     <string name="tasker_add_intent_title">إضافة نية بث لـ Tasker</string>
@@ -1390,10 +1403,31 @@
     <string name="icon_picker_no_icon_packs">لا توجد حزم أيقونات مثبتة لتغيير أيقونة التطبيق.</string>
     <string name="icon_picker_download_icon_packs">تنزيل</string>
     <string name="app_menu_usage_today">%1$s اليوم · فُتح %2$s</string>
-    <string name="app_menu_version">v%1$s</string>
-    <plurals name="app_menu_opened_count"><item quantity="one">مرة واحدة</item><item quantity="other">%d مرات</item></plurals>
-    <plurals name="app_menu_usage_hours"><item quantity="one">ساعة واحدة</item><item quantity="other">%d س</item></plurals>
-    <plurals name="app_menu_usage_minutes"><item quantity="one">دقيقة واحدة</item><item quantity="other">%d د</item></plurals>
+    <string name="app_menu_version">الإصدار %1$s</string>
+    <plurals name="app_menu_opened_count">
+        <item quantity="zero">%d مرة</item>
+        <item quantity="one">مرة واحدة</item>
+        <item quantity="two">مرتان</item>
+        <item quantity="few">%d مرات</item>
+        <item quantity="many">%d مرة</item>
+        <item quantity="other">%d مرة</item>
+    </plurals>
+    <plurals name="app_menu_usage_hours">
+        <item quantity="zero">%d س</item>
+        <item quantity="one">ساعة واحدة</item>
+        <item quantity="two">%d س</item>
+        <item quantity="few">%d س</item>
+        <item quantity="many">%d س</item>
+        <item quantity="other">%d س</item>
+    </plurals>
+    <plurals name="app_menu_usage_minutes">
+        <item quantity="zero">%d د</item>
+        <item quantity="one">دقيقة واحدة</item>
+        <item quantity="two">%d د</item>
+        <item quantity="few">%d د</item>
+        <item quantity="many">%d د</item>
+        <item quantity="other">%d د</item>
+    </plurals>
     <string name="app_menu_usage_hours_decimal">%1$s س</string>
     <string name="other_screen_time_today_title">وقت استخدام الشاشة اليوم</string>
     <string name="other_screen_time_hours_minutes">%1$d س %2$d د</string>
@@ -1405,7 +1439,8 @@
     <string name="speed_bump_explainer_just_enabled">لقد فعّلتها للتو لـ %1$s</string>
     <string name="speed_bump_overlay_prompt">سيُفتح %1$s قريبًا…</string>
     <string name="speed_bump_overlay_title">خذ نفسًا عميقًا</string>
-    <string name="speed_bump_title">SpeedBump</string>
+    <string name="speed_bump_pause_action">إيقاف SpeedBump مؤقتًا</string>
+    <string name="speed_bump_pause_menu_title">إيقاف SpeedBump مؤقتًا لتطبيق %1$s</string>
     <string name="speed_bump_outside_quick_search_title">توسيع SpeedBump</string>
     <string name="speed_bump_outside_quick_search_desc">تطبيق SpeedBump عند فتح التطبيقات خارج Quick Search</string>
     <string name="home_upcoming_alarm">المنبه القادم</string>
@@ -1502,7 +1537,6 @@
     <string name="bookmarks_link_label">الرابط</string>
     <string name="bookmarks_invalid_link">أدخل عنوان ويب صالحًا</string>
     <string name="reminders_permission_hint">يلزم إذن لعرض إشعارات التذكيرات. انقر للسماح.</string>
-    <string name="reminders_home_card_dismiss">إزالة من الشاشة الرئيسية</string>
     <string name="settings_include_past_reminders_title">التذكيرات السابقة</string>
     <string name="settings_include_past_reminders_desc">عرض التذكيرات السابقة في نتائج البحث</string>
     <string name="app_setting_create_reminder">إنشاء تذكير</string>

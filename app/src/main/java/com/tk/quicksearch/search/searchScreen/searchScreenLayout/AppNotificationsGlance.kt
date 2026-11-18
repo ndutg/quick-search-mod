@@ -27,7 +27,6 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
-import com.tk.quicksearch.search.apps.notificationDots.NotificationDotsPermission
 import com.tk.quicksearch.search.data.AppNotification
 import com.tk.quicksearch.search.data.AppNotificationsConfig
 import com.tk.quicksearch.search.data.AppNotificationsSettings
@@ -78,13 +77,14 @@ internal fun rememberAppNotificationsConfig(): AppNotificationsConfig? {
 @Composable
 internal fun rememberAppNotificationsGlance(
     enabled: Boolean,
+    /** Notification listener access, read once per resume for every notification glance. */
+    hasAccess: Boolean,
     excludedKeys: Set<String>,
 ): AppNotificationsGlance? {
     val context = LocalContext.current
     val refreshKey = rememberResumeRefreshKey()
     val config = rememberAppNotificationsConfig()
     val notifications by GlanceNotificationsStore.appNotifications.collectAsState()
-    val hasAccess = remember(refreshKey) { NotificationDotsPermission.hasNotificationListenerAccess(context) }
     var expanded by remember(refreshKey) { mutableStateOf(false) }
     if (!enabled || !hasAccess || config?.isActive != true) return null
     val matches =
@@ -136,7 +136,7 @@ internal fun AppNotificationRow(
         belowText = {
             Text(
                 text = "$appLabel • $age",
-                style = MaterialTheme.typography.labelSmall,
+                style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
@@ -152,9 +152,9 @@ internal fun ShowMoreAppNotificationsRow(glance: AppNotificationsGlance) {
         modifier =
             Modifier
                 .fillMaxWidth()
-                .heightIn(min = 44.dp)
+                .heightIn(min = DesignTokens.MinTouchTarget)
                 .clickable(role = Role.Button, onClick = glance.expand)
-                .padding(horizontal = 7.dp, vertical = DesignTokens.SpacingSmall),
+                .padding(horizontal = DesignTokens.GlanceRowHorizontalPadding, vertical = DesignTokens.SpacingSmall),
         horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium),
         verticalAlignment = Alignment.CenterVertically,
     ) {

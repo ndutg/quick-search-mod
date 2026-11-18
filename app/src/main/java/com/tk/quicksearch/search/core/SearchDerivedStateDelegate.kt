@@ -1,5 +1,6 @@
 package com.tk.quicksearch.search.core
 
+import com.tk.quicksearch.search.contacts.models.ContactActionProvider
 import android.app.Application
 import android.content.Context
 import android.os.SystemClock
@@ -9,7 +10,6 @@ import com.tk.quicksearch.search.searchScreen.SearchScreenConstants
 import com.tk.quicksearch.search.startup.StartupHomeSurfaceSnapshot
 import com.tk.quicksearch.search.startup.StartupSurfaceSnapshot
 import com.tk.quicksearch.search.startup.StartupSurfaceStore
-import com.tk.quicksearch.shared.util.PackageConstants
 import com.tk.quicksearch.shared.util.WallpaperUtils
 import com.tk.quicksearch.shared.util.getAppGridColumns
 import java.util.Locale
@@ -39,6 +39,9 @@ internal class SearchDerivedStateDelegate(
 ) {
     @Volatile
     private var searchableAppsSnapshotVersion: Long = -1L
+
+    @Volatile
+    private var lastCustomizationSnapshot: Map<String, *>? = null
 
     private val appSearchManager get() = handlersProvider().appSearchManager
     private val iconPackHandler get() = handlersProvider().iconPackHandler
@@ -98,17 +101,23 @@ internal class SearchDerivedStateDelegate(
         isLoading: Boolean? = null,
     ) {
         val startedAtElapsedMs = SystemClock.elapsedRealtime()
-        appSearchManager.refreshNicknames()
+        // Nicknames, triggers and aliases all live in the search customization store. Only a
+        // change there should invalidate the UI's nickname/trigger lookups, which re-keys every row.
+        val customizationSnapshot = userPreferences.getSearchCustomizationSnapshot()
+        val customizationChanged = customizationSnapshot != lastCustomizationSnapshot
+        lastCustomizationSnapshot = customizationSnapshot
+        if (customizationChanged) appSearchManager.refreshNicknames()
 
         val catalogVersionAtRead = appSearchManager.catalogVersion
         val apps = appSearchManager.cachedApps
-        val visibleAppList = appSearchManager.availableApps()
         val hasUsagePermission = permissionStateProvider().hasUsagePermission
         val suggestionsEnabled = configStateProvider().appSuggestionsEnabled
 
         val suggestionHiddenPackages = userPreferences.getSuggestionHiddenPackages()
         val resultHiddenPackages = userPreferences.getResultHiddenPackages()
         val pinnedPackages = userPreferences.getPinnedPackages()
+        val pinnedOrder by lazy(LazyThreadSafetyMode.NONE) { appSearchManager.readPinnedOrder() }
+        val visibleAppList = appSearchManager.availableApps(suggestionHiddenPackages)
 
         if (suggestionsEnabled && !hasUsagePermission && userPreferences.getRecentAppLaunches().isEmpty()) {
             val initialRecents =
@@ -119,14 +128,20 @@ internal class SearchDerivedStateDelegate(
             userPreferences.setRecentAppLaunches(initialRecents)
         }
 
-        // Pinned apps stay on the home screen even when app suggestions are turned off.
-        val pinnedAppsForSuggestions = appSearchManager.computePinnedApps(emptySet())
-        val pinnedAppsForResults =
+        // One sorted pass over the catalog serves both pinned lists; they differ only in what
+        // each excludes, and filtering keeps the shared pinned order.
+        val launchablePinnedApps =
             computePinnedApps(
                 apps = apps,
                 pinnedPackages = pinnedPackages,
-                exclusion = resultHiddenPackages,
+                exclusion = emptySet(),
+                pinnedOrder = { pinnedOrder },
             )
+        // Pinned apps stay on the home screen even when app suggestions are turned off.
+        val pinnedAppsForSuggestions =
+            launchablePinnedApps.filter(appSearchManager::isEligibleForPinnedSuggestions)
+        val pinnedAppsForResults =
+            launchablePinnedApps.filterNot { resultHiddenPackages.contains(it.launchCountKey()) }
         val suggestedRecents =
             if (suggestionsEnabled) {
                 val recentsSource = visibleAppList
@@ -209,13 +224,15 @@ internal class SearchDerivedStateDelegate(
                 recentApps = recents,
                 newOrUpdatedApps = newOrUpdatedApps,
                 mostUsedApps = mostUsedApps,
-                searchResults = searchResults,
+                // The query may have changed while this ran; keep the newer query's own results.
+                searchResults = if (state.query == query) searchResults else state.searchResults,
                 pinnedApps = pinnedAppsForSuggestions,
                 suggestionExcludedApps = suggestionHiddenAppList,
                 resultExcludedApps = resultHiddenAppList,
                 indexedAppCount = visibleAppList.size,
                 cacheLastUpdatedMillis = lastUpdated ?: state.cacheLastUpdatedMillis,
-                nicknameUpdateVersion = state.nicknameUpdateVersion + 1,
+                nicknameUpdateVersion =
+                    if (customizationChanged) state.nicknameUpdateVersion + 1 else state.nicknameUpdateVersion,
             )
         }
         if (isLoading != null) {
@@ -226,6 +243,7 @@ internal class SearchDerivedStateDelegate(
             pinnedApps = pinnedAppsForSuggestions,
             recents = recents,
             searchResults = searchResults,
+            forceCircularMask = configStateProvider().appIconShape == AppIconShape.CIRCLE,
         )
 
         val totalElapsedMs = SystemClock.elapsedRealtime() - startedAtElapsedMs
@@ -303,28 +321,13 @@ internal class SearchDerivedStateDelegate(
     fun refreshMessagingState() {
         val apps = appSearchManager.cachedApps
         val packageNames = apps.map { it.packageName }.toSet()
-        val isWhatsAppInstalled = packageNames.contains(PackageConstants.WHATSAPP_PACKAGE)
-        val isWhatsAppBusinessInstalled = packageNames.contains(PackageConstants.WHATSAPP_BUSINESS_PACKAGE)
-        val isTelegramInstalled = packageNames.contains(PackageConstants.TELEGRAM_PACKAGE)
-        val isSignalInstalled = packageNames.contains(PackageConstants.SIGNAL_PACKAGE)
-        val isGoogleMeetInstalled = packageNames.contains(PackageConstants.GOOGLE_MEET_PACKAGE)
-        messagingHandler.updateMessagingAvailability(
-            whatsappInstalled = isWhatsAppInstalled,
-            whatsappBusinessInstalled = isWhatsAppBusinessInstalled,
-            telegramInstalled = isTelegramInstalled,
-            signalInstalled = isSignalInstalled,
-            googleMeetInstalled = isGoogleMeetInstalled,
-            updateState = false,
-        )
+        val installed = ContactActionProvider.entries.filterTo(linkedSetOf()) { it.packageName in packageNames }
+        messagingHandler.updateMessagingAvailability(installed, updateState = false)
         updatePermissionState {
             it.copy(
                 primaryContactButton = messagingHandler.primaryContactButton,
                 secondaryContactButton = messagingHandler.secondaryContactButton,
-                isWhatsAppInstalled = isWhatsAppInstalled,
-                isWhatsAppBusinessInstalled = isWhatsAppBusinessInstalled,
-                isTelegramInstalled = isTelegramInstalled,
-                isSignalInstalled = isSignalInstalled,
-                isGoogleMeetInstalled = isGoogleMeetInstalled,
+                installedContactProviders = installed,
             )
         }
     }
@@ -365,6 +368,11 @@ internal class SearchDerivedStateDelegate(
                     .take(suggestionLimit)
 
             if (!allowDuringQuery && results.query.isNotBlank()) {
+                return@launch
+            }
+            // Until startup publishes suggestions the app lists are still empty; saving now would
+            // wipe the cached Home the next launch draws first. Later saves cover these changes.
+            if (results.screenState is ScreenVisibilityState.Initializing) {
                 return@launch
             }
 
@@ -469,9 +477,10 @@ internal class SearchDerivedStateDelegate(
         apps: List<AppInfo>,
         pinnedPackages: Set<String>,
         exclusion: Set<String>,
+        pinnedOrder: () -> Map<String, Int> = appSearchManager::readPinnedOrder,
     ): List<AppInfo> {
         if (apps.isEmpty() || pinnedPackages.isEmpty()) return emptyList()
-        val pinnedOrder = userPreferences.getPinnedPackageOrder().withIndex().associate { it.value to it.index }
+        val pinnedOrder = pinnedOrder()
 
         return apps
             .asSequence()

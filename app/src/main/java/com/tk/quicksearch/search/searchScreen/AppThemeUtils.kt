@@ -4,12 +4,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
 import com.tk.quicksearch.search.core.BackgroundSource
 import com.tk.quicksearch.search.core.AppTheme
+import com.tk.quicksearch.search.core.SearchUiState
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DarkWallpaperSearchSurfaceAlpha
 import com.tk.quicksearch.shared.ui.theme.LightResultCardFrostAlpha
 import com.tk.quicksearch.shared.ui.theme.LightWallpaperKeyboardButtonAlpha
 import com.tk.quicksearch.shared.ui.theme.LightWallpaperSearchResultCardAlpha
 import com.tk.quicksearch.shared.ui.theme.SearchColorTheme
+import com.tk.quicksearch.shared.ui.theme.ThemeColorRegistry
 
 private const val NEUTRAL_APP_THEME_INTENSITY = 0.5f
 private const val MAX_APP_THEME_TONE_SHIFT = 0.38f
@@ -24,7 +26,6 @@ internal fun isAmoledSurfaceTheme(
     amoledThemeEnabled &&
         isDarkMode &&
         !deviceThemeEnabled &&
-        theme == AppTheme.MONOCHROME &&
         backgroundSource == BackgroundSource.THEME
 
 internal fun AppThemeColors(
@@ -33,30 +34,7 @@ internal fun AppThemeColors(
     alpha: Float = 1f,
     intensity: Float = NEUTRAL_APP_THEME_INTENSITY,
 ): List<Color> {
-    val baseColors =
-        if (isDarkMode) {
-            when (theme) {
-                AppTheme.FOREST ->
-                    AppColors.ForestDarkPalette
-                AppTheme.AURORA ->
-                    AppColors.AuroraDarkPalette
-                AppTheme.SUNSET ->
-                    AppColors.SunsetDarkPalette
-                AppTheme.MONOCHROME ->
-                    AppColors.MonochromeDarkPalette
-            }
-        } else {
-            when (theme) {
-                AppTheme.FOREST ->
-                    AppColors.ForestLightPalette
-                AppTheme.AURORA ->
-                    AppColors.AuroraLightPalette
-                AppTheme.SUNSET ->
-                    AppColors.SunsetLightPalette
-                AppTheme.MONOCHROME ->
-                    AppColors.MonochromeLightPalette
-            }
-        }
+    val baseColors = ThemeColorRegistry.gradient(theme, isDarkMode)
 
     val clampedAlpha = alpha.coerceIn(0f, 1f)
     return baseColors.map { color ->
@@ -89,9 +67,9 @@ internal fun appThemeDividerColor(
     val palette = AppThemeColors(theme = theme, isDarkMode = isDarkMode, intensity = intensity)
     val base = if (isDarkMode) palette[2] else palette[3]
     return if (isDarkMode) {
-        lerp(start = base, stop = Color.White, fraction = 0.18f).copy(alpha = 0.38f)
+        lerp(start = base, stop = Color.White, fraction = 0.18f).copy(alpha = AppColors.DisabledContentAlpha)
     } else {
-        lerp(start = base, stop = Color.Black, fraction = 0.15f).copy(alpha = 0.24f)
+        lerp(start = base, stop = Color.Black, fraction = 0.15f).copy(alpha = AppColors.TintStrongAlpha)
     }
 }
 
@@ -136,7 +114,7 @@ internal fun resolveSearchColorTheme(
             SearchColorTheme(
                 background = gradientColors[0],
                 cardBackground = cardBg,
-                keyboardButtonBackground = cardBg.copy(alpha = 0.75f),
+                keyboardButtonBackground = cardBg.copy(alpha = AppColors.ContentHighAlpha),
             )
         }
         BackgroundSource.SYSTEM_WALLPAPER,
@@ -181,4 +159,35 @@ private fun adjustAppThemeTone(
             )
         else -> color
     }
+}
+
+/** Result-card, divider and action colors tinted by the app theme; all null when tints don't apply. */
+internal data class OverlayThemeTints(
+    val cardColor: Color?,
+    val dividerTint: Color?,
+    val actionTint: Color?,
+)
+
+/**
+ * Theme tints for the search surface when the app theme (not the device theme) colors the
+ * background; otherwise every tint is null and callers fall back to the default palette.
+ */
+internal fun overlayThemeTints(
+    state: SearchUiState,
+    isDarkMode: Boolean,
+): OverlayThemeTints {
+    if (state.deviceThemeEnabled || state.backgroundSource != BackgroundSource.THEME) {
+        return OverlayThemeTints(cardColor = null, dividerTint = null, actionTint = null)
+    }
+    return OverlayThemeTints(
+        cardColor =
+            appThemeResultCardColor(
+                theme = state.appTheme,
+                isDarkMode = isDarkMode,
+                intensity = state.overlayThemeIntensity,
+                amoledThemeEnabled = state.amoledThemeEnabled,
+            ),
+        dividerTint = appThemeDividerColor(state.appTheme, isDarkMode, state.overlayThemeIntensity),
+        actionTint = appThemeActionColor(state.appTheme, isDarkMode, state.overlayThemeIntensity),
+    )
 }
