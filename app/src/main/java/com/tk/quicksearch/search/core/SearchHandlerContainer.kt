@@ -38,11 +38,7 @@ import com.tk.quicksearch.tools.aiTools.CurrencyConverterHandler
 import com.tk.quicksearch.tools.aiTools.DictionaryHandler
 import com.tk.quicksearch.tools.aiTools.WeatherHandler
 import com.tk.quicksearch.tools.aiTools.WorldClockHandler
-import com.tk.quicksearch.tools.calculator.CalculatorHandler
-import com.tk.quicksearch.tools.colorVisualizer.ColorVisualizerHandler
-import com.tk.quicksearch.tools.dateCalculator.DateCalculatorHandler
 import com.tk.quicksearch.tools.aiSearch.AiSearchHandler
-import com.tk.quicksearch.tools.unitConverter.UnitConverterHandler
 import com.tk.quicksearch.tools.tasker.TaskerIntegration
 import com.tk.quicksearch.shared.util.cachedDefaultHomeAppStatus
 import kotlinx.coroutines.CoroutineDispatcher
@@ -75,7 +71,12 @@ internal class SearchHandlerContainer(
     private val isLowRamDevice: Boolean,
 ) {
     val appManager by lazy {
-        AppManagementService(userPreferences, scope, refreshAppSuggestions)
+        // Pin, hide and reorder refresh the whole app catalog; keep that off the main thread.
+        AppManagementService(
+            userPreferences,
+            scope,
+            AppManagementService.backgroundRefresher(scope, refreshAppSuggestions),
+        )
     }
 
     val contactManager by lazy {
@@ -176,22 +177,6 @@ internal class SearchHandlerContainer(
             userPreferences = userPreferences,
             uiStateUpdater = updateUiState,
         )
-    }
-
-    val calculatorHandler by lazy {
-        CalculatorHandler(userPreferences = userPreferences)
-    }
-
-    val unitConverterHandler by lazy {
-        UnitConverterHandler(userPreferences = userPreferences)
-    }
-
-    val dateCalculatorHandler by lazy {
-        DateCalculatorHandler(userPreferences = userPreferences)
-    }
-
-    val colorVisualizerHandler by lazy {
-        ColorVisualizerHandler(userPreferences = userPreferences)
     }
 
     val currencyConverterHandler by lazy {
@@ -307,6 +292,15 @@ internal class SearchHandlerContainer(
 
     lateinit var contactActionHandler: ContactActionHandler
         private set
+
+    /**
+     * Loads the contacts search snapshot ahead of the first contact query. Skipped on low-RAM
+     * devices, where the snapshot is only built once contacts are actually searched. Call on IO.
+     */
+    fun prewarmContactSearch() {
+        if (isLowRamDevice || SearchSection.CONTACTS in sectionManager.disabledSections) return
+        contactRepository.prewarmSearchSnapshot()
+    }
 
     fun initializeServices(
         getPrimaryContactButton: () -> ContactButtonAction,

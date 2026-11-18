@@ -3,13 +3,28 @@
 App-setting rows are the Quick Search settings that appear as search results. Every new
 user-facing setting needs one. Paths are relative to `app/src/main/java/com/tk/quicksearch/`.
 
-## Some rows are generated automatically
+## Plain on/off settings
+
+1. Add one entry to `BooleanSettings` in `search/appSettings/BooleanSetting.kt`. Give it a
+   stable preference key, a default, a stable search row ID, and string resources. Add keywords if
+   useful. Search registration, startup hydration, and backup restore use that definition.
+2. Place a `BooleanSettingTile` on the existing Settings page. Pass the definition,
+   `state.booleanSettings`, and `callbacks.onApplySettingsCommand`. Use the same state and command
+   if the page needs a custom row.
+3. At the feature's point of use, read `uiState.isBooleanSettingEnabled(definition)`. Background
+   work can read the setting through `UserAppPreferences.isBooleanSettingEnabled`.
+
+See `FILE_PREVIEWS` and its tile in `settings/settingsDetailScreen/FileSettings.kt`. For strings,
+use `.claude/skills/localize-strings/SKILL.md`. Use the dedicated command path below for settings
+that need an action, permission prompt, or coordinated side effect.
+
+## Existing registration paths
 
 - **Search section toggles** come from `SearchSectionRegistry` (`appSettingsToggleKey`) via
-  `addSearchSectionToggles()`. Adding the section there creates the row, and the toggle's
-  read/write routes through `setSectionEnabled`.
-- **Tool toggles** set `toggleKey` in `settings/settingsDetailScreen/ToolSettingsRegistry.kt`. You still need the
-  toggle wiring below.
+  `searchSectionToggleRows()`, with row metadata from `AppSettingsCatalogRows.kt`. Reads and writes
+  route through the section state and `setSectionEnabled`.
+- **Inline tools** supply their own `BooleanSetting` in the inline tool definition. See
+  `.claude/skills/new-search-tool/SKILL.md`. Other tools use their existing settings commands.
 
 For anything else, pick a type:
 
@@ -21,38 +36,24 @@ For anything else, pick a type:
 Title (and optional description) in `values/strings.xml` plus all 16 localized
 `values-*/strings.xml`. Reuse an existing string when the text matches exactly.
 
-## 2) Enum key
+## Searchable pages and actions
 
-In `search/appSettings/AppSettingResult.kt`, reuse or add:
+- **New page.** Define its title, nesting level, back destination, and optional
+  `SettingsPageSearchShortcut` in `settings/settingsDetailScreen/SettingsDetailType.kt`.
+  Add the page content to `SettingsDetailScreen.kt` or the nested detail body. The catalog
+  discovers the shortcut automatically. Use a stable, unique row ID for recent-tap ranking.
+- **Another link to an existing page.** In `AppSettingsRepository`, add a row with
+  `AppSettingsTarget.Page(existingPage)`. Use a dedicated link when it needs a separate search
+  title or context-dependent availability.
+- **Runs an action.** Register the row with an `AppSettingsAction` for a command the app and
+  overlay hosts handle, or an `AppSettingsRouteAction` for UI owned by the search route.
+  For a new route action, the exhaustive dispatch in `SearchRouteSettingActions.kt` requires
+  its implementation.
+- **Configures a gesture.** The catalog derives these rows from `GestureSettingTarget`.
 
-- `AppSettingsDestination` for NAVIGATE
-- `AppSettingsToggleKey` for TOGGLE
+## Toggles with side effects
 
-`AppSettingResult` requires exactly one of `destination`/`toggleKey` matching the action, and
-throws otherwise.
-
-## 3) Register the row
-
-In `AppSettingsRepository.loadSettings()`, call `addNavigation(...)` or `addToggle(...)`:
-
-- `id`: stable and unique. Never rename an existing one; it keys recent-tap ranking.
-- `titleRes`, optional `descriptionRes`.
-- `keywords`: synonyms users might type (e.g. "theme", "colour"). They're matched in search and
-  can appear as the row's dynamic description.
-
-## 4a) NAVIGATE wiring
-
-- **Opens a settings page:** map it in `app/navigation/AppSettingsDestinationMapper.kt`
-  (`toSettingsDetailTypeOrNull`). The `when` is exhaustive, so the compiler flags a missing case.
-  - A new page needs a value in `settings/settingsDetailScreen/SettingsDetailType.kt` and rendering in
-    `SettingsDetailScreen.kt` (or `SettingsNestedDetailScreen.kt` for nested pages).
-- **Runs an action:** map it to `null` in the mapper, then handle it in
-  `app/navigation/AppSettingsDestinationHandler.kt`. That `when` ends in `else -> Unit`, so a
-  missing case fails silently. Actions that need route UI (a dialog, for example) are
-  intercepted in `SearchRouteSettingActions.kt` instead (see `OPEN_EVENTS_IN`).
-
-## 4b) TOGGLE wiring
-
+Use an `AppSettingsToggleKey` and register the row with `addToggle` in the appropriate catalog.
 Back it with the usual flow: preference → `UserAppPreferences` → ViewModel setter →
 `SearchUiState`. Then, in `settings/shared/SettingsCommands.kt`:
 
@@ -65,7 +66,7 @@ If turning the toggle on needs a permission, confirmation, or side effect, inter
 `search/searchScreen/searchRoute/SearchRouteSettingActions.kt` (see `OVERLAY_MODE`,
 `DIRECT_DIAL`, `NOTIFICATION_DOTS`) instead of doing it in the ViewModel setter.
 
-## 5) Optional
+## Optional
 
 - **Hide conditionally:** add the rule in `AppSettingsSearchHandler.getVisibleSettings()`. Don't
   put this logic in composables.
@@ -83,7 +84,6 @@ If turning the toggle on needs a permission, confirmation, or side effect, inter
 
 ## Common mistakes
 
-- Enum added but row not registered, or row registered without mapper/handler/`SettingsCommands`
-  wiring.
-- Action destination added to the handler but not mapped to `null` in the mapper.
-- Strings missing from the localized files.
+- Reusing a search row ID. Catalog validation checks uniqueness.
+- Missing the command for a custom toggle or permission flow.
+- Adding strings only to the base resource file.

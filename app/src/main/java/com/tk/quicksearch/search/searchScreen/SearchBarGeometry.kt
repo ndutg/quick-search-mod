@@ -1,6 +1,6 @@
 package com.tk.quicksearch.search.searchScreen
 
-import androidx.compose.animation.core.FastOutSlowInEasing
+import com.tk.quicksearch.shared.ui.theme.AppMotion
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -16,7 +16,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.zIndex
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.unit.constrainWidth
+import androidx.compose.ui.unit.offset
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.search.core.SearchUiState
@@ -26,7 +29,10 @@ import com.tk.quicksearch.shared.ui.theme.DesignTokens
 internal data class SearchBarGeometry(
     val useInsetEngineStrip: Boolean,
     val insetEngineStripOverlap: androidx.compose.ui.unit.Dp,
-    val insetEngineStripFullBleedFraction: Float,
+    /** Read only in layout or draw, or by the inset card itself, so it does not recompose the screen. */
+    val insetEngineStripFullBleedFraction: () -> Float,
+    /** True while the inset card is between resting and full bleed, which resizes the bottom chrome. */
+    val isInsetEngineStripAnimating: () -> Boolean,
     val searchFieldModifier: Modifier,
     val insetCardBackdrop: InsetCardBackdrop,
 )
@@ -40,9 +46,8 @@ internal fun rememberSearchBarGeometry(
     isOverlayPresentation: Boolean,
 ): SearchBarGeometry {
     val density = LocalDensity.current
-    // With the bottom search bar, the compact engine strip becomes a rounded container attached to
-    // the top of the search bar instead of a full-bleed band behind it. It tucks behind the bar so
-    // the two read as one shape.
+    // With the bottom search bar, compact engines turn into a rounded card that the bar sits at the
+    // top of, with the engine row below it, instead of a full-bleed band above the bar.
     val useInsetEngineStrip =
             showBottomSearchBar &&
                     state.isSearchEngineCompactMode &&
@@ -51,8 +56,8 @@ internal fun rememberSearchBarGeometry(
                     state.detectedShortcutTarget == null &&
                     state.detectedAliasSearchSection == null
 
-    // The strip paints the card behind a transparent bar, so it has to reach past the bar's bottom
-    // edge; falling short would draw its own outline inside the bar. The derived overlap assumes a
+    // The engine row paints the card behind a transparent bar, so it has to reach up past the bar's
+    // top edge; falling short would draw the card's top edge inside the bar. The derived overlap assumes a
     // default-height field, so track the measured height and keep whichever is taller.
     var measuredSearchBarHeight by remember { mutableStateOf(0.dp) }
     val insetEngineStripOverlap = InsetSearchBarGeometry.overlapFor(measuredSearchBarHeight)
@@ -64,7 +69,7 @@ internal fun rememberSearchBarGeometry(
     // has no gesture handle to clear, so its card always spans the overlay's full width.
     @OptIn(ExperimentalLayoutApi::class)
     val isImeOpeningOrOpen = WindowInsets.imeAnimationTarget.getBottom(density) > 0
-    val insetEngineStripFullBleedFraction by
+    val insetEngineStripFullBleedFractionState =
             animateFloatAsState(
                     targetValue =
                             if (useInsetEngineStrip && (isOverlayPresentation || isImeOpeningOrOpen)) {
@@ -72,23 +77,25 @@ internal fun rememberSearchBarGeometry(
                             } else {
                                 0f
                             },
-                    animationSpec = tween(durationMillis = 220, easing = FastOutSlowInEasing),
+                    animationSpec = tween(durationMillis = AppMotion.DurationStandard, easing = AppMotion.EmphasizedEasing),
                     label = "insetEngineStripFullBleed",
             )
 
     val searchFieldModifier =
             if (useInsetEngineStrip) {
-                // Inset on every side by the same amount so the bar sits centred inside the card
-                // the strip paints; the strip reaches down by exactly these spacings plus the bar.
-                Modifier.padding(
-                        start =
-                                InsetSearchBarGeometry.barHorizontalInset(
-                                        insetEngineStripFullBleedFraction,
-                                ),
-                        end =
-                                InsetSearchBarGeometry.barHorizontalInset(
-                                        insetEngineStripFullBleedFraction,
-                                ),
+                // Inset from the card's edges; the card reaches up by exactly these spacings plus
+                // the bar.
+                // Horizontal inset applied in layout: it follows the full-bleed animation every frame.
+                Modifier.layout { measurable, constraints ->
+                    val inset =
+                            InsetSearchBarGeometry.barHorizontalInset(
+                                    insetEngineStripFullBleedFractionState.value,
+                            ).roundToPx()
+                    val placeable = measurable.measure(constraints.offset(horizontal = -inset * 2))
+                    layout(constraints.constrainWidth(placeable.width + inset * 2), placeable.height) {
+                        placeable.place(inset, 0)
+                    }
+                }.padding(
                         top = InsetSearchBarGeometry.BarTopSpacing,
                         bottom = InsetSearchBarGeometry.BarBottomSpacing,
                 ).onSizeChanged { size ->
@@ -115,14 +122,17 @@ internal fun rememberSearchBarGeometry(
                                     DesignTokens.SpacingMedium
                                 } else {
                                     DesignTokens.SpacingXSmall
-                                }) + DesignTokens.SpacingXXSmall,
+                                }) + DesignTokens.SpacingXSmall,
                 )
             }
 
     return SearchBarGeometry(
         useInsetEngineStrip,
         insetEngineStripOverlap,
-        insetEngineStripFullBleedFraction,
+        remember(insetEngineStripFullBleedFractionState) { { insetEngineStripFullBleedFractionState.value } },
+        remember(insetEngineStripFullBleedFractionState) {
+            { insetEngineStripFullBleedFractionState.value.let { it > 0f && it < 1f } }
+        },
         searchFieldModifier,
         rememberInsetCardBackdrop(),
     )

@@ -1,5 +1,9 @@
 package com.tk.quicksearch.search.core
 
+import com.tk.quicksearch.tools.inlineSearch.SearchToolType
+import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.job
+import kotlinx.coroutines.currentCoroutineContext
 import android.os.SystemClock
 import com.tk.quicksearch.search.apps.AppSearchPerformanceLogger
 import com.tk.quicksearch.search.files.FileExtensionQuery
@@ -50,6 +54,16 @@ internal class SearchQueryCoordinator(
 
     fun onQueryChange(newQuery: String) {
         onQueryChangeInternal(newQuery, clearShortcutWhenBlank = false)
+    }
+
+    /**
+     * Searches the current query again once data it needs has loaded (e.g. the startup app catalog),
+     * keeping the alias state its original run resolved. The query and text field are untouched.
+     */
+    fun rerunCurrentQuery() {
+        val query = currentResultsStateProvider().query
+        if (query.isBlank()) return
+        onQueryChangeInternal(query, clearShortcutWhenBlank = false, force = true)
     }
 
     fun activateSearchSectionFilter(section: SearchSection) {
@@ -345,12 +359,13 @@ internal class SearchQueryCoordinator(
     private fun onQueryChangeInternal(
         newQuery: String,
         clearShortcutWhenBlank: Boolean,
+        force: Boolean = false,
     ) {
         val previousQuery = currentResultsStateProvider().query
-        if (newQuery == previousQuery) return
+        if (!force && newQuery == previousQuery) return
 
         val trimmedQuery = newQuery.trim()
-        if (trimmedQuery.isNotBlank() && trimmedQuery == previousQuery.trim()) {
+        if (!force && trimmedQuery.isNotBlank() && trimmedQuery == previousQuery.trim()) {
             updateUiState { it.copy(query = newQuery) }
             when (val aliasResolution = resolveAliasQueryResolution(newQuery)) {
                 is AliasQueryResolution.ReprocessQuery -> {
@@ -447,7 +462,7 @@ internal class SearchQueryCoordinator(
                         dictionaryState = DictionaryState(),
                         weatherState = WeatherState(),
                         calculatorState =
-                            aliasState.lockedToolMode?.let(::createToolModeState)
+                            aliasState.lockedToolMode?.emptyMode()
                                 ?: CalculatorState(),
                         webSuggestions = emptyList(),
                         webSuggestionsLoading = false,
@@ -497,7 +512,7 @@ internal class SearchQueryCoordinator(
                         if (clearShortcutWhenBlank || lockedMode == null) {
                             CalculatorState()
                         } else {
-                            createToolModeState(lockedMode)
+                            lockedMode.emptyMode()
                         },
                     webSuggestions = emptyList(),
                     webSuggestionsLoading = false,
@@ -526,7 +541,8 @@ internal class SearchQueryCoordinator(
             return
         }
 
-        when (val aliasResolution = resolveAliasQueryResolution(newQuery)) {
+        // A forced re-run keeps the alias state its original run resolved (resolution has side effects).
+        when (val aliasResolution = if (force) AliasQueryResolution.None else resolveAliasQueryResolution(newQuery)) {
             is AliasQueryResolution.ReprocessQuery -> {
                 onQueryChangeInternal(
                     aliasResolution.queryWithoutAlias,
@@ -578,14 +594,14 @@ internal class SearchQueryCoordinator(
 
         val shouldSkipSearch = appSearchManager.shouldSkipDueToNoMatchPrefix(normalizedQuery)
 
-        if (trimmedQuery.isNotBlank() && appShortcutSearchHandler.getAvailableShortcuts().isEmpty()) {
+        if (trimmedQuery.isNotBlank() && appShortcutSearchHandler.needsInitialLoad()) {
             loadAppShortcuts()
         }
 
         cancelAppSearch()
         webSuggestionHandler.cancelSuggestions()
 
-        val showingTool = calculatorResult.isToolMode || calculatorResult.result != null
+        val showingTool = calculatorResult.isToolMode || calculatorResult.hasExclusiveResult
         if (showingTool) {
             clearInformationCardsExcept(SearchViewModel.ActiveInformationCard.CALCULATOR)
         }
@@ -614,6 +630,12 @@ internal class SearchQueryCoordinator(
                 detectedTarget == null &&
                 !showingTool &&
                 !shouldSkipAppSearchDueToAlias
+        // Keep showing the previous suggestions while the next request is in flight.
+        val willFetchWebSuggestions =
+            !showingTool &&
+                trimmedQuery.length >= 2 &&
+                webSuggestionHandler.isEnabled &&
+                (detectedTarget != null || (detectedAliasSearchSection == null && !shouldSkipAppSearchDueToAlias))
         updateUiState { state ->
             state.copy(
                 query = newQuery,
@@ -629,7 +651,7 @@ internal class SearchQueryCoordinator(
                         state.searchResults
                     },
                 calculatorState = calculatorResult,
-                webSuggestions = emptyList(),
+                webSuggestions = if (willFetchWebSuggestions) state.webSuggestions else emptyList(),
                 webSuggestionsLoading = false,
                 isAppSearchInProgress = shouldRunAppSearch,
                 isSecondarySearchInProgress =
@@ -682,10 +704,12 @@ internal class SearchQueryCoordinator(
                     val computationStartedAtElapsedMs = SystemClock.elapsedRealtime()
                     val appsSnapshot = getSearchableAppsSnapshot()
                     val gridLimit = getGridItemCount()
+                    val searchJob = currentCoroutineContext().job
                     val results = appSearchManager.deriveMatches(
                         queryContext,
                         appsSnapshot,
                         gridLimit,
+                        ensureActive = searchJob::ensureActive,
                     )
                     val computationElapsedMs = SystemClock.elapsedRealtime() - computationStartedAtElapsedMs
                     AppSearchPerformanceLogger.logTiming(

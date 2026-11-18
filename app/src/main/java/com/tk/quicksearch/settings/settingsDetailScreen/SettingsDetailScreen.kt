@@ -1,10 +1,14 @@
 package com.tk.quicksearch.settings.settingsDetailScreen
 
+import com.tk.quicksearch.shared.ui.components.AppMessages
+import com.tk.quicksearch.shared.ui.components.AppIconButton
+import com.tk.quicksearch.shared.ui.components.AppTopAppBar
+import com.tk.quicksearch.shared.ui.components.AppFabTone
+import com.tk.quicksearch.shared.ui.components.AppFloatingActionButton
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build
-import android.widget.Toast
-import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
@@ -19,9 +23,7 @@ import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -38,6 +40,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.tk.quicksearch.R
+import com.tk.quicksearch.app.navigation.SettingsPageBackHandler
+import com.tk.quicksearch.shared.ui.components.predictiveBackPreview
+import com.tk.quicksearch.shared.ui.components.rememberPredictiveBackPreviewState
 import com.tk.quicksearch.search.core.AppTheme
 import com.tk.quicksearch.search.core.AppThemeMode
 import com.tk.quicksearch.search.core.SearchUiState
@@ -56,6 +61,7 @@ import com.tk.quicksearch.settings.shared.SettingsScreenBackground
 import com.tk.quicksearch.settings.shared.settingsRoute.SettingsScreenState
 import com.tk.quicksearch.settings.shared.isAppSettingToggleEnabled
 import com.tk.quicksearch.settings.shared.settingsContentWidth
+import com.tk.quicksearch.settings.shared.settingsScrollClip
 import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
@@ -88,11 +94,7 @@ internal fun SettingsDetailLevel1Screen(
         coroutineScope.launch {
             runCatching { downloadAndShareFeatures(context) }
                 .onFailure {
-                    Toast.makeText(
-                        context,
-                        R.string.settings_features_export_failed,
-                        Toast.LENGTH_SHORT,
-                    ).show()
+                    AppMessages.show(context, R.string.settings_features_export_failed)
                 }
         }
     }
@@ -101,11 +103,7 @@ internal fun SettingsDetailLevel1Screen(
             if (granted) {
                 exportFeatures()
             } else {
-                Toast.makeText(
-                    context,
-                    R.string.settings_features_export_failed,
-                    Toast.LENGTH_SHORT,
-                ).show()
+                AppMessages.show(context, R.string.settings_features_export_failed)
             }
         }
     val onExportFeatures: () -> Unit = {
@@ -127,7 +125,13 @@ internal fun SettingsDetailLevel1Screen(
         } else {
             callbacks.onBack
         }
-    BackHandler(onBack = onBackAction)
+    val backPreview = rememberPredictiveBackPreviewState()
+    // Closing an open license entry keeps this page, so it gets no page-level preview.
+    SettingsPageBackHandler(
+        previewState = backPreview,
+        preview = !(detailType == SettingsDetailType.OPEN_SOURCE_LICENSES && selectedOpenSourceLicense != null),
+        onBack = onBackAction,
+    )
     val hasExcludedItems =
         state.suggestionExcludedApps.isNotEmpty() ||
             state.resultExcludedApps.isNotEmpty() ||
@@ -146,7 +150,7 @@ internal fun SettingsDetailLevel1Screen(
         overlayThemeIntensity = state.overlayThemeIntensity,
         deviceThemeEnabled = effectiveDeviceThemeEnabled,
         amoledThemeEnabled = state.amoledThemeEnabled,
-        modifier = modifier,
+        modifier = modifier.predictiveBackPreview(backPreview),
     ) {
     MonoThemeWrapper(
         applyMono = shouldForceMonochromeTheme,
@@ -167,7 +171,7 @@ internal fun SettingsDetailLevel1Screen(
                 trailingContent =
                     if (detailType == SettingsDetailType.FEATURES_LIST) {
                         {
-                            IconButton(onClick = onExportFeatures) {
+                            AppIconButton(onClick = onExportFeatures, tooltip = stringResource(R.string.settings_features_export)) {
                                 Icon(
                                     imageVector = MaterialSymbols.Download,
                                     contentDescription =
@@ -187,12 +191,10 @@ internal fun SettingsDetailLevel1Screen(
                         .settingsContentWidth()
                         .fillMaxHeight()
                         .align(Alignment.CenterHorizontally)
+                        .padding(horizontal = DesignTokens.ContentHorizontalPadding)
+                        .settingsScrollClip(scrollState)
                         .verticalScroll(scrollState)
-                        .padding(
-                            start = DesignTokens.ContentHorizontalPadding,
-                            end = DesignTokens.ContentHorizontalPadding,
-                            bottom = DesignTokens.SectionTopPadding,
-                        ),
+                        .padding(bottom = DesignTokens.SectionTopPadding),
             ) {
                 when (detailType) {
                     SettingsDetailType.SEARCH_ENGINES -> {
@@ -207,36 +209,13 @@ internal fun SettingsDetailLevel1Screen(
                             shortcutCodes = state.shortcutCodes,
                             setAliasCode = callbacks.setAliasCode,
                             shortcutEnabled = state.shortcutEnabled,
-                            setAliasEnabled = callbacks.setAliasEnabled,
-                            isSearchEngineCompactMode = state.isSearchEngineCompactMode,
                             amazonDomain = state.amazonDomain,
                             onSetAmazonDomain = callbacks.onSetAmazonDomain,
-                            onSetLlmApiKeyForDetectedProvider = callbacks.onSetLlmApiKeyForDetectedProvider,
-                            activeLlmApiKeyLast4 = state.activeLlmApiKeyLast4,
-                            isSavingLlmApiKey = state.isSavingLlmApiKey,
-                            personalContext = state.personalContext,
-                            onSetPersonalContext = callbacks.onSetPersonalContext,
-                            activeLlmModel = state.activeLlmModel,
-                            activeLlmGroundingEnabled = state.activeLlmGroundingEnabled,
-                            activeLlmAvailableModels = state.activeLlmAvailableModels,
-                            onSetActiveLlmModel = callbacks.onSetActiveLlmModel,
-                            onSetActiveLlmGroundingEnabled = callbacks.onSetActiveLlmGroundingEnabled,
-                            onRefreshAvailableLlmModels = callbacks.onRefreshAvailableLlmModels,
                             onOpenAiSearchConfigure = callbacks.onOpenAiSearchConfigure,
                             aiSearchAvailable = state.hasApiKey,
                             showTitle = false,
-                            aiSearchSetupExpanded = aiSearchSetupExpanded,
-                            onToggleAiSearchSetupExpanded = onToggleAiSearchSetupExpanded,
                             disabledSearchEnginesExpanded = disabledSearchEnginesExpanded,
                             onToggleDisabledSearchEnginesExpanded = onToggleDisabledSearchEnginesExpanded,
-                            onToggleSearchEngineCompactMode = { enabled ->
-                                callbacks.onApplySettingsCommand(
-                                    SettingsCommand.Toggle(
-                                        key = com.tk.quicksearch.search.appSettings.AppSettingsToggleKey.SEARCH_ENGINE_COMPACT_MODE,
-                                        enabled = enabled,
-                                    ),
-                                )
-                            },
                             isSearchEngineAliasSuffixEnabled = state.isSearchEngineAliasSuffixEnabled,
                             onToggleSearchEngineAliasSuffixEnabled = { enabled ->
                                 callbacks.onApplySettingsCommand(
@@ -265,12 +244,7 @@ internal fun SettingsDetailLevel1Screen(
                                 if (hasExcludedItems) {
                                     onNavigateToDetail(SettingsDetailType.EXCLUDED_ITEMS)
                                 } else {
-                                    Toast
-                                        .makeText(
-                                            context,
-                                            context.getString(R.string.settings_excluded_items_empty),
-                                            Toast.LENGTH_SHORT,
-                                        ).show()
+                                    AppMessages.show(context, R.string.settings_excluded_items_empty)
                                 }
                             },
                             onNavigateToNicknames = {
@@ -310,8 +284,8 @@ internal fun SettingsDetailLevel1Screen(
                     }
 
                     SettingsDetailType.APPEARANCE -> {
-                        val hasEnabledSearchEngines =
-                            state.searchEngineOrder.any { target ->
+                        val enabledSearchEngines =
+                            state.searchEngineOrder.filter { target ->
                                 target.getId() !in state.disabledSearchEngines
                             }
 
@@ -372,6 +346,15 @@ internal fun SettingsDetailLevel1Screen(
                                 callbacks.onApplySettingsCommand(
                                     SettingsCommand.Toggle(
                                         key = com.tk.quicksearch.search.appSettings.AppSettingsToggleKey.SHOW_STATUS_BAR,
+                                        enabled = enabled,
+                                    ),
+                                )
+                            },
+                            searchChromeBlurEnabled = state.searchChromeBlurEnabled,
+                            onToggleSearchChromeBlur = { enabled ->
+                                callbacks.onApplySettingsCommand(
+                                    SettingsCommand.Toggle(
+                                        key = com.tk.quicksearch.search.appSettings.AppSettingsToggleKey.SEARCH_CHROME_BLUR,
                                         enabled = enabled,
                                     ),
                                 )
@@ -445,7 +428,7 @@ internal fun SettingsDetailLevel1Screen(
                             onRequestWallpaperPermission = callbacks.onRequestWallpaperPermission,
                             isSearchEngineCompactMode = state.isSearchEngineCompactMode,
                             searchEngineCompactRowCount = state.searchEngineCompactRowCount,
-                            hasEnabledSearchEngines = hasEnabledSearchEngines,
+                            enabledSearchEngines = enabledSearchEngines,
                             onToggleSearchEngineCompactMode = { enabled ->
                                 callbacks.onApplySettingsCommand(
                                     SettingsCommand.Toggle(
@@ -652,22 +635,16 @@ internal fun SettingsDetailLevel1Screen(
         }
 
         if (detailType == SettingsDetailType.FEATURES_LIST && scrollState.value > 0) {
-            FloatingActionButton(
+            AppFloatingActionButton(
                 onClick = { coroutineScope.launch { scrollState.animateScrollTo(0) } },
+                icon = MaterialSymbols.KeyboardArrowUp,
+                contentDescription = stringResource(R.string.settings_scroll_to_top),
                 modifier =
                     Modifier
                         .align(Alignment.BottomEnd)
-                        .padding(DesignTokens.SpacingLarge)
-                        .size(40.dp),
-                containerColor = AppColors.Accent,
-                contentColor = AppColors.OnAccent,
-            ) {
-                Icon(
-                    imageVector = MaterialSymbols.KeyboardArrowUp,
-                    contentDescription = stringResource(R.string.settings_scroll_to_top),
-                    modifier = Modifier.size(DesignTokens.IconSizeSmall),
-                )
-            }
+                        .padding(DesignTokens.SpacingLarge),
+                tone = AppFabTone.Tonal,
+            )
         }
     }
     }
@@ -680,35 +657,11 @@ internal fun SettingsDetailHeader(
     onBack: () -> Unit,
     trailingContent: (@Composable (() -> Unit))? = null,
 ) {
-    Row(
-        modifier =
-            Modifier
-                .fillMaxWidth()
-                .padding(
-                    horizontal = DesignTokens.ContentHorizontalPadding,
-                    vertical = DesignTokens.HeaderVerticalPadding,
-                ),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        IconButton(onClick = onBack) {
-            Icon(
-                imageVector = MaterialSymbols.ArrowBack,
-                contentDescription = stringResource(R.string.desc_navigate_back),
-                tint = MaterialTheme.colorScheme.onSurface,
-            )
-        }
-        Spacer(modifier = Modifier.width(DesignTokens.HeaderIconSpacing))
-        Text(
-            text = title,
-            style = MaterialTheme.typography.headlineSmall,
-            color = MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier.weight(1f),
-        )
-        trailingContent?.let {
-            Spacer(modifier = Modifier.width(DesignTokens.HeaderIconSpacing))
-            it()
-        }
-    }
+    AppTopAppBar(
+        title = title,
+        onBack = onBack,
+        actions = { trailingContent?.invoke() },
+    )
 }
 
 @Composable

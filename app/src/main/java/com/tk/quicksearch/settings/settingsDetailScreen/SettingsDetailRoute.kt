@@ -1,7 +1,7 @@
 package com.tk.quicksearch.settings.settingsDetailScreen
 
+import com.tk.quicksearch.shared.ui.components.AppMessages
 import android.content.Intent
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -49,6 +49,7 @@ fun SettingsDetailRoute(
         onBack: () -> Unit,
         viewModel: SearchViewModel,
         detailType: SettingsDetailType,
+        pageSettled: Boolean = true,
         sourceDetailType: SettingsDetailType? = null,
         onNavigateToDetail: (SettingsDetailType) -> Unit = {},
         onNavigateToSearch: () -> Unit = {},
@@ -88,11 +89,7 @@ fun SettingsDetailRoute(
                             SettingsCommand.BackgroundSourceSetting(BackgroundSource.CUSTOM_IMAGE),
                         )
                     } else {
-                        Toast.makeText(
-                            context,
-                            context.getString(R.string.settings_overlay_source_custom_save_failed),
-                            Toast.LENGTH_SHORT,
-                        ).show()
+                        AppMessages.show(context, context.getString(R.string.settings_overlay_source_custom_save_failed))
                     }
                 }
             }
@@ -128,10 +125,15 @@ fun SettingsDetailRoute(
                 )
             }
 
-    DisposableEffect(lifecycleOwner, detailType) {
+    var hasSettled by remember { mutableStateOf(pageSettled) }
+    LaunchedEffect(pageSettled) {
+        if (pageSettled) hasSettled = true
+    }
+    DisposableEffect(lifecycleOwner, detailType, hasSettled) {
+        if (!hasSettled) return@DisposableEffect onDispose { }
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_RESUME) {
-                viewModel.handleOptionalPermissionChange()
+                viewModel.refreshPermissionSnapshotForVisiblePage()
                 wallpaperPermissionController.onRefreshPermissionState()
             }
             if (
@@ -168,21 +170,13 @@ fun SettingsDetailRoute(
     val onShortcutAdded: (StaticShortcut) -> Unit = { addedShortcut ->
         appShortcutFocusShortcut = addedShortcut
         appShortcutFocusPackageName = addedShortcut.packageName
-        Toast.makeText(
-            context,
-            context.getString(
+        AppMessages.show(context, context.getString(
                 R.string.settings_app_shortcuts_add_success_with_app_name,
                 addedShortcut.appLabel,
-            ),
-            Toast.LENGTH_SHORT,
-        ).show()
+            ))
     }
     val onShortcutAddFailed: () -> Unit = {
-        Toast.makeText(
-            context,
-            context.getString(R.string.settings_app_shortcuts_add_failed),
-            Toast.LENGTH_SHORT,
-        ).show()
+        AppMessages.show(context, context.getString(R.string.settings_app_shortcuts_add_failed))
     }
     val appShortcutSourceFlow =
             rememberAppShortcutSourceFlow(
@@ -207,44 +201,27 @@ fun SettingsDetailRoute(
                         )
                     },
                     onSourceLaunchUnsupported = {
-                        Toast.makeText(
-                                        context,
-                                        context.getString(
+                        AppMessages.show(context, context.getString(
                                                 R.string.settings_app_shortcuts_create_not_supported,
-                                        ),
-                                        Toast.LENGTH_SHORT,
-                                )
-                                .show()
+                                        ))
                     },
             )
 
-    // Wait for the fresh system scan before showing the list so it doesn't render cached
-    // shortcuts first and then reshuffle when the refresh lands.
-    var hasRefreshedAppShortcuts by remember { mutableStateOf(false) }
-    LaunchedEffect(detailType) {
-        if (detailType == SettingsDetailType.APP_SHORTCUTS) {
+    // Preview pages can render their shell without scanning packages.
+    val pageData = LocalSettingsPageData.current ?: remember { SettingsPageData() }
+    var hasRefreshedAppShortcuts by remember(detailType) { mutableStateOf(false) }
+    LaunchedEffect(detailType, pageSettled) {
+        if (detailType == SettingsDetailType.APP_SHORTCUTS && pageSettled && !hasRefreshedAppShortcuts) {
             viewModel.refreshAppShortcutsAndAwait()
             hasRefreshedAppShortcuts = true
-        } else {
-            hasRefreshedAppShortcuts = false
         }
     }
 
-    // The package scan runs alongside the shortcut refresh and is redone only when installed apps
-    // change; shortcut edits just re-filter the scanned sources.
-    var appShortcutSources by remember { mutableStateOf<List<AppShortcutSource>?>(null) }
-    LaunchedEffect(detailType, state.allApps) {
-        if (detailType != SettingsDetailType.APP_SHORTCUTS) {
-            appShortcutSources = null
-            return@LaunchedEffect
+    var appShortcutSources by remember(detailType, state.allApps) { mutableStateOf<List<AppShortcutSource>?>(null) }
+    LaunchedEffect(detailType, pageSettled, pageData, state.allApps) {
+        if (detailType == SettingsDetailType.APP_SHORTCUTS && pageSettled && appShortcutSources == null) {
+            appShortcutSources = pageData.appShortcutSources(context.applicationContext, state.allApps)
         }
-        appShortcutSources =
-                withContext(Dispatchers.IO) {
-                    queryAppShortcutSources(
-                            packageManager = context.packageManager,
-                            repositoryApps = state.allApps,
-                    )
-                }
     }
 
     LaunchedEffect(
@@ -296,7 +273,7 @@ fun SettingsDetailRoute(
                     handlers =
                             SettingsRouteHandlers(
                                     onBack = onBackAction,
-                                    onToggleOverlayMode = viewModel::setOverlayModeEnabled,
+                                    onToggleOverlayMode = { viewModel.setOverlayModeEnabled(it) },
                                     onPickCustomImage = {
                                         overlayCustomImagePickerLauncher.launch(
                                             PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)

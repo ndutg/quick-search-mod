@@ -1,5 +1,6 @@
 package com.tk.quicksearch.search.searchScreen.searchScreenLayout
 
+import com.tk.quicksearch.shared.ui.theme.AppShapes
 import android.content.ClipData
 import android.content.ClipDescription
 import android.content.ClipboardManager
@@ -30,7 +31,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
@@ -91,7 +91,7 @@ internal fun OtpCodeRow(
     GlanceStatusRow(
         icon = { NotificationAppIcon(otp.packageName) },
         title = "$source • $age",
-        titleStyle = MaterialTheme.typography.bodySmall,
+        titleStyle = MaterialTheme.typography.bodyMedium,
         titleMaxLines = GlanceTextMaxLines,
         onClick = { openNotificationTarget(context, otp.packageName, otp.contentIntent) },
         onDismiss = onDismiss,
@@ -100,7 +100,7 @@ internal fun OtpCodeRow(
             Row(
                 modifier =
                     Modifier
-                        .clip(RoundedCornerShape(8.dp))
+                        .clip(AppShapes.small)
                         .clickable(role = Role.Button) { copied = copySensitiveText(context, copyLabel, otp.code) },
                 horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
                 verticalAlignment = Alignment.CenterVertically,
@@ -109,7 +109,6 @@ internal fun OtpCodeRow(
                     text = otp.code,
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.SemiBold,
-                    letterSpacing = 2.sp,
                     color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 1,
                 )
@@ -117,7 +116,7 @@ internal fun OtpCodeRow(
                     imageVector = if (copied) MaterialSymbols.Check else MaterialSymbols.ContentCopy,
                     contentDescription = stringResource(if (copied) R.string.home_copied else R.string.calculator_copy_result),
                     tint = if (copied) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.size(20.dp),
+                    modifier = Modifier.size(DesignTokens.IconSizeSmall),
                 )
             }
         },

@@ -3,11 +3,11 @@ package com.tk.quicksearch.search.core
 import com.tk.quicksearch.search.data.userAppPreferences.StartupPreferencesFacade
 import com.tk.quicksearch.search.data.preferences.UiPreferences
 import com.tk.quicksearch.search.models.FileType
+import com.tk.quicksearch.tools.inlineSearch.SearchToolType
 
 internal data class SearchPreferenceCache(
     val enabledFileTypes: Set<FileType> = emptySet(),
     val showFolders: Boolean = false,
-    val filePreviewsEnabled: Boolean = true,
     val showSystemFiles: Boolean = false,
     val folderWhitelistPatterns: Set<String> = emptySet(),
     val folderBlacklistPatterns: Set<String> = emptySet(),
@@ -39,6 +39,7 @@ internal data class SearchPreferenceCache(
     val themedIconsEnabled: Boolean = false,
     val deviceThemeEnabled: Boolean = false,
     val amoledThemeEnabled: Boolean = false,
+    val searchChromeBlurEnabled: Boolean = false,
     val maskUnsupportedIconPackIcons: Boolean = true,
     val wallpaperBackgroundAlpha: Float = UiPreferences.DEFAULT_WALLPAPER_BACKGROUND_ALPHA,
     val wallpaperBlurRadius: Float = UiPreferences.DEFAULT_WALLPAPER_BLUR_RADIUS,
@@ -76,7 +77,6 @@ internal data class SearchPreferenceCache(
             return SearchPreferenceCache(
                 enabledFileTypes = prefs.enabledFileTypes,
                 showFolders = prefs.showFolders,
-                filePreviewsEnabled = prefs.filePreviewsEnabled,
                 showSystemFiles = prefs.showSystemFiles,
                 folderWhitelistPatterns = prefs.folderWhitelistPatterns,
                 folderBlacklistPatterns = prefs.folderBlacklistPatterns,
@@ -108,6 +108,7 @@ internal data class SearchPreferenceCache(
                 themedIconsEnabled = prefs.themedIconsEnabled,
                 deviceThemeEnabled = prefs.deviceThemeEnabled,
                 amoledThemeEnabled = prefs.amoledThemeEnabled,
+                searchChromeBlurEnabled = prefs.searchChromeBlurEnabled,
                 maskUnsupportedIconPackIcons = prefs.maskUnsupportedIconPackIcons,
                 wallpaperBackgroundAlpha = prefs.wallpaperBackgroundAlpha,
                 wallpaperBlurRadius = prefs.wallpaperBlurRadius,

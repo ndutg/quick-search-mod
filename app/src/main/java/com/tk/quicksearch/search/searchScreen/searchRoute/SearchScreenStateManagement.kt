@@ -33,7 +33,7 @@ import com.tk.quicksearch.search.models.NoteInfo
 import com.tk.quicksearch.search.models.ContactMethod
 import com.tk.quicksearch.search.deviceSettings.DeviceSetting
 import com.tk.quicksearch.search.files.FileExtensionQuery
-import com.tk.quicksearch.search.searchHistory.RecentSearchEntry
+import com.tk.quicksearch.search.searchScreen.LocalSharedPageWallpaper
 import com.tk.quicksearch.search.searchScreen.dialogs.NicknameDialogState
 import com.tk.quicksearch.search.searchScreen.dialogs.TriggerDialogState
 import com.tk.quicksearch.search.data.appShortcutRepository.StaticShortcut
@@ -66,10 +66,6 @@ private fun SearchSection.toExpandedSectionOrNone(): ExpandedSection =
 @Composable
 internal fun SearchScreenStateManagement(
     state: SearchUiState,
-    onQueryChanged: (String) -> Unit,
-    onClearQuery: () -> Unit,
-    onSettingsClick: () -> Unit,
-    onRequestUsagePermission: () -> Unit,
     onAppClick: (AppInfo) -> Unit,
     onOpenInSplitScreen: (AppInfo) -> Unit,
     onAppInfoClick: (AppInfo) -> Unit,
@@ -85,7 +81,6 @@ internal fun SearchScreenStateManagement(
     onUpdateNotNowClick: () -> Unit,
     onContactClick: (ContactInfo) -> Unit,
     onShowContactMethods: (ContactInfo) -> Unit,
-    onDismissContactMethods: () -> Unit,
     onCallContact: (ContactInfo) -> Unit,
     onSmsContact: (ContactInfo) -> Unit,
     onContactMethodClick: (ContactInfo, ContactMethod) -> Unit,
@@ -137,20 +132,9 @@ internal fun SearchScreenStateManagement(
     onDisableAppShortcut: (StaticShortcut) -> Unit,
     onDisableAllAppShortcutsForApp: (StaticShortcut) -> Unit,
     onAppShortcutAppInfoClick: (StaticShortcut) -> Unit,
-    onSearchTargetClick: (String, com.tk.quicksearch.search.core.SearchTarget) -> Unit,
-    onSearchEngineLongPress: () -> Unit,
-    onAiSearchEmailClick: (String) -> Unit,
-    onSetPersonalContext: (String?) -> Unit,
-    onSetActiveLlmModel: (String?) -> Unit,
-    onSetActiveLlmGroundingEnabled: (Boolean) -> Unit,
-    onRefreshAvailableLlmModels: () -> Unit,
     onOpenAppSettings: () -> Unit,
     onOpenCalendarPermissionSettings: () -> Unit,
     onOpenStorageAccessSettings: () -> Unit,
-    onAppNicknameClick: (AppInfo) -> Unit,
-    onClearDetectedShortcut: () -> Unit,
-    onContactNicknameClick: (ContactInfo) -> Unit,
-    onFileNicknameClick: (DeviceFile) -> Unit,
     getAppNickname: (String) -> String?,
     getContactNickname: (Long) -> String?,
     getFileNickname: (String) -> String?,
@@ -163,36 +147,15 @@ internal fun SearchScreenStateManagement(
     getAppShortcutTrigger: (String) -> com.tk.quicksearch.search.data.preferences.ResultTrigger?,
     getSettingTrigger: (String) -> com.tk.quicksearch.search.data.preferences.ResultTrigger?,
     getNoteTrigger: (Long) -> com.tk.quicksearch.search.data.preferences.ResultTrigger?,
-    onSaveAppNickname: (AppInfo, String?) -> Unit,
-    onSaveAppShortcutNickname: (StaticShortcut, String?) -> Unit,
-    onSaveContactNickname: (ContactInfo, String?) -> Unit,
-    onSaveFileNickname: (DeviceFile, String?) -> Unit,
     getSettingNickname: (String) -> String?,
-    onSaveSettingNickname: (DeviceSetting, String?) -> Unit,
-    getLastShownPhoneNumber: (Long) -> String?,
-    setLastShownPhoneNumber: (Long, String) -> Unit,
-    onDirectDialChoiceSelected: (com.tk.quicksearch.search.core.DirectDialOption, Boolean) -> Unit,
-    onDismissDirectDialChoice: () -> Unit,
-    onReleaseNotesAcknowledged: () -> Unit,
-    onWebSuggestionClick: (String) -> Unit,
-    onSearchEngineOnboardingDismissed: () -> Unit,
     onContactActionHintDismissed: () -> Unit,
-    onCustomizeSearchEnginesClick: () -> Unit,
-    onOpenAiSearchConfigure: () -> Unit,
-    onDeleteRecentItem: (RecentSearchEntry) -> Unit,
-    onWelcomeAnimationCompleted: (() -> Unit)?,
     onWallpaperLoaded: (() -> Unit)?,
     onWallpaperUnavailable: (() -> Unit)?,
     onSystemWallpaperChanged: (() -> Unit)?,
     onCustomAction: (ContactInfo, ContactCardAction) -> Unit,
     getPrimaryContactCardAction: (Long) -> ContactCardAction?,
     getSecondaryContactCardAction: (Long) -> ContactCardAction?,
-    onSavePrimaryContactCardAction: (Long, ContactCardAction) -> Unit,
-    onSaveSecondaryContactCardAction: (Long, ContactCardAction) -> Unit,
     isOverlayPresentation: Boolean,
-    onOverlayExpandRequest: (() -> Unit)?,
-    isOverlayExpanded: Boolean,
-    onOverlayNumberKeyboardUiChanged: ((Boolean, Boolean) -> Unit)?,
     onOverlayScrollableContentChanged: ((Boolean) -> Unit)?,
     onConsumeContactActionRequest: () -> Unit,
 ): SearchScreenStateResult {
@@ -370,13 +333,14 @@ internal fun SearchScreenStateManagement(
         reverseScrolling = alignResultsToBottom,
     )
 
-    val wallpaperState = SearchScreenWallpaperLogic(
-        state = state,
-        onWallpaperLoaded = onWallpaperLoaded,
-        onWallpaperUnavailable = onWallpaperUnavailable,
-        onSystemWallpaperChanged = onSystemWallpaperChanged,
-        isOverlayPresentation = isOverlayPresentation,
-    )
+    val wallpaperState =
+        LocalSharedPageWallpaper.current ?: SearchScreenWallpaperLogic(
+            state = state,
+            onWallpaperLoaded = onWallpaperLoaded,
+            onWallpaperUnavailable = onWallpaperUnavailable,
+            onSystemWallpaperChanged = onSystemWallpaperChanged,
+            isOverlayPresentation = isOverlayPresentation,
+        )
 
     val effectiveStateForCards =
         state.copy(
@@ -608,6 +572,7 @@ internal fun SearchScreenStateManagement(
         useImageBackground = wallpaperState.usesWallpaperBackground,
         useSystemWallpaperBackdrop = wallpaperState.usesSystemWallpaperBackdrop,
         useMonoThemeFallback = wallpaperState.usesMonoThemeFallback,
+        systemWallpaperUnderBitmap = wallpaperState.systemWallpaperUnderBitmap,
         effectiveStateForCards = effectiveStateForCards,
         sectionParams = sectionParams,
         renderingState = renderingState,
@@ -645,6 +610,7 @@ internal data class SearchScreenStateResult(
     val useImageBackground: Boolean,
     val useSystemWallpaperBackdrop: Boolean,
     val useMonoThemeFallback: Boolean,
+    val systemWallpaperUnderBitmap: Boolean,
     val effectiveStateForCards: SearchUiState,
     val sectionParams: SectionParams,
     val renderingState: SectionRenderingState,

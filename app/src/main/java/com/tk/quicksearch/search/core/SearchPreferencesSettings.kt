@@ -1,5 +1,6 @@
 package com.tk.quicksearch.search.core
 
+import com.tk.quicksearch.search.data.preferences.SwipeDirection
 import android.widget.Toast
 import com.tk.quicksearch.R
 import com.tk.quicksearch.overlay.OverlayModeController
@@ -27,6 +28,7 @@ internal fun SearchPreferencesDelegate.setSearchEngineAliasSuffixEnabled(enabled
         scope.launch(Dispatchers.IO) {
             userPreferences.setSearchEngineAliasSuffixEnabled(enabled)
             updateFeatureState { it.copy(isSearchEngineAliasSuffixEnabled = enabled) }
+            rerunSecondarySearchIfNeeded()
         }
     }
 
@@ -56,14 +58,6 @@ internal fun SearchPreferencesDelegate.setShowFolders(show: Boolean) {
             stateAccess.showFolders = show
             updateUiState { it.copy(showFolders = show) }
             rerunSecondarySearchIfNeeded()
-        }
-    }
-
-internal fun SearchPreferencesDelegate.setFilePreviewsEnabled(enabled: Boolean) {
-        scope.launch(Dispatchers.IO) {
-            userPreferences.setFilePreviewsEnabled(enabled)
-            stateAccess.filePreviewsEnabled = enabled
-            updateUiState { it.copy(filePreviewsEnabled = enabled) }
         }
     }
 
@@ -194,7 +188,7 @@ internal fun SearchPreferencesDelegate.setSearchHintsEnabled(enabled: Boolean) {
     }
 
 internal fun SearchPreferencesDelegate.setSettingsIconEnabled(enabled: Boolean) {
-        if (!enabled && userPreferences.getSwipeLeftAction() != SwipeGestureAction.SETTINGS) {
+        if (!enabled && userPreferences.actionFor(SwipeDirection.LEFT) != SwipeGestureAction.SETTINGS) {
             return
         }
         updateBooleanPreference(
@@ -299,25 +293,28 @@ internal fun SearchPreferencesDelegate.setAutoCloseOverlayEnabled(enabled: Boole
         )
     }
 
-internal fun SearchPreferencesDelegate.setOverlayModeEnabled(enabled: Boolean) {
-        updateBooleanPreference(
-            value = enabled,
-            preferenceSetter = userPreferences::setOverlayModeEnabled,
-            stateUpdater = {
-                stateAccess.overlayModeEnabled = it
-                updateUiState { state ->
-                    state.copy(
-                        overlayModeEnabled = it,
-                        wallpaperBackgroundAlpha = stateAccess.wallpaperBackgroundAlpha,
-                        wallpaperBlurRadius = stateAccess.wallpaperBlurRadius,
-                    )
-                }
-                if (!it) {
-                    OverlayModeController.stopOverlay(applicationProvider())
-                }
-            },
-        )
+internal fun SearchPreferencesDelegate.setOverlayModeEnabled(
+    enabled: Boolean,
+    onModeChanged: (() -> Unit)? = null,
+) {
+    scope.launch(Dispatchers.IO) {
+        userPreferences.setOverlayModeEnabled(enabled)
+        stateAccess.overlayModeEnabled = enabled
+        updateUiState { state ->
+            state.copy(
+                overlayModeEnabled = enabled,
+                wallpaperBackgroundAlpha = stateAccess.wallpaperBackgroundAlpha,
+                wallpaperBlurRadius = stateAccess.wallpaperBlurRadius,
+            )
+        }
+        withContext(Dispatchers.Main) {
+            onModeChanged?.invoke()
+            if (!enabled) {
+                OverlayModeController.stopOverlay()
+            }
+        }
     }
+}
 
 internal fun SearchPreferencesDelegate.setAmazonDomain(domain: String?) {
         stateAccess.amazonDomain = domain
@@ -358,11 +355,13 @@ internal fun SearchPreferencesDelegate.setLlmApiKey(
                 if (isNewKey) {
                     val defaultModelId = LlmDefaultModels.pick(providerId, providerModels)
                     userPreferences.setLlmModel(providerId, defaultModelId)
-                    userPreferences.setLlmGroundingEnabled(providerId, true)
+                    val groundingEnabled =
+                        AiSearchLlmProviderRegistry.definition(providerId)?.defaultGroundingEnabled ?: true
+                    userPreferences.setLlmGroundingEnabled(providerId, groundingEnabled)
                     userPreferences.setLlmThinkingEnabled(providerId, false)
                     if (providerId == aiSearchHandler.getAiSearchProviderId()) {
                         aiSearchHandler.setSelectedModelId(defaultModelId)
-                        aiSearchHandler.setGroundingEnabled(true)
+                        aiSearchHandler.setGroundingEnabled(groundingEnabled)
                         aiSearchHandler.setThinkingEnabled(false)
                     }
                 }

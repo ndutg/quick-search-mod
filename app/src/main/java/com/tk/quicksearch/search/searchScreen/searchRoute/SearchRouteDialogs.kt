@@ -1,18 +1,15 @@
 package com.tk.quicksearch.search.searchScreen.searchRoute
 
+import com.tk.quicksearch.shared.ui.theme.AppShapes
+import com.tk.quicksearch.shared.ui.components.AppOutlinedTextField
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import com.tk.quicksearch.shared.ui.components.AppAlertDialog
-import com.tk.quicksearch.shared.ui.components.dialogTextFieldColors
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -36,7 +33,6 @@ import com.tk.quicksearch.search.models.ContactMethod
 import com.tk.quicksearch.search.models.DeviceFile
 import com.tk.quicksearch.search.models.CalendarEventInfo
 import com.tk.quicksearch.search.models.NoteInfo
-import com.tk.quicksearch.search.searchHistory.RecentSearchEntry
 import com.tk.quicksearch.search.searchScreen.dialogs.AppShortcutIconEditDialog
 import com.tk.quicksearch.search.searchScreen.dialogs.NicknameDialogState
 import com.tk.quicksearch.search.searchScreen.dialogs.TriggerDialogState
@@ -44,9 +40,10 @@ import com.tk.quicksearch.search.searchScreen.dialogs.SearchScreenDialogs
 import com.tk.quicksearch.search.data.appShortcutRepository.StaticShortcut
 import com.tk.quicksearch.search.data.appShortcutRepository.shortcutKey
 import com.tk.quicksearch.settings.appShortcutsSettings.EditCustomShortcutDialog
-import com.tk.quicksearch.tools.aiSearch.AiSearchLlmProviderId
+import com.tk.quicksearch.tools.aiSearch.AiSearchLlmProviderRegistry
 import com.tk.quicksearch.tools.aiSearch.ModelPickerDialog
 import kotlinx.coroutines.delay
+import com.tk.quicksearch.shared.ui.components.AppTextButton
 
 @Composable
 internal fun SearchScreenDialogLogic(
@@ -134,7 +131,7 @@ internal fun SearchScreenDialogLogic(
                 Text(text = stringResource(R.string.settings_direct_search_personal_context))
             },
             text = {
-                OutlinedTextField(
+                AppOutlinedTextField(
                     value = personalContextInput,
                     onValueChange = { setPersonalContextInput(it) },
                     modifier =
@@ -157,11 +154,12 @@ internal fun SearchScreenDialogLogic(
                     singleLine = false,
                     minLines = 4,
                     maxLines = 8,
-                    colors = dialogTextFieldColors(),
+                    label = null,
+                    shape = AppShapes.extraSmall,
                 )
             },
             confirmButton = {
-                Button(
+                AppTextButton(
                     onClick = {
                         val trimmed = personalContextInput.text.trim()
                         onSetPersonalContext(trimmed.takeIf { it.isNotEmpty() })
@@ -172,7 +170,7 @@ internal fun SearchScreenDialogLogic(
                 }
             },
             dismissButton = {
-                TextButton(onClick = { setShowPersonalContextDialog(false) }) {
+                AppTextButton(onClick = { setShowPersonalContextDialog(false) }) {
                     Text(text = stringResource(R.string.dialog_cancel))
                 }
             },
@@ -202,10 +200,7 @@ internal fun SearchScreenDialogLogic(
                 onRefreshAvailableLlmModels()
             },
             showGroundingToggle =
-                state.aiSearchLlmProviderId != AiSearchLlmProviderId.OPENAI &&
-                    !state.aiSearchLlmProviderId.isCustom &&
-                    state.aiSearchLlmProviderId != AiSearchLlmProviderId.GROQ &&
-                    state.aiSearchLlmProviderId != AiSearchLlmProviderId.OPENCODE,
+                AiSearchLlmProviderRegistry.definition(state.aiSearchLlmProviderId)?.showGroundingInResultPicker == true,
             selectedProviderId = state.aiSearchLlmProviderId,
         )
     }

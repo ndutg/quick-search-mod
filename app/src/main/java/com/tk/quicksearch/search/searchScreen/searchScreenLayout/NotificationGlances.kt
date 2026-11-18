@@ -1,5 +1,6 @@
 package com.tk.quicksearch.search.searchScreen.searchScreenLayout
 
+import com.tk.quicksearch.shared.ui.theme.AppMotion
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.PendingIntent
@@ -26,8 +27,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.FilledIconButton
-import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.LinearProgressIndicator
@@ -50,7 +49,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.lifecycle.Lifecycle
@@ -58,7 +56,6 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.apps.appLock.AppLockGate
-import com.tk.quicksearch.search.apps.notificationDots.NotificationDotsPermission
 import com.tk.quicksearch.search.apps.rememberAppIcon
 import com.tk.quicksearch.search.data.FinishedProgressNotification
 import com.tk.quicksearch.search.data.GlanceNotificationAction
@@ -79,6 +76,8 @@ import java.text.NumberFormat
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
+import com.tk.quicksearch.shared.ui.components.AppIconButton
+import com.tk.quicksearch.shared.ui.components.AppIconButtonStyle
 
 /** At most this many ongoing (progress and Live Update) and finished ones show on home, running ones first. */
 private const val MAX_PROGRESS_ROWS = 3
@@ -106,8 +105,11 @@ internal class NotificationGlances(
     val weather: List<WeatherNotification>,
     /** Hides the row and clears the notification from the shade when the app allows. */
     val dismissWeather: (WeatherNotification) -> Unit,
-    /** Wall clock the timer and call rows count from; ticks every second while one shows. */
-    val nowMillis: Long,
+    /**
+     * Wall clock the timer and call rows count from; ticks every second while one shows. Read it
+     * inside the row so each tick recomposes only that row, not the whole home layout.
+     */
+    val nowMillis: () -> Long,
 )
 
 /**
@@ -115,7 +117,11 @@ internal class NotificationGlances(
  * notification access shared with notification dots and media.
  */
 @Composable
-internal fun rememberNotificationGlances(enabled: Boolean): NotificationGlances {
+internal fun rememberNotificationGlances(
+    enabled: Boolean,
+    /** Notification listener access, read once per resume for every notification glance. */
+    hasAccess: Boolean,
+): NotificationGlances {
     val context = LocalContext.current
     val preferences = remember(context) { GlancePreferences(context.applicationContext) }
     val refreshKey = rememberResumeRefreshKey()
@@ -127,7 +133,6 @@ internal fun rememberNotificationGlances(enabled: Boolean): NotificationGlances 
     val allWorkouts by GlanceNotificationsStore.workouts.collectAsState()
     val allOtps by GlanceNotificationsStore.otps.collectAsState()
     val allWeather by GlanceNotificationsStore.weather.collectAsState()
-    val hasAccess = remember(refreshKey) { NotificationDotsPermission.hasNotificationListenerAccess(context) }
     val showTimers = remember(refreshKey) { preferences.isShowTimersEnabled() }
     val showProgress = remember(refreshKey) { preferences.isShowProgressNotificationsEnabled() }
     val showMissedCalls = remember(refreshKey) { preferences.isShowMissedCallsEnabled() }
@@ -197,7 +202,7 @@ internal fun rememberNotificationGlances(enabled: Boolean): NotificationGlances 
         dismissOtp = GlanceNotificationsStore::dismissOtp,
         weather = weather,
         dismissWeather = { GlanceNotificationsStore.dismissWeather(it.key) },
-        nowMillis = nowMillis,
+        nowMillis = { nowMillis },
     )
 }
 
@@ -223,14 +228,23 @@ internal fun launchNotificationTarget(
     runCatching { context.startActivity(launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) }
 }
 
+/**
+ * App labels by package and locale, kept for the process: notification rows come and go with every
+ * post, and each would otherwise ask the package manager again on the main thread.
+ */
+private val appLabelCache = java.util.concurrent.ConcurrentHashMap<String, String>()
+
 @Composable
 internal fun rememberAppLabel(packageName: String): String {
     val context = LocalContext.current
-    return remember(packageName) {
-        val packageManager = context.packageManager
-        runCatching {
-            packageManager.getApplicationInfo(packageName, 0).loadLabel(packageManager).toString()
-        }.getOrDefault(packageName)
+    val locale = context.resources.configuration.locales[0]
+    return remember(packageName, locale) {
+        appLabelCache.getOrPut("$packageName/$locale") {
+            val packageManager = context.packageManager
+            runCatching {
+                packageManager.getApplicationInfo(packageName, 0).loadLabel(packageManager).toString()
+            }.getOrDefault(packageName)
+        }
     }
 }
 
@@ -288,8 +302,8 @@ internal fun TimerRow(
                                     targetState = action,
                                     contentKey = { it.title },
                                     transitionSpec = {
-                                        (fadeIn(tween(220)) + scaleIn(tween(220), initialScale = 0.8f)) togetherWith
-                                            (fadeOut(tween(150)) + scaleOut(tween(150), targetScale = 0.8f)) using
+                                        (fadeIn(tween(AppMotion.DurationStandard, easing = AppMotion.EmphasizedDecelerateEasing)) + scaleIn(tween(AppMotion.DurationStandard, easing = AppMotion.EmphasizedDecelerateEasing), initialScale = 0.8f)) togetherWith
+                                            (fadeOut(tween(AppMotion.DurationExit, easing = AppMotion.EmphasizedAccelerateEasing)) + scaleOut(tween(AppMotion.DurationExit, easing = AppMotion.EmphasizedAccelerateEasing), targetScale = 0.8f)) using
                                             SizeTransform(clip = false)
                                     },
                                     label = "timerAction",
@@ -321,9 +335,11 @@ private fun TimerActionButton(action: GlanceNotificationAction) {
         GlanceActionChip(label = action.title, onClick = { action.intent.sendFromUserTap() })
         return
     }
-    FilledTonalIconButton(
+    AppIconButton(
         onClick = { action.intent.sendFromUserTap() },
-        modifier = Modifier.size(36.dp),
+        tooltip = action.title,
+        style = AppIconButtonStyle.Tonal,
+        modifier = Modifier.size(DesignTokens.ButtonHeightSmall),
     ) {
         if (bitmap != null) {
             Icon(bitmap = bitmap, contentDescription = action.title, modifier = Modifier.size(TimerActionIconSize))
@@ -340,7 +356,7 @@ internal fun timerActionIcon(title: String): ImageVector? =
         "resume", "start", "play", "continue" -> MaterialSymbols.PlayArrow
         "reset", "restart" -> MaterialSymbols.RestartAlt
         "stop" -> MaterialSymbols.Stop
-        "delete", "remove" -> MaterialSymbols.Delete
+        "delete", "remove" -> MaterialSymbols.DeleteOutline
         "lap" -> MaterialSymbols.Flag
         "dismiss", "cancel" -> MaterialSymbols.Close
         else -> null
@@ -404,9 +420,11 @@ internal fun OngoingCallRow(
         trailing =
             onHangUp?.let { hangUp ->
                 {
-                    FilledIconButton(
+                    AppIconButton(
                         onClick = hangUp,
-                        modifier = Modifier.size(32.dp),
+                        tooltip = stringResource(R.string.home_ongoing_call_hang_up),
+                        style = AppIconButtonStyle.Filled,
+                        modifier = Modifier.size(DesignTokens.ButtonHeightSmall),
                         colors =
                             IconButtonDefaults.filledIconButtonColors(
                                 containerColor = MaterialTheme.colorScheme.error,
@@ -416,7 +434,7 @@ internal fun OngoingCallRow(
                         Icon(
                             imageVector = MaterialSymbols.CallEnd,
                             contentDescription = stringResource(R.string.home_ongoing_call_hang_up),
-                            modifier = Modifier.size(18.dp),
+                            modifier = Modifier.size(DesignTokens.ButtonIconSizeSmall),
                         )
                     }
                 }
@@ -440,7 +458,7 @@ internal fun WorkoutRow(workout: WorkoutNotification) {
         title = workout.title ?: appLabel,
         subtitle = workout.stats ?: appLabel.takeIf { workout.title != null },
         titleMaxLines = GlanceTextMaxLines,
-        subtitleStyle = MaterialTheme.typography.bodyMedium.copy(fontSize = 20.sp, lineHeight = 26.sp),
+        subtitleStyle = MaterialTheme.typography.titleLarge,
         pillText = workout.duration,
         onClick = { openNotificationTarget(context, workout.packageName, workout.contentIntent) },
     )
@@ -465,6 +483,9 @@ internal fun WeatherRow(
     )
 }
 
+/** Below this a progress bar would be an empty track, so the row leaves it out. */
+internal const val MIN_VISIBLE_PROGRESS = 0.01f
+
 @Composable
 internal fun ProgressNotificationRow(notification: ProgressNotification) {
     val context = LocalContext.current
@@ -483,13 +504,17 @@ internal fun ProgressNotificationRow(notification: ProgressNotification) {
         )
         return
     }
+    if (notification.isNavigation) {
+        NavigationProgressRow(notification, appLabel)
+        return
+    }
     val fraction = notification.progress.toFloat() / notification.progressMax
     val percentLabel = remember(fraction) { NumberFormat.getPercentInstance().format(fraction.toDouble()) }
     val fullLabel = remember { NumberFormat.getPercentInstance().format(1.0) }
     GlanceStatusRow(
         icon = { NotificationAppIcon(notification.packageName) },
         title = notification.title ?: appLabel,
-        subtitle = notification.text ?: appLabel.takeIf { notification.title != null },
+        subtitle = notification.text ?: notification.subText ?: appLabel.takeIf { notification.title != null },
         titleMaxLines = GlanceTextMaxLines,
         pillText = percentLabel,
         pillWidthText = fullLabel,
@@ -497,10 +522,54 @@ internal fun ProgressNotificationRow(notification: ProgressNotification) {
             openNotificationTarget(context, notification.packageName, notification.contentIntent)
         },
         belowText = {
+            if (fraction < MIN_VISIBLE_PROGRESS) return@GlanceStatusRow
             LinearProgressIndicator(
                 progress = { fraction },
-                modifier = Modifier.fillMaxWidth().padding(top = 4.dp, end = 4.dp),
+                modifier = Modifier.fillMaxWidth().padding(top = DesignTokens.SpacingXSmall, end = DesignTokens.SpacingXSmall),
             )
+        },
+    )
+}
+
+/**
+ * Turn-by-turn navigation: the next instruction, the arrival time, the distance to the next turn and
+ * the trip so far as a bar ending at a destination flag, rather than a task's percentage.
+ */
+@Composable
+private fun NavigationProgressRow(
+    notification: ProgressNotification,
+    appLabel: String,
+) {
+    val context = LocalContext.current
+    val fraction = notification.progress.toFloat() / notification.progressMax
+    GlanceStatusRow(
+        icon = { NotificationAppIcon(notification.packageName) },
+        title = notification.title ?: appLabel,
+        subtitle = notification.subText ?: notification.text ?: appLabel.takeIf { notification.title != null },
+        titleMaxLines = GlanceTextMaxLines,
+        pillText = notification.shortCriticalText,
+        onClick = {
+            openNotificationTarget(context, notification.packageName, notification.contentIntent)
+        },
+        belowText = {
+            if (fraction < MIN_VISIBLE_PROGRESS) return@GlanceStatusRow
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(top = DesignTokens.SpacingXSmall),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingXSmall),
+            ) {
+                LinearProgressIndicator(
+                    progress = { fraction },
+                    modifier = Modifier.weight(1f),
+                    drawStopIndicator = {},
+                )
+                Icon(
+                    imageVector = MaterialSymbols.Flag,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(16.dp),
+                )
+            }
         },
     )
 }

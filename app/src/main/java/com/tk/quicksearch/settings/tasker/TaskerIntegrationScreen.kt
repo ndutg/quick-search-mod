@@ -1,5 +1,9 @@
 package com.tk.quicksearch.settings.tasker
 
+import com.tk.quicksearch.shared.ui.components.AppAlertDialog
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
+import com.tk.quicksearch.shared.ui.components.AppIconButton
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.Image
@@ -10,11 +14,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -23,6 +24,10 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.Box
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import com.tk.quicksearch.R
@@ -30,12 +35,16 @@ import com.tk.quicksearch.searchEngines.AliasValidator.hasExactAliasConflict
 import com.tk.quicksearch.searchEngines.AliasValidator.isValidGeneralAliasCode
 import com.tk.quicksearch.searchEngines.AliasValidator.normalizeShortcutCodeInput
 import com.tk.quicksearch.search.apps.rememberAppIcon
-import com.tk.quicksearch.settings.shared.SettingsCard
+import com.tk.quicksearch.shared.ui.components.AppOutlinedTextField
+import com.tk.quicksearch.shared.ui.components.SegmentedTile
+import com.tk.quicksearch.shared.ui.components.SegmentedTileContent
+import com.tk.quicksearch.shared.ui.components.SegmentedGroup
 import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
-import com.tk.quicksearch.shared.ui.components.dialogTextFieldColors
 import com.tk.quicksearch.tools.tasker.TaskerIntentTool
 import com.tk.quicksearch.tools.tasker.TaskerIntegration
+import com.tk.quicksearch.shared.ui.components.TonalIconBadge
+import com.tk.quicksearch.shared.ui.components.AppButton
 
 @Composable
 fun TaskerIntegrationScreen(
@@ -48,6 +57,7 @@ fun TaskerIntegrationScreen(
     var alias by rememberSaveable { mutableStateOf("") }
     var name by rememberSaveable { mutableStateOf("") }
     var action by rememberSaveable { mutableStateOf("") }
+    var pendingDeleteId by rememberSaveable { mutableStateOf<String?>(null) }
     val normalizedAlias = normalizeShortcutCodeInput(alias)
     val aliasConflict = hasExactAliasConflict(alias, existingAliases)
     val actionValid = action.isNotBlank() && action.none(Char::isWhitespace)
@@ -58,37 +68,31 @@ fun TaskerIntegrationScreen(
         modifier = modifier.fillMaxSize().verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
     ) {
-        SettingsCard(modifier = Modifier.fillMaxWidth()) {
-            Column(
-                modifier = Modifier.fillMaxWidth().padding(
-                    horizontal = DesignTokens.CardHorizontalPadding,
-                    vertical = DesignTokens.CardVerticalPadding,
-                ),
-                verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium),
-            ) {
+        SegmentedTile(index = 0, count = 1) {
+            SegmentedTileContent {
                 Text(
                     stringResource(R.string.tasker_add_intent_title),
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.semantics { heading() },
                 )
                 Text(
                     stringResource(R.string.tasker_add_intent_description),
-                    style = MaterialTheme.typography.bodySmall,
+                    style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
-                OutlinedTextField(
+                AppOutlinedTextField(
                     value = name,
                     onValueChange = { name = it },
                     modifier = Modifier.fillMaxWidth(),
-                    label = { Text(stringResource(R.string.tasker_intent_name_label)) },
+                    label = stringResource(R.string.tasker_intent_name_label),
                     singleLine = true,
-                    colors = dialogTextFieldColors(),
                 )
-                OutlinedTextField(
+                AppOutlinedTextField(
                     value = alias,
                     onValueChange = { alias = it },
                     modifier = Modifier.fillMaxWidth(),
-                    label = { Text(stringResource(R.string.settings_custom_tool_alias_label)) },
+                    label = stringResource(R.string.settings_custom_tool_alias_label),
                     supportingText = if (aliasConflict) {
                         { Text(stringResource(R.string.tasker_alias_conflict)) }
                     } else {
@@ -96,18 +100,16 @@ fun TaskerIntegrationScreen(
                     },
                     isError = aliasConflict,
                     singleLine = true,
-                    colors = dialogTextFieldColors(),
                 )
-                OutlinedTextField(
+                AppOutlinedTextField(
                     value = action,
                     onValueChange = { action = it },
                     modifier = Modifier.fillMaxWidth(),
-                    label = { Text(stringResource(R.string.tasker_broadcast_action_label)) },
-                    placeholder = { Text("com.example.MY_TASK") },
+                    label = stringResource(R.string.tasker_broadcast_action_label),
+                    placeholder = { Text(stringResource(R.string.tasker_broadcast_action_placeholder)) },
                     singleLine = true,
-                    colors = dialogTextFieldColors(),
                 )
-                Button(
+                AppButton(
                     onClick = {
                         onAdd(normalizedAlias, name.trim(), action.trim())
                         alias = ""
@@ -122,57 +124,77 @@ fun TaskerIntegrationScreen(
             }
         }
 
-        tools.forEach { tool ->
-            SettingsCard(modifier = Modifier.fillMaxWidth()) {
-                Row(
-                    modifier = Modifier.fillMaxWidth().padding(
-                        horizontal = DesignTokens.CardHorizontalPadding,
-                        vertical = DesignTokens.CardVerticalPadding,
-                    ),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium),
-                ) {
-                    if (taskerIcon != null) {
-                        Image(
-                            bitmap = taskerIcon,
-                            contentDescription = null,
-                            modifier = Modifier.size(DesignTokens.IconSizeSmall),
-                            contentScale = ContentScale.Fit,
-                        )
-                    } else {
-                        Icon(
-                            MaterialSymbols.Bolt,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.size(DesignTokens.IconSizeSmall),
-                        )
-                    }
-                    Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingXSmall)) {
-                        Text(
-                            tool.name,
-                            style = MaterialTheme.typography.titleMedium,
-                            color = MaterialTheme.colorScheme.onSurface,
-                        )
-                        Text(
-                            stringResource(R.string.tasker_saved_alias, existingAliases[tool.id].orEmpty()),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                        Text(
-                            tool.broadcastAction,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
-                    IconButton(onClick = { onDelete(tool.id) }) {
-                        Icon(
-                            MaterialSymbols.Delete,
-                            contentDescription = stringResource(R.string.tasker_delete_intent),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
+        if (tools.isNotEmpty()) {
+            Spacer(Modifier.height(DesignTokens.SpacingSmall))
+        }
+        SegmentedGroup {
+            tools.forEachIndexed { index, tool ->
+                SegmentedTile(index = index, count = tools.size) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(
+                            start = DesignTokens.SpacingLarge,
+                            end = DesignTokens.SpacingXSmall,
+                            top = DesignTokens.SpacingLarge,
+                            bottom = DesignTokens.SpacingLarge,
+                        ),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingLarge),
+                    ) {
+                        if (taskerIcon != null) {
+                            Box(modifier = Modifier.size(TaskerLeadingSlotSize), contentAlignment = Alignment.Center) {
+                                Image(
+                                    bitmap = taskerIcon,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(DesignTokens.IconSize),
+                                    contentScale = ContentScale.Fit,
+                                )
+                            }
+                        } else {
+                            TonalIconBadge(icon = MaterialSymbols.Bolt)
+                        }
+                        Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingXSmall)) {
+                            Text(
+                                tool.name,
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.onSurface,
+                            )
+                            Text(
+                                stringResource(R.string.tasker_saved_alias, existingAliases[tool.id].orEmpty()),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                            Text(
+                                tool.broadcastAction,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                        AppIconButton(onClick = { pendingDeleteId = tool.id }, tooltip = stringResource(R.string.tasker_delete_intent)) {
+                            Icon(
+                                MaterialSymbols.DeleteOutline,
+                                contentDescription = stringResource(R.string.tasker_delete_intent),
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
                     }
                 }
             }
         }
     }
+
+    tools.firstOrNull { it.id == pendingDeleteId }?.let { tool ->
+        AppAlertDialog(
+            onDismissRequest = { pendingDeleteId = null },
+            title = { Text(stringResource(R.string.dialog_delete_item_title, tool.name)) },
+            confirmLabel = stringResource(R.string.dialog_delete),
+            onConfirm = {
+                pendingDeleteId = null
+                onDelete(tool.id)
+            },
+            dismissLabel = stringResource(R.string.dialog_cancel),
+            destructive = true,
+        )
+    }
 }
+
+private val TaskerLeadingSlotSize = 40.dp

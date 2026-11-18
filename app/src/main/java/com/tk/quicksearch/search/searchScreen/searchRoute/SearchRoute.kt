@@ -1,5 +1,8 @@
 package com.tk.quicksearch.search.searchScreen.searchRoute
 
+import com.tk.quicksearch.shared.ui.components.AppMessages
+import com.tk.quicksearch.settings.settingsDetailScreen.SettingsDetailType
+import com.tk.quicksearch.search.appSettings.AppSettingsTarget
 import com.tk.quicksearch.search.searchScreen.LocalPinnedGlanceOnly
 import com.tk.quicksearch.search.searchScreen.forPinnedGlanceOnly
 import android.Manifest
@@ -7,7 +10,6 @@ import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.speech.RecognizerIntent
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
@@ -39,9 +41,8 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.tk.quicksearch.R
+import com.tk.quicksearch.search.appSettings.BooleanSettings
 import com.tk.quicksearch.app.UpdateHelper
-import com.tk.quicksearch.search.core.AccentColorMode
-import com.tk.quicksearch.search.core.BackgroundSource
 import com.tk.quicksearch.search.core.ItemCustomizationRemover
 import com.tk.quicksearch.search.core.LocalItemCustomizationRemover
 import com.tk.quicksearch.search.core.SearchUiState
@@ -50,7 +51,6 @@ import com.tk.quicksearch.search.core.SearchEngine
 import com.tk.quicksearch.search.core.SearchTarget
 import com.tk.quicksearch.search.data.preferences.SwipeGestureAction
 import com.tk.quicksearch.search.data.preferences.HomeSwipeGestureAction
-import com.tk.quicksearch.search.appSettings.AppSettingsDestination
 import com.tk.quicksearch.search.appSettings.LocalOpenAppSettingDestination
 import com.tk.quicksearch.search.appSettings.LocalAppSettingInlineControls
 import com.tk.quicksearch.search.deviceSettings.DeviceSetting
@@ -87,7 +87,7 @@ fun SearchRoute(
     onOpenToolsSettings: () -> Unit = {},
     onOpenCustomToolSettings: (String) -> Unit = {},
     onOpenReleaseNotesFeatures: () -> Unit = {},
-    onOpenAppSettingDestination: (AppSettingsDestination) -> Unit = {},
+    onOpenAppSettingDestination: (AppSettingsTarget.Host) -> Unit = {},
     onOpenNotesDetail: (Long?) -> Unit = {},
     onOpenNotificationHistory: () -> Unit = {},
     onOpenWidgetsPanelFromSwipe: (() -> Unit)? = null,
@@ -142,7 +142,7 @@ fun SearchRoute(
         try {
             voiceInputLauncher.launch(intent)
         } catch (_: ActivityNotFoundException) {
-            Toast.makeText(context, R.string.voice_input_not_available, Toast.LENGTH_SHORT).show()
+            AppMessages.show(context, R.string.voice_input_not_available)
         }
     }
 
@@ -408,7 +408,7 @@ fun SearchRoute(
             onOtherSearchItemAction = undoActions.onOtherSearchItemAction,
             onSettingsClick = onSettingsClick,
             onAppClick = { app: com.tk.quicksearch.search.models.AppInfo ->
-                if (SpeedBump.isEnabled(context, app.packageName)) {
+                if (SpeedBump.shouldShow(context, app.packageName)) {
                     speedBumpApp = app
                 } else {
                     runAfterAppUnlock(app.packageName, app.appName) {
@@ -473,7 +473,7 @@ fun SearchRoute(
                 viewModel.handleContactMethod(contact, method)
             },
             onFileClick = { file: com.tk.quicksearch.search.models.DeviceFile ->
-                if (uiState.filePreviewsEnabled &&
+                if (uiState.isBooleanSettingEnabled(BooleanSettings.FILE_PREVIEWS.setting) &&
                     (com.tk.quicksearch.search.models.FileTypeUtils.isPdf(file) ||
                         com.tk.quicksearch.search.models.FileTypeUtils.isImage(file))
                 ) {
@@ -563,7 +563,7 @@ fun SearchRoute(
                         QuickSearchHelp.questionOrNull(trimmedQuery) != null ->
                             viewModel.askQuickSearch()
                         uiState.currencyConverterEnabled &&
-                                uiState.calculatorState.result == null &&
+                                !uiState.calculatorState.hasExclusiveResult &&
                                 CurrencyConversionIntentParser.parseConfirmed(trimmedQuery) != null ->
                             viewModel.executeCurrencyConversion()
                         uiState.worldClockEnabled &&
@@ -661,7 +661,6 @@ fun SearchRoute(
                 viewModel.onWebSuggestionTap(suggestion)
             },
             onRecentQueryClick = viewModel::onRecentQueryTap,
-            onSearchEngineOnboardingDismissed = viewModel::onSearchEngineOnboardingDismissed,
             onContactActionHintDismissed = viewModel::onContactActionHintDismissed,
             onCustomizeSearchEnginesClick = onCustomizeSearchEnginesClick,
             onOpenAiSearchConfigure = onOpenAiSearchConfigure,
@@ -685,15 +684,7 @@ fun SearchRoute(
             onSavePrimaryContactCardAction = viewModel::setPrimaryContactCardAction,
             onSaveSecondaryContactCardAction = viewModel::setSecondaryContactCardAction,
             onWallpaperLoaded = onWallpaperLoaded,
-            onWallpaperUnavailable = {
-                viewModel.setWallpaperAvailable(false)
-                if (
-                    viewModel.uiState.value.backgroundSource == BackgroundSource.SYSTEM_WALLPAPER &&
-                    viewModel.uiState.value.accentColorMode == AccentColorMode.FROM_WALLPAPER
-                ) {
-                    viewModel.setAccentColorMode(AccentColorMode.NONE)
-                }
-            },
+            onWallpaperUnavailable = viewModel::onWallpaperUnavailable,
             onSystemWallpaperChanged = viewModel::resetHomeTextColorForNewWallpaper,
             isOverlayPresentation = isOverlayPresentation,
             onOverlayExpandRequest = onOverlayExpandRequest,
@@ -701,14 +692,14 @@ fun SearchRoute(
             onOverlayNumberKeyboardUiChanged = onOverlayNumberKeyboardUiChanged,
             onOverlayScrollableContentChanged = onOverlayScrollableContentChanged,
             onOpenPermissionsSettings = {
-                onOpenAppSettingDestination(AppSettingsDestination.PERMISSIONS)
+                onOpenAppSettingDestination(AppSettingsTarget.Page(SettingsDetailType.PERMISSIONS))
             },
             onHomePinnedSectionOrderChange = viewModel::setHomePinnedSectionOrder,
             onChangeWallpaperClick = {
                 launchSystemWallpaperPicker(context)
             },
             onOpenGesturesSettingsClick = {
-                onOpenAppSettingDestination(AppSettingsDestination.GESTURES)
+                onOpenAppSettingDestination(AppSettingsTarget.Page(SettingsDetailType.GESTURES))
             },
             swipeUpAction = swipeActions[2],
             swipeDownAction = swipeActions[3],

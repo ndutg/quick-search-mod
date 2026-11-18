@@ -2,13 +2,13 @@ package com.tk.quicksearch.search.core
 
 import com.tk.quicksearch.search.data.preferences.UiPreferences
 import com.tk.quicksearch.search.models.FileType
+import com.tk.quicksearch.tools.inlineSearch.SearchToolType
 
 internal class SearchViewModelLegacyPreferenceState(
     clearQueryOnLaunch: Boolean,
 ) {
     var enabledFileTypes: Set<FileType> = emptySet()
     var showFolders: Boolean = false
-    var filePreviewsEnabled: Boolean = true
     var showSystemFiles: Boolean = false
     var folderWhitelistPatterns: Set<String> = emptySet()
     var folderBlacklistPatterns: Set<String> = emptySet()
@@ -38,6 +38,7 @@ internal class SearchViewModelLegacyPreferenceState(
     var themedIconsEnabled: Boolean = false
     var deviceThemeEnabled: Boolean = false
     var amoledThemeEnabled: Boolean = false
+    var searchChromeBlurEnabled: Boolean = false
     var maskUnsupportedIconPackIcons: Boolean = true
     var wallpaperBackgroundAlpha: Float = UiPreferences.DEFAULT_WALLPAPER_BACKGROUND_ALPHA
     var wallpaperBlurRadius: Float = UiPreferences.DEFAULT_WALLPAPER_BLUR_RADIUS
@@ -63,7 +64,6 @@ internal class SearchViewModelLegacyPreferenceState(
     fun applyPreferenceCacheToLegacyVars(prefCache: SearchPreferenceCache) {
         enabledFileTypes = prefCache.enabledFileTypes
         showFolders = prefCache.showFolders
-        filePreviewsEnabled = prefCache.filePreviewsEnabled
         showSystemFiles = prefCache.showSystemFiles
         folderWhitelistPatterns = prefCache.folderWhitelistPatterns
         folderBlacklistPatterns = prefCache.folderBlacklistPatterns
@@ -93,6 +93,7 @@ internal class SearchViewModelLegacyPreferenceState(
         themedIconsEnabled = prefCache.themedIconsEnabled
         deviceThemeEnabled = prefCache.deviceThemeEnabled
         amoledThemeEnabled = prefCache.amoledThemeEnabled
+        searchChromeBlurEnabled = prefCache.searchChromeBlurEnabled
         maskUnsupportedIconPackIcons = prefCache.maskUnsupportedIconPackIcons
         wallpaperBackgroundAlpha = prefCache.wallpaperBackgroundAlpha
         wallpaperBlurRadius = prefCache.wallpaperBlurRadius

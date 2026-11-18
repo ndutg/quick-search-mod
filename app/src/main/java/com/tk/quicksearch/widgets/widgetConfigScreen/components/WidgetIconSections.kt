@@ -1,10 +1,8 @@
 package com.tk.quicksearch.widgets.widgetConfigScreen.components
 
+import com.tk.quicksearch.shared.ui.components.AppMessages
 import android.content.Context
 import android.content.Intent
-import android.widget.Toast
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -22,42 +20,28 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import com.tk.quicksearch.R
+import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.util.defaultAssistantPackage
 import com.tk.quicksearch.widgets.searchWidget.MicAction
 import com.tk.quicksearch.widgets.utils.SearchIconDisplay
-import com.tk.quicksearch.widgets.utils.WidgetConfigConstants
 import com.tk.quicksearch.widgets.utils.WidgetPreferences
 
 @Composable
 fun WidgetSearchIconSection(
     state: WidgetPreferences,
+    index: Int = 0,
+    count: Int = 1,
     onStateChange: (WidgetPreferences) -> Unit,
 ) {
     val context = LocalContext.current
-    Column(
-        verticalArrangement =
-            Arrangement.spacedBy(WidgetConfigConstants.COLOR_SECTION_SPACING),
-    ) {
-        Text(
-            text = stringResource(R.string.widget_search_icon),
-            style = MaterialTheme.typography.titleSmall,
-        )
+    WidgetSettingTile(title = stringResource(R.string.widget_search_icon), index = index, count = count) {
         SearchIconChoiceSegmentedButtonRow(
             selectedDisplay = state.searchIconDisplay,
             onSelectionChange = { display ->
                 if (display != SearchIconDisplay.LEFT && state.hasCustomButtons) {
-                    Toast
-                        .makeText(
-                            context,
-                            context.getString(
-                                R.string
-                                    .widget_custom_buttons_restriction,
-                            ),
-                            Toast.LENGTH_SHORT,
-                        ).show()
+                    AppMessages.show(context, R.string.widget_custom_buttons_restriction)
                 } else {
                     onStateChange(state.copy(searchIconDisplay = display))
                 }
@@ -69,16 +53,11 @@ fun WidgetSearchIconSection(
 @Composable
 fun WidgetMicIconSection(
     state: WidgetPreferences,
+    index: Int = 0,
+    count: Int = 1,
     onStateChange: (WidgetPreferences) -> Unit,
 ) {
-    Column(
-        verticalArrangement =
-            Arrangement.spacedBy(WidgetConfigConstants.COLOR_SECTION_SPACING),
-    ) {
-        Text(
-            text = stringResource(R.string.widget_mic_icon),
-            style = MaterialTheme.typography.titleSmall,
-        )
+    WidgetSettingTile(title = stringResource(R.string.widget_mic_icon), index = index, count = count) {
         MicActionChoiceSegmentedButtonRow(
             selectedAction = state.micAction,
             onSelectionChange = { onStateChange(state.copy(micAction = it)) },
@@ -130,9 +109,9 @@ fun WidgetMicIconSection(
 
             Text(
                 text = annotatedString,
-                style = MaterialTheme.typography.bodySmall,
+                style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(top = 8.dp),
+                modifier = Modifier.padding(horizontal = WidgetTileTextInset),
             )
         }
     }
@@ -168,10 +147,7 @@ private fun createClickableText(
                         TextLinkStyles(
                             style =
                                 SpanStyle(
-                                    color =
-                                        MaterialTheme
-                                            .colorScheme
-                                            .primary,
+                                    color = AppColors.Accent,
                                     textDecoration =
                                         TextDecoration
                                             .Underline,

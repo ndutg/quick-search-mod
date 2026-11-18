@@ -1,5 +1,6 @@
 package com.tk.quicksearch.search.searchScreen
 
+import com.tk.quicksearch.onboarding.welcomeContentReveal
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.background
@@ -13,8 +14,6 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
-import com.tk.quicksearch.search.searchScreen.shared.CardlessTrailingEdge
-import com.tk.quicksearch.search.searchScreen.shared.LocalCardlessTrailingEdge
 import com.tk.quicksearch.search.searchScreen.shared.LocalSearchCardLayoutEnabled
 import com.tk.quicksearch.widgetsPanel.HomeWidgetEditGuard
 import com.tk.quicksearch.widgetsPanel.LocalHomeWidgetEditGuard
@@ -192,7 +191,6 @@ fun SearchScreen(
     onReleaseNotesViewAllFeatures: () -> Unit = {},
     onAccessibilityPermissionDisclaimerDismissed: () -> Unit = {},
     onWebSuggestionClick: (String) -> Unit = {},
-    onSearchEngineOnboardingDismissed: () -> Unit = {},
     onContactActionHintDismissed: () -> Unit = {},
     onClearDetectedShortcut: () -> Unit = {},
     onSectionSelected: (com.tk.quicksearch.search.core.SearchSection) -> Unit = {},
@@ -247,10 +245,6 @@ fun SearchScreen(
 
     val stateResult = SearchScreenStateManagement(
         state = state,
-        onQueryChanged = onQueryChanged,
-        onClearQuery = onClearQuery,
-        onSettingsClick = onSettingsClick,
-        onRequestUsagePermission = onRequestUsagePermission,
         onAppClick = onAppClick,
         onOpenInSplitScreen = onOpenInSplitScreen,
         onAppInfoClick = onAppInfoClick,
@@ -266,7 +260,6 @@ fun SearchScreen(
         onUpdateNotNowClick = onUpdateNotNowClick,
         onContactClick = onContactClick,
         onShowContactMethods = onShowContactMethods,
-        onDismissContactMethods = onDismissContactMethods,
         onCallContact = onCallContact,
         onSmsContact = onSmsContact,
         onContactMethodClick = onContactMethodClick,
@@ -318,20 +311,9 @@ fun SearchScreen(
         onDisableAppShortcut = onDisableAppShortcut,
         onDisableAllAppShortcutsForApp = onDisableAllAppShortcutsForApp,
         onAppShortcutAppInfoClick = onAppShortcutAppInfoClick,
-        onSearchTargetClick = onSearchTargetClick,
-        onSearchEngineLongPress = onSearchEngineLongPress,
-        onAiSearchEmailClick = onAiSearchEmailClick,
-        onSetPersonalContext = onSetPersonalContext,
-        onSetActiveLlmModel = onSetActiveLlmModel,
-        onSetActiveLlmGroundingEnabled = onSetActiveLlmGroundingEnabled,
-        onRefreshAvailableLlmModels = onRefreshAvailableLlmModels,
         onOpenAppSettings = onOpenAppSettings,
         onOpenCalendarPermissionSettings = onOpenCalendarPermissionSettings,
         onOpenStorageAccessSettings = onOpenStorageAccessSettings,
-        onAppNicknameClick = onAppNicknameClick,
-        onClearDetectedShortcut = onClearDetectedShortcut,
-        onContactNicknameClick = onContactNicknameClick,
-        onFileNicknameClick = onFileNicknameClick,
         getAppNickname = getAppNickname,
         getContactNickname = getContactNickname,
         getFileNickname = getFileNickname,
@@ -344,36 +326,15 @@ fun SearchScreen(
         getAppShortcutTrigger = getAppShortcutTrigger,
         getSettingTrigger = getSettingTrigger,
         getNoteTrigger = getNoteTrigger,
-        onSaveAppNickname = onSaveAppNickname,
-        onSaveAppShortcutNickname = onSaveAppShortcutNickname,
-        onSaveContactNickname = onSaveContactNickname,
-        onSaveFileNickname = onSaveFileNickname,
         getSettingNickname = getSettingNickname,
-        onSaveSettingNickname = onSaveSettingNickname,
-        getLastShownPhoneNumber = getLastShownPhoneNumber,
-        setLastShownPhoneNumber = setLastShownPhoneNumber,
-        onDirectDialChoiceSelected = onDirectDialChoiceSelected,
-        onDismissDirectDialChoice = onDismissDirectDialChoice,
-        onReleaseNotesAcknowledged = onReleaseNotesAcknowledged,
-        onWebSuggestionClick = onWebSuggestionClick,
-        onSearchEngineOnboardingDismissed = onSearchEngineOnboardingDismissed,
         onContactActionHintDismissed = onContactActionHintDismissed,
-        onCustomizeSearchEnginesClick = onCustomizeSearchEnginesClick,
-        onOpenAiSearchConfigure = onOpenAiSearchConfigure,
-        onDeleteRecentItem = onDeleteRecentItem,
-        onWelcomeAnimationCompleted = onWelcomeAnimationCompleted,
         onWallpaperLoaded = onWallpaperLoaded,
         onWallpaperUnavailable = onWallpaperUnavailable,
         onSystemWallpaperChanged = onSystemWallpaperChanged,
         onCustomAction = onCustomAction,
         getPrimaryContactCardAction = getPrimaryContactCardAction,
         getSecondaryContactCardAction = getSecondaryContactCardAction,
-        onSavePrimaryContactCardAction = onSavePrimaryContactCardAction,
-        onSaveSecondaryContactCardAction = onSaveSecondaryContactCardAction,
         isOverlayPresentation = isOverlayPresentation,
-        onOverlayExpandRequest = onOverlayExpandRequest,
-        isOverlayExpanded = isOverlayExpanded,
-        onOverlayNumberKeyboardUiChanged = onOverlayNumberKeyboardUiChanged,
         onOverlayScrollableContentChanged = onOverlayScrollableContentChanged,
         onConsumeContactActionRequest = onConsumeContactActionRequest,
     )
@@ -422,18 +383,18 @@ fun SearchScreen(
         LocalHomeWidgetEditGuard provides homeWidgetEditGuard,
         LocalSearchCardLayoutEnabled provides state.cardLayoutEnabled,
         com.tk.quicksearch.search.searchScreen.searchScreenLayout.LocalGlanceIconPackPackage provides state.selectedIconPackPackage,
-        LocalCardlessTrailingEdge provides remember { CardlessTrailingEdge() },
         com.tk.quicksearch.search.bookmarks.LocalBookmarksSectionParams provides stateResult.sectionParams.bookmarksParams,
         com.tk.quicksearch.search.noted.LocalNotedSectionParams provides stateResult.sectionParams.notedParams,
     ) {
     Box(modifier = screenModifier.homeWidgetEditTapGuard(homeWidgetEditGuard)) {
-        if (!isOverlayPresentation && !LocalPageBackdropDrawnByHost.current) {
+        if (!isOverlayPresentation && LocalSharedPageWallpaper.current == null) {
             SearchPageBackdrop(
                 state = state,
                 imageBitmap = stateResult.imageBitmap,
                 useImageBackground = stateResult.useImageBackground,
                 useSystemWallpaperBackdrop = stateResult.useSystemWallpaperBackdrop,
                 useMonoThemeFallback = stateResult.useMonoThemeFallback,
+                systemWallpaperUnderBitmap = stateResult.systemWallpaperUnderBitmap,
             )
         }
 
@@ -443,7 +404,7 @@ fun SearchScreen(
                 if (isOverlayPresentation) {
                     Modifier.fillMaxWidth()
                 } else {
-                    Modifier.fillMaxSize()
+                    Modifier.fillMaxSize().welcomeContentReveal()
                 },
             state = stateResult.effectiveStateForCards,
             renderingState = stateResult.renderingState,

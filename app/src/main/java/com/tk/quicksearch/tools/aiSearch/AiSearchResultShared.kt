@@ -1,5 +1,7 @@
 package com.tk.quicksearch.tools.aiSearch
 
+import androidx.compose.ui.semantics.Role
+import com.tk.quicksearch.shared.ui.theme.AppShapes
 import androidx.annotation.StringRes
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.foundation.Image
@@ -7,6 +9,9 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.offset
+import androidx.compose.ui.draw.clip
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.height
@@ -23,21 +28,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
-import com.tk.quicksearch.search.core.SearchToolType
+import com.tk.quicksearch.tools.inlineSearch.SearchToolType
 import com.tk.quicksearch.search.searchScreen.shared.InformationCard
-import com.tk.quicksearch.search.searchScreen.shared.LocalCardlessStackSpacing
+import com.tk.quicksearch.search.searchScreen.shared.InformationCardCopyAction
+import com.tk.quicksearch.search.searchScreen.shared.InformationCardFooter
 import com.tk.quicksearch.search.searchScreen.shared.LocalSearchCardLayoutEnabled
-import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
-import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 
 internal val AiResultCardMinHeight = 175.dp
@@ -69,7 +71,7 @@ internal fun GeminiResultCard(
     )
 }
 
-/** Tool branding shown under a result card in place of the AI provider attribution. */
+/** Tool branding shown at the bottom of a result card in place of the AI provider attribution. */
 internal data class ToolAttribution(
         val icon: ImageVector,
         @param:StringRes val titleRes: Int,
@@ -88,7 +90,6 @@ private fun ColumnWithContent(
         copyText: String?,
         toolAttribution: ToolAttribution?,
 ) {
-    val hasAttribution = showAttribution || toolAttribution != null
     @Suppress("DEPRECATION")
     val clipboardManager = LocalClipboardManager.current
     // Flat (compact) cards have no container to fill, so they size to the answer.
@@ -96,7 +97,6 @@ private fun ColumnWithContent(
     val cardModifier =
             Modifier.fillMaxWidth()
                     .heightIn(min = cardMinHeight)
-                    .padding(bottom = if (hasAttribution) compactAttributionCardBottomPadding() else 0.dp)
                     .let { baseModifier ->
                         if (copyText.isNullOrBlank()) {
                             baseModifier
@@ -110,76 +110,37 @@ private fun ColumnWithContent(
                         }
                     }
 
-    androidx.compose.foundation.layout.Column(
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
+    InformationCard(
+            modifier = cardModifier,
+            showWallpaperBackground = showWallpaperBackground,
     ) {
-        InformationCard(
-                modifier = cardModifier,
-                showWallpaperBackground = showWallpaperBackground,
-        ) {
-            content()
-        }
-
-        if (toolAttribution != null) {
-            ToolAttributionRow(
-                    modifier = Modifier.fillMaxWidth().padding(top = compactAttributionTopPadding()),
-                    icon = toolAttribution.icon,
-                    titleRes = toolAttribution.titleRes,
-            )
-        } else if (showAttribution) {
-            AiProviderAttributionRow(
-                    modifier = Modifier.fillMaxWidth().padding(top = compactAttributionTopPadding()),
-                    usedModelId = usedModelId,
-                    llmProviderId = llmProviderId,
-                    isClickable = isAttributionClickable,
-                    onClick = onGeminiModelInfoClick,
-                    onLongClick = onOpenAiSearchConfigure,
+        content()
+        val copyAnswer = copyText?.takeIf { it.isNotBlank() }
+        if (toolAttribution != null || showAttribution || copyAnswer != null) {
+            // Pins the footer to the card's bottom edge when the answer is shorter than the minimum height.
+            Spacer(modifier = Modifier.weight(1f))
+            InformationCardFooter(
+                    source = {
+                        if (toolAttribution != null) {
+                            ToolAttributionRow(icon = toolAttribution.icon, titleRes = toolAttribution.titleRes)
+                        } else if (showAttribution) {
+                            AiProviderAttributionRow(
+                                    usedModelId = usedModelId,
+                                    llmProviderId = llmProviderId,
+                                    isClickable = isAttributionClickable,
+                                    onClick = onGeminiModelInfoClick,
+                                    onLongClick = onOpenAiSearchConfigure,
+                            )
+                        }
+                    },
+                    actions = { copyAnswer?.let { InformationCardCopyAction(text = it) } },
             )
         }
     }
 }
 
-/**
- * Gap between a flat (compact) card's bottom divider and the attribution row below it. The cards
- * above pad their content so the space over the divider looks the same once text leading is counted.
- */
-private val CompactAttributionDividerGap = 18.dp
-
-/**
- * Extra space above an attribution row that follows a flat (compact) card. The card's divider is
- * drawn half the stack spacing below the card, which leaves it almost touching the attribution.
- */
 @Composable
-internal fun compactAttributionTopPadding(): Dp {
-    if (LocalSearchCardLayoutEnabled.current) return 0.dp
-    return CompactAttributionDividerGap + LocalCardlessStackSpacing.current / 2 - DesignTokens.SpacingSmall
-}
-
-/**
- * Extra bottom padding for a flat (compact) card followed by an attribution row, so the space above
- * its divider matches [CompactAttributionDividerGap] below it. [extra] covers content that ends
- * closer to the card edge than the usual [DesignTokens.SpacingLarge] inset.
- */
-@Composable
-internal fun compactAttributionCardBottomPadding(extra: Dp = DesignTokens.SpacingXSmall): Dp =
-        if (LocalSearchCardLayoutEnabled.current) 0.dp else extra
-
-/**
- * Lines the attribution up with the card's content. Flat (compact) cards bleed their content
- * [DesignTokens.SpacingSmall] past the slot, so the row drops that much of its inset to match.
- */
-@Composable
-private fun attributionHorizontalPadding(): Dp =
-        if (LocalSearchCardLayoutEnabled.current) {
-            DesignTokens.SpacingLarge
-        } else {
-            DesignTokens.SpacingLarge - DesignTokens.SpacingSmall
-        }
-
-@Composable
-private fun informationAttributionContentColor(): Color =
-    AppColors.wallpaperAwareMutedSearchForeground(alpha = 1f)
+private fun informationAttributionContentColor(): Color = MaterialTheme.colorScheme.onSurfaceVariant
 
 @Composable
 private fun AnthropicClaudeWordmark(
@@ -268,116 +229,83 @@ internal fun AiProviderAttributionRow(
     val isGemma = usedModelId?.lowercase()?.startsWith("gemma-") == true
     val rowModifier =
             if (isClickable) {
+                // Full footer height as the touch target, with a rounded ripple around the wordmark.
+                // The offset cancels the ripple's side padding so the wordmark stays on the body inset.
                 modifier
-                        .padding(horizontal = attributionHorizontalPadding())
+                        .offset(x = -DesignTokens.SpacingXSmall)
+                        .heightIn(min = 48.dp)
+                        .clip(AppShapes.small)
                         .combinedClickable(
-                                interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() },
-                                indication = null,
+                                role = Role.Button,
                                 onClick = onClick,
                                 onLongClick = onLongClick,
                         )
+                        .padding(horizontal = DesignTokens.SpacingXSmall)
             } else {
-                modifier.padding(horizontal = attributionHorizontalPadding())
+                modifier
             }
     Row(
             modifier = rowModifier,
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(6.dp),
+            horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingXSmall),
     ) {
-        Text(
-                text = poweredByText,
-                style = MaterialTheme.typography.labelSmall,
-                color = contentColor,
-        )
-        when (llmProviderId) {
-            AiSearchLlmProviderId.OPENAI -> {
+        val definition = AiSearchLlmProviderRegistry.definition(llmProviderId)
+        if (definition == null) {
+            Text(
+                    text = usedModelId.orEmpty(),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = contentColor,
+            )
+            return@Row
+        }
+        when (val attribution = definition.branding.attribution) {
+            is AiProviderAttribution.Wordmark ->
                 Image(
-                        painter = painterResource(R.drawable.openai_wordmark),
+                        painter = painterResource(attribution.drawable),
                         contentDescription = poweredByText,
                         contentScale = ContentScale.Fit,
                         colorFilter = ColorFilter.tint(contentColor),
-                        modifier =
-                                Modifier.height(18.dp).aspectRatio(1564.3f / 428.4f),
+                        modifier = Modifier.height(attribution.heightDp.dp).aspectRatio(attribution.aspectRatio),
                 )
-            }
-            AiSearchLlmProviderId.ANTHROPIC -> {
+            AiProviderAttribution.Claude ->
                 AnthropicClaudeWordmark(
                         contentDescription = poweredByText,
                         wordmarkTextColor = contentColor,
-                        modifier =
-                                Modifier.height(18.dp)
-                                        .aspectRatio(689.97997f / 148.17999f),
+                        modifier = Modifier.height(18.dp).aspectRatio(689.97997f / 148.17999f),
                 )
-            }
-            AiSearchLlmProviderId.GROQ -> {
-                Image(
-                        painter = painterResource(R.drawable.groq_wordmark),
-                        contentDescription = poweredByText,
-                        contentScale = ContentScale.Fit,
-                        colorFilter = ColorFilter.tint(contentColor),
-                        modifier =
-                                Modifier.height(18.dp).aspectRatio(152f / 55.5f),
-                )
-            }
-            AiSearchLlmProviderId.META -> {
+            AiProviderAttribution.Label ->
                 Row(
-                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingXSmall),
                         verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Image(
-                            painter = painterResource(R.drawable.meta_logo),
+                            painter = painterResource(definition.branding.icon),
                             contentDescription = poweredByText,
                             modifier = Modifier.size(16.dp),
                     )
                     Text(
-                            text = stringResource(R.string.settings_ai_provider_meta),
-                            style = MaterialTheme.typography.labelSmall,
+                            text = stringResource(definition.nameRes),
+                            style = MaterialTheme.typography.labelMedium,
                             color = contentColor,
                     )
                 }
-            }
-            AiSearchLlmProviderId.OPENCODE -> {
-                Image(
-                        painter = painterResource(R.drawable.opencode_wordmark),
-                        contentDescription = poweredByText,
-                        contentScale = ContentScale.Fit,
-                        colorFilter = ColorFilter.tint(contentColor),
-                        modifier =
-                                Modifier.height(14.dp).aspectRatio(640.714f / 115f),
-                )
-            }
-            else -> {
-                if (llmProviderId.isCustom) {
-                    Text(
-                            text = usedModelId.orEmpty(),
-                            style = MaterialTheme.typography.labelSmall,
-                            color = contentColor,
+            AiProviderAttribution.Gemini ->
+                if (isGemma) {
+                    GemmaWordmark(
+                            contentDescription = poweredByText,
+                            wordmarkTextColor = contentColor,
+                            modifier = Modifier.height(18.dp).aspectRatio(250f / 64f),
                     )
                 } else {
-                    val logoAspectRatio = if (isGemma) 250f / 64f else 288f / 65f
-                    val logoHeight = if (isGemma) 18.dp else 14.dp
-                    if (isGemma) {
-                        GemmaWordmark(
-                                contentDescription = poweredByText,
-                                wordmarkTextColor = contentColor,
-                                modifier = Modifier.height(logoHeight).aspectRatio(logoAspectRatio),
-                        )
-                    } else {
-                        GeminiWordmark(
-                                contentDescription = poweredByText,
-                                wordmarkTextColor = contentColor,
-                                modifier = Modifier.height(logoHeight).aspectRatio(logoAspectRatio),
-                        )
-                    }
+                    GeminiWordmark(
+                            contentDescription = poweredByText,
+                            wordmarkTextColor = contentColor,
+                            modifier = Modifier.height(14.dp).aspectRatio(288f / 65f),
+                    )
                 }
-            }
         }
     }
 }
-
-/** OpenCode ships two-tone marks for light and dark surfaces; pick the one for [contentColor]. */
-internal fun openCodeLogoRes(contentColor: Color): Int =
-        if (contentColor.luminance() > 0.5f) R.drawable.opencode_logo_dark else R.drawable.opencode_logo_light
 
 /** Attribution row showing calculator branding. */
 @Composable
@@ -385,21 +313,11 @@ internal fun CalculatorAttributionRow(
         modifier: Modifier = Modifier,
         toolType: SearchToolType = SearchToolType.CALCULATOR,
 ) {
-    val titleRes =
-            when (toolType) {
-                SearchToolType.UNIT_CONVERTER -> R.string.unit_converter_info_title
-                SearchToolType.DATE_CALCULATOR -> R.string.date_calculator_info_title
-                SearchToolType.COLOR_VISUALIZER -> R.string.color_visualizer_toggle_title
-                SearchToolType.CALCULATOR -> R.string.calculator_toggle_title
-            }
-    val icon =
-            when (toolType) {
-                SearchToolType.UNIT_CONVERTER -> MaterialSymbols.Straighten
-                SearchToolType.DATE_CALCULATOR -> MaterialSymbols.CalendarMonth
-                SearchToolType.COLOR_VISUALIZER -> MaterialSymbols.Palette
-                SearchToolType.CALCULATOR -> MaterialSymbols.Calculate
-            }
-    ToolAttributionRow(modifier = modifier, icon = icon, titleRes = titleRes)
+    ToolAttributionRow(
+        modifier = modifier,
+        icon = toolType.attributionIcon(),
+        titleRes = toolType.setting.titleRes,
+    )
 }
 
 /** Attribution row showing a tool's icon and name. */
@@ -411,19 +329,20 @@ internal fun ToolAttributionRow(
 ) {
     val contentColor = informationAttributionContentColor()
     Row(
-            modifier = modifier.padding(horizontal = attributionHorizontalPadding()),
+            modifier = modifier,
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(6.dp),
+            horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
     ) {
+        // Decorative: the label beside it already names the tool for screen readers.
         Icon(
                 imageVector = icon,
-                contentDescription = stringResource(titleRes),
+                contentDescription = null,
                 tint = contentColor,
-                modifier = Modifier.size(14.dp),
+                modifier = Modifier.size(16.dp),
         )
         Text(
                 text = stringResource(titleRes),
-                style = MaterialTheme.typography.labelSmall,
+                style = MaterialTheme.typography.labelMedium,
                 color = contentColor,
         )
     }

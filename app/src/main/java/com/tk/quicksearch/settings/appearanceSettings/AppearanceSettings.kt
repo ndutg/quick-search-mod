@@ -1,10 +1,14 @@
 package com.tk.quicksearch.settings.appearanceSettings
 
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Icon
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
+import com.tk.quicksearch.shared.ui.components.SegmentedTileRow
+import com.tk.quicksearch.search.data.preferences.SwipeDirection
+import com.tk.quicksearch.search.data.preferences.actionKey
 import android.content.Context
 import android.os.Build
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -14,7 +18,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -26,18 +29,17 @@ import com.tk.quicksearch.search.core.IconPackInfo
 import com.tk.quicksearch.search.core.LauncherAppIcon
 import com.tk.quicksearch.search.core.SearchBarStyle
 import com.tk.quicksearch.search.core.SearchSection
+import com.tk.quicksearch.search.core.SearchTarget
+import com.tk.quicksearch.search.core.AccentColorMode
 import com.tk.quicksearch.search.core.AppTheme
 import com.tk.quicksearch.search.data.userAppPreferences.UserAppPreferences
 import com.tk.quicksearch.search.data.preferences.BasePreferences
 import com.tk.quicksearch.search.data.preferences.SwipeGestureAction
 import com.tk.quicksearch.settings.settingsDetailScreen.PriorityReorderDialog
-import com.tk.quicksearch.settings.shared.SettingsCard
-import com.tk.quicksearch.settings.shared.SettingsCardItem
-import com.tk.quicksearch.settings.shared.SettingsNavigationRow
+import com.tk.quicksearch.shared.ui.components.SegmentedTile
+import com.tk.quicksearch.shared.ui.components.SegmentedGroup
 import com.tk.quicksearch.settings.shared.SettingsToggleRow
 import com.tk.quicksearch.settings.searchEngineSettings.SearchEngineAppearanceCard
-import com.tk.quicksearch.shared.featureFlags.FeatureFlags
-import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 
 /** Complete appearance settings section with all appearance-related components and dialogs. */
@@ -57,6 +59,8 @@ fun AppearanceSettingsSection(
         onTogglePinnedAppShortcutsInAppGrid: (Boolean) -> Unit,
         showStatusBar: Boolean,
         onToggleShowStatusBar: (Boolean) -> Unit,
+        searchChromeBlurEnabled: Boolean,
+        onToggleSearchChromeBlur: (Boolean) -> Unit,
         settingsIconEnabled: Boolean,
         onToggleSettingsIcon: (Boolean) -> Unit,
         wallpaperBackgroundAlpha: Float,
@@ -83,7 +87,7 @@ fun AppearanceSettingsSection(
         onRequestWallpaperPermission: () -> Unit,
         isSearchEngineCompactMode: Boolean,
         searchEngineCompactRowCount: Int,
-        hasEnabledSearchEngines: Boolean,
+        enabledSearchEngines: List<SearchTarget>,
         onToggleSearchEngineCompactMode: (Boolean) -> Unit,
         onSetSearchEngineCompactRowCount: (Int) -> Unit,
         selectedIconPackPackage: String?,
@@ -124,7 +128,7 @@ fun AppearanceSettingsSection(
     val gesturePreferences =
         remember(appearanceContext) { UserAppPreferences(appearanceContext.applicationContext) }
     var settingsIconRequired by remember {
-        mutableStateOf(gesturePreferences.getSwipeLeftAction() != SwipeGestureAction.SETTINGS)
+        mutableStateOf(gesturePreferences.actionFor(SwipeDirection.LEFT) != SwipeGestureAction.SETTINGS)
     }
     DisposableEffect(gesturePreferences) {
         val preferences =
@@ -133,25 +137,20 @@ fun AppearanceSettingsSection(
                 Context.MODE_PRIVATE,
             )
         val listener = android.content.SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
-            if (key == BasePreferences.KEY_SWIPE_LEFT_ACTION) {
+            if (key == SwipeDirection.LEFT.actionKey) {
                 settingsIconRequired =
-                    gesturePreferences.getSwipeLeftAction() != SwipeGestureAction.SETTINGS
+                    gesturePreferences.actionFor(SwipeDirection.LEFT) != SwipeGestureAction.SETTINGS
             }
         }
         preferences.registerOnSharedPreferenceChangeListener(listener)
         onDispose { preferences.unregisterOnSharedPreferenceChangeListener(listener) }
     }
+    var themeCardExpanded by remember { mutableStateOf(gesturePreferences.isAppearanceCardExpanded(CARD_THEME)) }
+    var backgroundCardExpanded by remember { mutableStateOf(gesturePreferences.isAppearanceCardExpanded(CARD_BACKGROUND)) }
+    var searchBarCardExpanded by remember { mutableStateOf(gesturePreferences.isAppearanceCardExpanded(CARD_SEARCH_BAR)) }
+    var searchEnginesCardExpanded by remember { mutableStateOf(gesturePreferences.isAppearanceCardExpanded(CARD_SEARCH_ENGINES)) }
     var showIconPackDialog by remember { mutableStateOf(false) }
     var showPinnedSectionOrderDialog by rememberSaveable { mutableStateOf(false) }
-    val pinnedSectionOrderItems =
-        remember(homePinnedSectionOrder, pinnedAppShortcutsInAppGrid) {
-            homePinnedSectionOrder.filter { section ->
-                FeatureFlags.isSearchSectionEnabled(section) &&
-                    section != SearchSection.NOTED &&
-                    !(pinnedAppShortcutsInAppGrid && section == SearchSection.APP_SHORTCUTS)
-            }
-        }
-
     val hasIconPacks = availableIconPacks.isNotEmpty()
     val systemIconPackLabel = stringResource(R.string.settings_icon_pack_option_system)
     val selectedIconPackLabel =
@@ -173,12 +172,21 @@ fun AppearanceSettingsSection(
                 compactLayoutEnabled = compactLayoutEnabled,
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(DesignTokens.SpacingLarge))
 
         AppThemeCard(
                 selectedTheme = appTheme,
                 overlayThemeIntensity = overlayThemeIntensity,
-                onThemeSelected = onSetAppTheme,
+                onThemeSelected = { theme ->
+                    // Over a wallpaper or custom image, a new theme takes over the accent color.
+                    val switchAccentToTheme =
+                            theme != appTheme &&
+                                    (accentColorMode == AccentColorMode.FROM_WALLPAPER ||
+                                            (backgroundSource != BackgroundSource.THEME &&
+                                                    accentColorMode != AccentColorMode.NONE))
+                    onSetAppTheme(theme)
+                    if (switchAccentToTheme) onAccentColorModeChange(AccentColorMode.NONE)
+                },
                 onOverlayThemeIntensityChange = onOverlayThemeIntensityChange,
                 backgroundSource = backgroundSource,
                 onSetBackgroundSource = onSetBackgroundSource,
@@ -191,9 +199,14 @@ fun AppearanceSettingsSection(
                 onDeviceThemeToggle = onDeviceThemeToggle,
                 amoledThemeEnabled = amoledThemeEnabled,
                 onAmoledThemeToggle = onAmoledThemeToggle,
+                expanded = themeCardExpanded,
+                onExpandedChange = { expanded ->
+                    themeCardExpanded = expanded
+                    gesturePreferences.setAppearanceCardExpanded(CARD_THEME, expanded)
+                },
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(DesignTokens.SpacingLarge))
 
         WallpaperCard(
                 wallpaperBackgroundAlpha = wallpaperBackgroundAlpha,
@@ -212,20 +225,18 @@ fun AppearanceSettingsSection(
                 customAccentColorArgb = customAccentColorArgb,
                 onAccentColorModeChange = onAccentColorModeChange,
                 onCustomAccentColorChange = onCustomAccentColorChange,
+                appTheme = appTheme,
+                overlayThemeIntensity = overlayThemeIntensity,
+                amoledThemeEnabled = amoledThemeEnabled,
                 deviceThemeEnabled = deviceThemeEnabled,
+                expanded = backgroundCardExpanded,
+                onExpandedChange = { expanded ->
+                    backgroundCardExpanded = expanded
+                    gesturePreferences.setAppearanceCardExpanded(CARD_BACKGROUND, expanded)
+                },
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Alternate launcher icons are adaptive icons (mipmap-anydpi-v26 only).
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            AppLauncherIconCard(
-                    launcherAppIcon = launcherAppIcon,
-                    onSetLauncherAppIcon = onSetLauncherAppIcon,
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-        }
+        Spacer(modifier = Modifier.height(DesignTokens.SpacingLarge))
 
         SearchBarStyleCard(
                 searchBarStyle = searchBarStyle,
@@ -234,97 +245,113 @@ fun AppearanceSettingsSection(
                 settingsIconEnabled = settingsIconEnabled,
                 settingsIconRequired = settingsIconRequired,
                 onToggleSettingsIcon = onToggleSettingsIcon,
+                searchChromeBlurEnabled = searchChromeBlurEnabled,
+                onToggleSearchChromeBlur = onToggleSearchChromeBlur,
+                fixedShape = SearchBarStyle.hasFixedShape(bottomSearchBarEnabled, isSearchEngineCompactMode),
+                enabledSearchEngines = enabledSearchEngines,
+                searchEngineCompactRowCount = searchEngineCompactRowCount,
+                appIconShape = appIconShape,
+                iconPackPackage = selectedIconPackPackage,
+                expanded = searchBarCardExpanded,
+                onExpandedChange = { expanded ->
+                    searchBarCardExpanded = expanded
+                    gesturePreferences.setAppearanceCardExpanded(CARD_SEARCH_BAR, expanded)
+                },
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(DesignTokens.SpacingLarge))
 
-        if (hasEnabledSearchEngines) {
+        if (enabledSearchEngines.isNotEmpty()) {
             SearchEngineAppearanceCard(
                     isSearchEngineCompactMode = isSearchEngineCompactMode,
                     onToggleSearchEngineCompactMode = onToggleSearchEngineCompactMode,
                     compactRowCount = searchEngineCompactRowCount,
                     onSetCompactRowCount = onSetSearchEngineCompactRowCount,
+                    expanded = searchEnginesCardExpanded,
+                    onExpandedChange = { expanded ->
+                        searchEnginesCardExpanded = expanded
+                        gesturePreferences.setAppearanceCardExpanded(CARD_SEARCH_ENGINES, expanded)
+                    },
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(DesignTokens.SpacingLarge))
         }
 
-        SettingsCard(modifier = Modifier.fillMaxWidth()) {
-            Column {
-                SettingsToggleRow(
-                        title = stringResource(R.string.settings_layout_option_bottom_title),
-                        subtitle = stringResource(R.string.settings_layout_option_bottom_desc),
-                        checked = oneHandedMode,
-                        onCheckedChange = onToggleOneHandedMode,
-                        isFirstItem = true,
-                        extraVerticalPadding = 8.dp,
+        SegmentedGroup {
+            val layoutToggles =
+                    listOf(
+                            Triple(R.string.settings_layout_option_bottom_title, R.string.settings_layout_option_bottom_desc, oneHandedMode to onToggleOneHandedMode),
+                            Triple(R.string.settings_bottom_searchbar_title, R.string.settings_bottom_searchbar_desc, bottomSearchBarEnabled to onToggleBottomSearchBar),
+                            Triple(R.string.settings_compact_layout_title, R.string.settings_compact_layout_desc, compactLayoutEnabled to onToggleCompactLayout),
+                            Triple(R.string.settings_show_status_bar_title, R.string.settings_show_status_bar_desc, showStatusBar to onToggleShowStatusBar),
+                    )
+            // Alternate launcher icons are adaptive icons (mipmap-anydpi-v26 only).
+            val showLauncherIcon = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+            val offset = if (showLauncherIcon) 1 else 0
+            val tileCount = layoutToggles.size + offset
+            if (showLauncherIcon) {
+                AppLauncherIconTile(
+                        launcherAppIcon = launcherAppIcon,
+                        onSetLauncherAppIcon = onSetLauncherAppIcon,
+                        index = 0,
+                        count = tileCount,
                 )
-                SettingsToggleRow(
-                        title = stringResource(R.string.settings_bottom_searchbar_title),
-                        subtitle = stringResource(R.string.settings_bottom_searchbar_desc),
-                        checked = bottomSearchBarEnabled,
-                        onCheckedChange = onToggleBottomSearchBar,
-                        extraVerticalPadding = 8.dp,
-                )
-                SettingsToggleRow(
-                        title = stringResource(R.string.settings_compact_layout_title),
-                        subtitle = stringResource(R.string.settings_compact_layout_desc),
-                        checked = compactLayoutEnabled,
-                        onCheckedChange = onToggleCompactLayout,
-                        extraVerticalPadding = 8.dp,
-                )
-                SettingsToggleRow(
-                        title = stringResource(R.string.settings_show_status_bar_title),
-                        subtitle = stringResource(R.string.settings_show_status_bar_desc),
-                        checked = showStatusBar,
-                        onCheckedChange = onToggleShowStatusBar,
-                        extraVerticalPadding = 8.dp,
-                        showDivider = false,
-                )
+            }
+            layoutToggles.forEachIndexed { index, (titleRes, descRes, toggle) ->
+                SegmentedTile(index = index + offset, count = tileCount) {
+                    SettingsToggleRow(
+                            title = stringResource(titleRes),
+                            subtitle = stringResource(descRes),
+                            checked = toggle.first,
+                            onCheckedChange = toggle.second,
+                    )
+                }
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(DesignTokens.SpacingLarge))
 
-        SettingsCard(modifier = Modifier.fillMaxWidth()) {
-            Column {
+        SegmentedGroup {
+            val pinnedCount = if (unifiedPinnedItemsEnabled) 2 else 3
+            var index = 0
+            SegmentedTile(index = index++, count = pinnedCount) {
                 SettingsToggleRow(
                         title = stringResource(R.string.settings_unified_pinned_items_title),
                         subtitle = stringResource(R.string.settings_unified_pinned_items_desc),
                         checked = unifiedPinnedItemsEnabled,
                         onCheckedChange = onToggleUnifiedPinnedItems,
-                        isFirstItem = true,
-                        extraVerticalPadding = 8.dp,
                 )
-                if (!unifiedPinnedItemsEnabled) {
-                    SettingsNavigationRow(
-                            item =
-                                    SettingsCardItem(
-                                            title = stringResource(R.string.settings_pinned_sections_order_title),
-                                            description = stringResource(R.string.settings_pinned_sections_order_desc),
-                                            actionOnPress = { showPinnedSectionOrderDialog = true },
-                                    ),
-                            contentPadding =
-                                    PaddingValues(
-                                            horizontal = DesignTokens.SpacingXXLarge,
-                                            vertical = DesignTokens.CardVerticalPadding + 8.dp,
-                                    ),
+            }
+            if (!unifiedPinnedItemsEnabled) {
+                SegmentedTile(
+                    index = index++,
+                    count = pinnedCount,
+                    onClick = { showPinnedSectionOrderDialog = true },
+                ) {
+                    SegmentedTileRow(
+                        title = stringResource(R.string.settings_pinned_sections_order_title),
+                        description = stringResource(R.string.settings_pinned_sections_order_desc),
+                        trailing = {
+                            Icon(
+                                imageVector = MaterialSymbols.ChevronRight,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        },
                     )
-                    HorizontalDivider(color = AppColors.SettingsDivider)
                 }
+            }
+            SegmentedTile(index = index, count = pinnedCount) {
                 SettingsToggleRow(
                         title = stringResource(R.string.settings_pinned_app_shortcuts_in_app_grid_title),
                         subtitle = stringResource(R.string.settings_pinned_app_shortcuts_in_app_grid_desc),
                         checked = pinnedAppShortcutsInAppGrid,
                         onCheckedChange = onTogglePinnedAppShortcutsInAppGrid,
-                        extraVerticalPadding = 8.dp,
-                        showDivider = false,
                 )
             }
         }
 
-
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(DesignTokens.SpacingLarge))
 
         AppIconCard(
                 showAppLabels = showAppLabels,
@@ -356,16 +383,11 @@ fun AppearanceSettingsSection(
     }
 
     if (showPinnedSectionOrderDialog) {
-        PriorityReorderDialog(
-                items = pinnedSectionOrderItems,
-                onItemsChange = { order ->
-                    onHomePinnedSectionOrderChange(
-                            withHiddenPinnedSectionsRestored(order, homePinnedSectionOrder),
-                    )
-                },
+        PinnedSectionsOrderDrawer(
+                homePinnedSectionOrder = homePinnedSectionOrder,
+                pinnedAppShortcutsInAppGrid = pinnedAppShortcutsInAppGrid,
+                onOrderChange = onHomePinnedSectionOrderChange,
                 onDismiss = { showPinnedSectionOrderDialog = false },
-                titleRes = R.string.settings_pinned_sections_order_title,
-                infoRes = R.string.settings_pinned_sections_order_dialog_info,
         )
     }
 
@@ -381,6 +403,36 @@ fun AppearanceSettingsSection(
                 onDismiss = { showIconPackDialog = false },
         )
     }
+}
+
+private const val CARD_THEME = "theme"
+private const val CARD_BACKGROUND = "background"
+private const val CARD_SEARCH_BAR = "search_bar"
+private const val CARD_SEARCH_ENGINES = "search_engines"
+
+@Composable
+internal fun PinnedSectionsOrderDrawer(
+    homePinnedSectionOrder: List<SearchSection>,
+    pinnedAppShortcutsInAppGrid: Boolean,
+    onOrderChange: (List<SearchSection>) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    val visibleOrder =
+        remember(homePinnedSectionOrder, pinnedAppShortcutsInAppGrid) {
+            homePinnedSectionOrder.filter { section ->
+                    section != SearchSection.NOTED &&
+                    !(pinnedAppShortcutsInAppGrid && section == SearchSection.APP_SHORTCUTS)
+            }
+        }
+    PriorityReorderDialog(
+        items = visibleOrder,
+        onItemsChange = { order ->
+            onOrderChange(withHiddenPinnedSectionsRestored(order, homePinnedSectionOrder))
+        },
+        onDismiss = onDismiss,
+        titleRes = R.string.settings_pinned_sections_order_title,
+        infoRes = R.string.settings_pinned_sections_order_dialog_info,
+    )
 }
 
 /** Keeps sections hidden from the reorder dialog at their saved positions. */

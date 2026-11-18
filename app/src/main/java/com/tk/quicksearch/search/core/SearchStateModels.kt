@@ -1,5 +1,6 @@
 package com.tk.quicksearch.search.core
 
+import com.tk.quicksearch.search.contacts.models.ContactActionProvider
 import com.tk.quicksearch.search.contacts.models.ContactButtonAction
 import com.tk.quicksearch.search.data.appShortcutRepository.StaticShortcut
 import com.tk.quicksearch.search.data.preferences.UiPreferences
@@ -147,11 +148,7 @@ data class SearchPermissionState(
         // Contact card button actions (depend on installed apps)
         val primaryContactButton: ContactButtonAction = ContactButtonAction.CALL,
         val secondaryContactButton: ContactButtonAction = ContactButtonAction.SMS,
-        val isWhatsAppInstalled: Boolean = false,
-        val isWhatsAppBusinessInstalled: Boolean = false,
-        val isTelegramInstalled: Boolean = false,
-        val isSignalInstalled: Boolean = false,
-        val isGoogleMeetInstalled: Boolean = false,
+        val installedContactProviders: Set<ContactActionProvider> = emptySet(),
 )
 
 // ---------------------------------------------------------------------------
@@ -161,6 +158,7 @@ data class SearchPermissionState(
 data class SearchFeatureState(
         // Search engine targets & configuration
         val searchTargetsOrder: List<SearchTarget> = emptyList(),
+        val defaultBrowserPackage: String? = null,
         val disabledSearchTargetIds: Set<String> = emptySet(),
         val isSearchEngineCompactMode: Boolean = false,
         val searchEngineCompactRowCount: Int = 1,
@@ -192,10 +190,6 @@ data class SearchFeatureState(
         val webSuggestionsEnabled: Boolean = true,
         val webSuggestionsCount: Int = 3,
         // Calculator
-        val calculatorEnabled: Boolean = true,
-        val unitConverterEnabled: Boolean = true,
-        val dateCalculatorEnabled: Boolean = true,
-        val colorVisualizerEnabled: Boolean = true,
         val currencyConverterEnabled: Boolean = true,
         val worldClockEnabled: Boolean = true,
         val dictionaryEnabled: Boolean = true,
@@ -231,7 +225,6 @@ data class SearchFeatureState(
         // Assistant launch voice mode
         val assistantLaunchVoiceModeEnabled: Boolean = false,
         // Usage permission banner
-        val shouldShowUsagePermissionBanner: Boolean = false,
         // Home screen prompt card
         val showUpdateCard: Boolean = false,
         val isUpdateReadyToInstall: Boolean = false,
@@ -286,6 +279,7 @@ data class SearchUiConfigState(
         val themedIconsEnabled: Boolean = true,
         val deviceThemeEnabled: Boolean = false,
         val amoledThemeEnabled: Boolean = false,
+        val searchChromeBlurEnabled: Boolean = false,
         val accentColorMode: AccentColorMode = AccentColorMode.FROM_WALLPAPER,
         val customAccentColorArgb: Int = UiPreferences.DEFAULT_CUSTOM_ACCENT_COLOR_ARGB,
         val appSuggestionsEnabled: Boolean = true,
@@ -299,17 +293,15 @@ data class SearchUiConfigState(
         val selectedIconPackPackage: String? = null,
         val availableIconPacks: List<IconPackInfo> = emptyList(),
         val maskUnsupportedIconPackIcons: Boolean = true,
+        val booleanSettings: Map<String, Boolean> = emptyMap(),
         // File display preferences
         val enabledFileTypes: Set<FileType> = FileType.values().toSet(),
         val showFolders: Boolean = false,
-        val filePreviewsEnabled: Boolean = true,
         val showSystemFiles: Boolean = false,
         val folderWhitelistPatterns: Set<String> = emptySet(),
         val folderBlacklistPatterns: Set<String> = emptySet(),
         val excludedFileExtensions: Set<String> = emptySet(),
         // Onboarding, hints, and dialog visibility
-        val showSearchEngineOnboarding: Boolean = false,
-        val showStartSearchingOnOnboarding: Boolean = false,
         val showSearchBarWelcomeAnimation: Boolean = false,
         val showContactActionHint: Boolean = false,
         val hasSeenOverlayAssistantTip: Boolean = true,

@@ -66,6 +66,8 @@ class AppSearchManager(
 
     fun initCache(initialApps: List<AppInfo>) {
         cachedApps = initialApps
+        // A query typed before the catalog loaded matched nothing; that miss says nothing about it.
+        noMatchPrefix = null
         preparedAppSearchData = emptyMap()
         scope.launch(Dispatchers.Default) {
             rebuildPreparedAppSearchData(initialApps)
@@ -217,6 +219,7 @@ class AppSearchManager(
         cachedApps = remainingApps
         val remainingKeys = remainingApps.mapTo(mutableSetOf()) { it.launchCountKey() }
         preparedAppSearchData = preparedAppSearchData.filterKeys(remainingKeys::contains)
+        fuzzySearchStrategy.clearCaches()
         noMatchPrefix = null
         onAppsUpdated()
         return true
@@ -269,9 +272,10 @@ class AppSearchManager(
         noMatchPrefix = prefix
     }
 
-    fun availableApps(): List<AppInfo> {
+    fun availableApps(
+        hidden: Set<String> = userPreferences.getSuggestionHiddenPackages(),
+    ): List<AppInfo> {
         if (cachedApps.isEmpty()) return emptyList()
-        val hidden = userPreferences.getSuggestionHiddenPackages()
         return cachedApps.filterNot { app ->
             hidden.contains(app.launchCountKey()) ||
                 hidden.contains(app.packageName) ||
@@ -282,37 +286,12 @@ class AppSearchManager(
         }
     }
 
-    fun searchSourceApps(): List<AppInfo> {
-        if (cachedApps.isEmpty()) return emptyList()
-        val resultHidden = userPreferences.getResultHiddenPackages()
-        val pinned = userPreferences.getPinnedPackages()
-        return cachedApps.filterNot { app ->
-            resultHidden.contains(app.launchCountKey()) ||
-                resultHidden.contains(app.packageName) ||
-                pinned.contains(app.launchCountKey())
-        }
-    }
+    /** Quick Search itself and the default launcher are never shown as pinned home apps. */
+    fun isEligibleForPinnedSuggestions(app: AppInfo): Boolean =
+        app.packageName != currentPackageName && app.packageName != defaultLauncherPackageName
 
-    fun computePinnedApps(exclusion: Set<String>): List<AppInfo> {
-        val pinnedPackages = userPreferences.getPinnedPackages()
-        if (cachedApps.isEmpty() || pinnedPackages.isEmpty()) return emptyList()
-        val pinnedOrder = userPreferences.getPinnedPackageOrder().withIndex().associate { it.value to it.index }
-
-        return cachedApps
-            .asSequence()
-            .filter {
-                pinnedPackages.contains(it.launchCountKey()) &&
-                    !exclusion.contains(it.launchCountKey()) &&
-                    it.hasLaunchIntent &&
-                    it.packageName != currentPackageName &&
-                    it.packageName != defaultLauncherPackageName
-            }
-            .sortedWith(
-                compareBy<AppInfo> { pinnedOrder[it.launchCountKey()] ?: Int.MAX_VALUE }
-                    .thenBy { it.appName.lowercase(Locale.getDefault()) },
-            )
-            .toList()
-    }
+    fun readPinnedOrder(): Map<String, Int> =
+        userPreferences.getPinnedPackageOrder().withIndex().associate { it.value to it.index }
 
     private var cachedAppNicknames: Map<String, String> = emptyMap()
 
@@ -323,6 +302,8 @@ class AppSearchManager(
 
     fun refreshNicknames() {
         cachedAppNicknames = userPreferences.getAllAppNicknames()
+        // Entries keyed by old nickname text would otherwise linger until the next catalog rebuild.
+        fuzzySearchStrategy.clearCaches()
     }
 
     fun deriveMatches(
@@ -338,13 +319,15 @@ class AppSearchManager(
             appNicknames = cachedAppNicknames,
             secondaryRankingSignal = userPreferences.getSecondaryRankingSignal(),
             matcher = searchMatcher,
-            preparedAppData = preparedAppSearchData,
+            preparedAppData = preparedAppSearchDataForQuery(),
         )
 
+    /** Query-path variant used by the debounced keystroke search. */
     fun deriveMatches(
         queryContext: SearchQueryContext,
         source: List<AppInfo>,
         limit: Int,
+        ensureActive: () -> Unit = {},
     ): List<AppInfo> =
         AppSearchAlgorithm.findMatches(
             queryContext = queryContext,
@@ -354,11 +337,27 @@ class AppSearchManager(
             appNicknames = cachedAppNicknames,
             secondaryRankingSignal = userPreferences.getSecondaryRankingSignal(),
             matcher = searchMatcher,
-            preparedAppData = preparedAppSearchData,
+            preparedAppData = preparedAppSearchDataForQuery(),
+            ensureActive = ensureActive,
         )
+
+    /**
+     * Until the background rebuild after [initCache] lands, build the prepared data once here
+     * instead of letting every keystroke (or derived-state refresh) recompute initials and
+     * abbreviations for every app.
+     */
+    private fun preparedAppSearchDataForQuery(): Map<String, PreparedAppSearchData> {
+        val current = preparedAppSearchData
+        val apps = cachedApps
+        if (current.isNotEmpty() || apps.isEmpty()) return current
+        val prepared = apps.associate { app -> app.launchCountKey() to PreparedAppSearchData.from(app) }
+        if (cachedApps === apps && preparedAppSearchData.isEmpty()) preparedAppSearchData = prepared
+        return prepared
+    }
 
     private fun rebuildPreparedAppSearchData(apps: List<AppInfo>) {
         searchTextCache.clear()
+        fuzzySearchStrategy.clearCaches()
         apps.forEach { app ->
             searchTextCache.prepare(app.appName)
             app.searchAliases.forEach(searchTextCache::prepare)

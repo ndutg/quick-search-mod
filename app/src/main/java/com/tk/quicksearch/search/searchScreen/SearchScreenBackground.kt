@@ -1,5 +1,6 @@
 package com.tk.quicksearch.search.searchScreen
 
+import com.tk.quicksearch.shared.ui.theme.AppMotion
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
@@ -34,7 +35,7 @@ internal fun SearchScreenBackground(
     wallpaperBitmap: ImageBitmap?,
     wallpaperBackgroundAlpha: Float,
     wallpaperBlurRadius: Float,
-    backgroundTransitionDurationMillis: Int = DesignTokens.WallpaperFadeInDuration + 120,
+    backgroundTransitionDurationMillis: Int = AppMotion.DurationLarge,
     animateBlurRadius: Boolean = true,
     fallbackBackgroundAlpha: Float = 1f,
     useGradientFallback: Boolean = false,
@@ -42,6 +43,7 @@ internal fun SearchScreenBackground(
     overlayThemeIntensity: Float = UiPreferences.DEFAULT_OVERLAY_THEME_INTENSITY,
     amoledThemeEnabled: Boolean = false,
     wallpaperFixedHeight: Dp? = null,
+    publishFrostedCards: Boolean = false,
     modifier: Modifier = Modifier,
 ) {
     // Check if we're in dark mode by checking the background color luminance
@@ -66,25 +68,25 @@ internal fun SearchScreenBackground(
     val wallpaperLayerAlpha by
         animateFloatAsState(
             targetValue = if (hasWallpaperLayer) 1f else 0f,
-            animationSpec = tween(durationMillis = backgroundTransitionDuration),
+            animationSpec = tween(durationMillis = backgroundTransitionDuration, easing = AppMotion.EmphasizedEasing),
             label = "wallpaperLayerAlpha",
         )
     val fallbackLayerAlpha by
         animateFloatAsState(
             targetValue = if (hasWallpaperLayer) 0f else 1f,
-            animationSpec = tween(durationMillis = backgroundTransitionDuration),
+            animationSpec = tween(durationMillis = backgroundTransitionDuration, easing = AppMotion.EmphasizedEasing),
             label = "fallbackLayerAlpha",
         )
     val wallpaperOverlayAlpha by
         animateFloatAsState(
             targetValue = if (hasWallpaperLayer) overlayAlpha else 0f,
-            animationSpec = tween(durationMillis = backgroundTransitionDuration),
+            animationSpec = tween(durationMillis = backgroundTransitionDuration, easing = AppMotion.EmphasizedEasing),
             label = "wallpaperOverlayAlpha",
         )
     val animatedBlurRadius by
         animateFloatAsState(
             targetValue = if (hasWallpaperLayer) blurRadius else 0f,
-            animationSpec = tween(durationMillis = backgroundTransitionDuration),
+            animationSpec = tween(durationMillis = backgroundTransitionDuration, easing = AppMotion.EmphasizedEasing),
             label = "wallpaperBlurRadius",
         )
     val effectiveBlurRadius =
@@ -94,12 +96,21 @@ internal fun SearchScreenBackground(
             if (hasWallpaperLayer) blurRadius else 0f
         }
 
+    val frostedCardSource = if (publishFrostedCards) LocalFrostedCardSource.current else null
+    if (publishFrostedCards) {
+        PublishFrostedWallpaper(
+            wallpaperBitmap = wallpaperBitmap,
+            enabled = hasWallpaperLayer,
+            wallpaperBlurRadiusDp = blurRadius,
+            tint = AppColors.WallpaperOverlayTint.copy(alpha = wallpaperOverlayAlpha),
+            alpha = wallpaperLayerAlpha,
+        )
+    }
+
     Box(modifier = modifier.fillMaxSize()) {
         val fallbackModifier =
             if (useGradientFallback) {
-                val useAmoledMonoBackground =
-                    amoledThemeEnabled && isDarkMode && appTheme == AppTheme.MONOCHROME
-                if (useAmoledMonoBackground) {
+                if (amoledThemeEnabled && isDarkMode) {
                     Modifier.fillMaxSize().background(Color.Black)
                 } else {
                     val fallbackGradientBrush =
@@ -146,6 +157,7 @@ internal fun SearchScreenBackground(
                     contentDescription = null,
                     modifier =
                         wallpaperModifier
+                            .frostedWallpaperAnchor(frostedCardSource)
                             .blur(radius = effectiveBlurRadius.dp)
                             .graphicsLayer(alpha = wallpaperLayerAlpha),
                     contentScale = ContentScale.Crop,

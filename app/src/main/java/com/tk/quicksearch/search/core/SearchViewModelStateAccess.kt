@@ -30,12 +30,6 @@ internal class SearchViewModelPreferencesStateAccess(
             state.showFolders = value
         }
 
-    override var filePreviewsEnabled: Boolean
-        get() = state.filePreviewsEnabled
-        set(value) {
-            state.filePreviewsEnabled = value
-        }
-
     override var showSystemFiles: Boolean
         get() = state.showSystemFiles
         set(value) {
@@ -178,6 +172,12 @@ internal class SearchViewModelPreferencesStateAccess(
         get() = state.amoledThemeEnabled
         set(value) {
             state.amoledThemeEnabled = value
+        }
+
+    override var searchChromeBlurEnabled: Boolean
+        get() = state.searchChromeBlurEnabled
+        set(value) {
+            state.searchChromeBlurEnabled = value
         }
 
     override var maskUnsupportedIconPackIcons: Boolean

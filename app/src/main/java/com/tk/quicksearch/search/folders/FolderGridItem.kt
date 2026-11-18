@@ -1,8 +1,8 @@
 package com.tk.quicksearch.search.folders
 
-import androidx.compose.animation.core.Spring
+import androidx.compose.ui.semantics.Role
+import com.tk.quicksearch.shared.ui.theme.AppShapes
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.spring
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -21,13 +21,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -47,6 +47,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.tk.quicksearch.R
+import com.tk.quicksearch.search.apps.AppGridPressedScale
 import com.tk.quicksearch.search.apps.AppLabelText
 import com.tk.quicksearch.search.apps.DraggedPinnedAppAlpha
 import com.tk.quicksearch.search.apps.DraggedPinnedAppScale
@@ -70,8 +71,11 @@ import com.tk.quicksearch.shared.ui.components.AppDropdownMenuItem
 import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
-import com.tk.quicksearch.shared.ui.theme.LocalAppIsDarkTheme
+import com.tk.quicksearch.shared.ui.theme.homeTextColor
 import com.tk.quicksearch.shared.util.hapticConfirm
+import com.tk.quicksearch.shared.ui.theme.AppMotion
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 
 private const val FolderPreviewSlotCount = 4
 // Four icons in a 2×2 grid whose corners just fit inside the round backdrop.
@@ -79,20 +83,16 @@ private const val FolderPreviewIconScale = 0.34f
 private const val FolderPreviewGapScale = 0.03f
 private const val FolderMergeTargetScale = 1.12f
 private val FolderBorderWidth = 1.dp
-private const val FolderBorderAlpha = 0.25f
-private const val FolderBackdropDarkWallpaperAlpha = 0.55f
-private const val FolderBackdropLightWallpaperAlpha = 0.65f
 
 /** Folders are always round, whatever the app icon shape. */
-internal val FolderBackdropShape: Shape = CircleShape
+internal val FolderBackdropShape: Shape = AppShapes.full
 
 @Composable
 internal fun folderBackdropColor(showWallpaperBackground: Boolean, color: Int? = null): Color =
         when {
             color != null -> folderColorBackdrop(color, showWallpaperBackground)
             !showWallpaperBackground -> MaterialTheme.colorScheme.surfaceContainerHighest
-            LocalAppIsDarkTheme.current -> Color.Black.copy(alpha = FolderBackdropDarkWallpaperAlpha)
-            else -> Color.White.copy(alpha = FolderBackdropLightWallpaperAlpha)
+            else -> AppColors.FolderWallpaperBackdrop
         }
 
 /**
@@ -137,7 +137,15 @@ internal fun FolderGridItem(
             }
     var showOptions by remember { mutableStateOf(false) }
     var isLocalDragging by remember { mutableStateOf(false) }
+    var isHeld by remember { mutableStateOf(false) }
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
     val showDraggedPresentation = isDragging || isLocalDragging
+    val pressScale by animateFloatAsState(
+        targetValue = if ((isPressed || isHeld) && !showDraggedPresentation && !isMergeTarget) AppGridPressedScale else 1f,
+        animationSpec = AppMotion.fastSpatial(),
+        label = "gridIconPressScale",
+    )
     val tileScale by
             animateFloatAsState(
                     targetValue =
@@ -146,13 +154,13 @@ internal fun FolderGridItem(
                                 isMergeTarget -> FolderMergeTargetScale
                                 else -> 1f
                             },
-                    animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
+                    animationSpec = AppMotion.dragFeedback(),
                     label = "folderTileScale",
             )
     val dragAlpha by
             animateFloatAsState(
                     targetValue = if (showDraggedPresentation) DraggedPinnedAppAlpha else 1f,
-                    animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
+                    animationSpec = AppMotion.dragFeedback(),
                     label = "folderTileDragAlpha",
             )
     val dragModifier =
@@ -164,6 +172,7 @@ internal fun FolderGridItem(
                     onPinnedDragStart = onPinnedDragStart,
                     onPinnedDrag = onPinnedDrag,
                     onPinnedDragEnd = onPinnedDragEnd,
+                    onHoldChange = { isHeld = it },
             )
     val isDraggable = onPinnedDragStart != null && onPinnedDrag != null && onPinnedDragEnd != null
     val clickModifier =
@@ -171,6 +180,9 @@ internal fun FolderGridItem(
                 Modifier
             } else {
                 Modifier.combinedClickable(
+                        role = Role.Button,
+                        interactionSource = interactionSource,
+                        indication = ripple(color = homeTextColor()),
                         onClick = {
                             if (!showOptions) {
                                 hapticConfirm(view)()
@@ -214,10 +226,10 @@ internal fun FolderGridItem(
                     modifier =
                             Modifier.requiredSize(iconSurfaceSize)
                                     .graphicsLayer {
-                                        scaleX = tileScale
-                                        scaleY = tileScale
+                                        scaleX = tileScale * pressScale
+                                        scaleY = tileScale * pressScale
                                     }
-                                    .clip(DesignTokens.ShapeLarge)
+                                    .clip(AppShapes.large)
                                     .swipeGestures(folder.folder.gridKey)
                                     .then(dragModifier)
                                     .then(clickModifier)
@@ -296,7 +308,7 @@ private fun FolderOptionsDropdown(
         }
         AppDropdownMenuItem(
                 text = stringResource(R.string.dialog_delete),
-                icon = MaterialSymbols.Delete,
+                icon = MaterialSymbols.DeleteOutline,
                 onClick = {
                     onDismiss()
                     onDelete()
@@ -325,7 +337,7 @@ internal fun FolderPreviewIcon(
                             .background(folderBackdropColor(showWallpaperBackground, color))
                             .border(
                                     width = FolderBorderWidth,
-                                    color = Color.White.copy(alpha = FolderBorderAlpha),
+                                    color = AppColors.FolderTileBorder,
                                     shape = FolderBackdropShape,
                             ),
             contentAlignment = Alignment.Center,

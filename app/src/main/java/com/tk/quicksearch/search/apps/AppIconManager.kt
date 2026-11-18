@@ -31,6 +31,7 @@ import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -74,6 +75,30 @@ private const val MaxAppIconBitmapSize = 512
  * [AppIconCache] and long lists like the all apps dialog don't reload while scrolling. Smaller
  * steps keep the default size so the 64dp surfaces elsewhere stay sharp.
  */
+private val iconPreferencesLock = Any()
+
+// Keyed by application context so a new Application (tests) never reads through a stale one.
+@Volatile
+private var sharedIconPreferences: SharedIconPreferences? = null
+
+/**
+ * Process-wide preferences reader for icon composables. The reads stay live (no cached values), so
+ * themed-icon, size, mask, and override changes are still picked up on the next recomposition.
+ */
+private fun iconPreferences(context: Context): UserAppPreferences {
+    val appContext = context.applicationContext
+    sharedIconPreferences?.takeIf { it.context === appContext }?.let { return it.preferences }
+    return synchronized(iconPreferencesLock) {
+        sharedIconPreferences?.takeIf { it.context === appContext }?.preferences
+            ?: UserAppPreferences(appContext).also { sharedIconPreferences = SharedIconPreferences(appContext, it) }
+    }
+}
+
+private class SharedIconPreferences(
+    val context: Context,
+    val preferences: UserAppPreferences,
+)
+
 private fun appIconBitmapSize(
     context: Context,
     userPreferences: UserAppPreferences,
@@ -112,12 +137,22 @@ private object AppIconCache {
             }
         }
 
+    // Full keys include global and per-package epochs, profile, and rendering options.
+    private val misses = LruCache<String, Boolean>(256)
+
+    fun isKnownMiss(cacheKey: String): Boolean = misses.get(cacheKey) == true
+
+    fun recordMiss(cacheKey: String) {
+        misses.put(cacheKey, true)
+    }
+
     fun get(cacheKey: String): AppIconEntry? = cache.get(cacheKey)
 
     fun put(
         cacheKey: String,
         entry: AppIconEntry,
     ) {
+        misses.remove(cacheKey)
         cache.put(cacheKey, entry)
     }
 
@@ -127,6 +162,7 @@ private object AppIconCache {
 
     fun clear() {
         cache.evictAll()
+        misses.evictAll()
     }
 
     private fun imageBitmapByteCount(bitmap: ImageBitmap): Long =
@@ -187,8 +223,9 @@ fun rememberAppIcon(
     val request = AppIconKeyParams(packageName, iconPackPackage, userHandleId, forceCircularMask, includeArchived)
     val context = LocalContext.current
     val densityDpi = context.resources.displayMetrics.densityDpi
-    // One instance per icon; building UserAppPreferences on every recomposition showed up in typing profiles.
-    val userPreferences = remember(context) { UserAppPreferences(context.applicationContext) }
+    // Shared by every icon: building UserAppPreferences per recomposition showed up in typing profiles,
+    // and one instance per icon kept a set of preference wrappers alive for each visible row.
+    val userPreferences = iconPreferences(context)
     val maskUnsupportedIconPackIcons =
         if (iconPackPackage == null) false
         else userPreferences.isIconPackUnsupportedIconMaskEnabled()
@@ -219,14 +256,13 @@ fun rememberAppIcon(
     val cachedInitial = AppIconCache.get(cacheKey)
     // Toggling themed icons switches cache keys; the other variant keeps the icon on screen
     // instead of a placeholder, and already holds everything the non-themed variant needs.
-    val alternateKey = cacheKeyFor(!includeMonochrome)
+    // Only a cache miss needs the other variant, so a cached icon builds a single key per recomposition.
+    val alternateKey = if (cachedInitial == null) cacheKeyFor(!includeMonochrome) else null
     val alternateEntry =
-        if (cachedInitial == null) {
-            AppIconCache.get(alternateKey)?.let { entry ->
+        alternateKey?.let { key ->
+            AppIconCache.get(key)?.let { entry ->
                 if (includeMonochrome) entry else entry.copy(monochromeData = null)
             }
-        } else {
-            null
         }
 
     val iconState =
@@ -254,6 +290,11 @@ fun rememberAppIcon(
                 return@produceState
             }
 
+            if (AppIconCache.isKnownMiss(cacheKey)) {
+                value = AppIconResult(null, false)
+                return@produceState
+            }
+
             val entry =
                 withContext(Dispatchers.IO) {
                     loadAppIconEntry(
@@ -267,12 +308,15 @@ fun rememberAppIcon(
                         forceCircularMask = request.forceCircularMask,
                         includeArchived = request.includeArchived,
                         includeMonochrome = includeMonochrome,
+                        onMissingPackage = { AppIconCache.recordMiss(cacheKey) },
                     )
                 }
 
             if (entry != null) {
                 AppIconCache.put(cacheKey, entry)
                 value = entry.toResult()
+            } else {
+                value = AppIconResult(null, false)
             }
         }
 
@@ -300,6 +344,7 @@ private fun loadAppIconEntry(
     forceCircularMask: Boolean,
     includeArchived: Boolean = true,
     includeMonochrome: Boolean = false,
+    onMissingPackage: (() -> Unit)? = null,
 ): AppIconEntry? {
     val iconPackBitmap =
         iconOverride?.takeUnless { it.useSystemDefault }?.let { override ->
@@ -307,6 +352,7 @@ private fun loadAppIconEntry(
                 context = context,
                 iconPackPackage = requireNotNull(override.iconPackPackage),
                 drawableName = requireNotNull(override.drawableName),
+                maxSize = targetSize,
             )
         } ?: iconPackPackage?.takeUnless { iconOverride?.useSystemDefault == true }?.let { pack ->
             IconPackManager.loadIconBitmap(
@@ -317,6 +363,7 @@ private fun loadAppIconEntry(
                     userHandleId?.let { handleId ->
                         { loadWorkProfileActivityIcon(context, packageName, handleId, densityDpi) }
                     },
+                maxSize = targetSize,
             )
         }
 
@@ -353,6 +400,7 @@ private fun loadAppIconEntry(
                 forceCircularMask = forceCircularMask,
                 includeArchived = includeArchived,
                 includeMonochrome = includeMonochrome,
+                onMissingPackage = onMissingPackage,
             )
     }
 }
@@ -426,6 +474,7 @@ private fun loadSystemAppIcon(
     forceCircularMask: Boolean,
     includeArchived: Boolean,
     includeMonochrome: Boolean,
+    onMissingPackage: (() -> Unit)? = null,
 ): AppIconEntry? =
     runCatching {
         // Prefer the launcher activity's icon: apps with switchable icons (Telegram, Reddit,
@@ -450,6 +499,10 @@ private fun loadSystemAppIcon(
         } else {
             val bitmap = drawable.toBoundedBitmap(targetSize).asImageBitmap()
             AppIconEntry(bitmap, isLegacy = Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
+        }
+    }.onFailure { error ->
+        if (error is android.content.pm.PackageManager.NameNotFoundException) {
+            onMissingPackage?.invoke()
         }
     }.getOrNull()
 
@@ -629,7 +682,20 @@ suspend fun prefetchAppIconRequests(
     includeArchived: Boolean = true,
 ) {
     if (requests.isEmpty()) return
-    val userPreferences = UserAppPreferences(context)
+    // Preference reads and cache-key building stay off the caller's (usually main) thread too.
+    withContext(Dispatchers.IO) { prefetchAppIconRequestsOnIo(context, requests, iconPackPackage, maxCount, forceCircularMask, parallelism, includeArchived) }
+}
+
+private suspend fun prefetchAppIconRequestsOnIo(
+    context: Context,
+    requests: Collection<AppIconRequest>,
+    iconPackPackage: String?,
+    maxCount: Int,
+    forceCircularMask: Boolean,
+    parallelism: Int,
+    includeArchived: Boolean,
+): Unit = coroutineScope {
+    val userPreferences = iconPreferences(context)
     val maskUnsupportedIconPackIcons =
         if (iconPackPackage == null) false
         else userPreferences.isIconPackUnsupportedIconMaskEnabled()
@@ -664,36 +730,34 @@ suspend fun prefetchAppIconRequests(
             .take(maxCount)
             .toList()
 
-    if (requestsToLoad.isEmpty()) return
+    if (requestsToLoad.isEmpty()) return@coroutineScope
 
-    withContext(Dispatchers.IO) {
-        requestsToLoad
-            .chunked(((requestsToLoad.size + parallelism - 1) / parallelism).coerceAtLeast(1))
-            .map { chunk ->
-                async {
-                    chunk.forEach { (request, cacheKey, iconOverride) ->
-                        ensureActive()
-                        if (AppIconCache.get(cacheKey) != null) return@forEach
-                        val entry =
-                            loadAppIconEntry(
-                                context = context,
-                                packageName = request.packageName,
-                                iconPackPackage = iconPackPackage,
-                                iconOverride = iconOverride,
-                                userHandleId = request.userHandleId,
-                                densityDpi = densityDpi,
-                                targetSize = bitmapSize,
-                                forceCircularMask = forceCircularMask,
-                                includeArchived = includeArchived,
-                                includeMonochrome = includeMonochrome,
-                            )
-                        if (entry != null) {
-                            AppIconCache.put(cacheKey, entry)
-                        }
+    requestsToLoad
+        .chunked(((requestsToLoad.size + parallelism - 1) / parallelism).coerceAtLeast(1))
+        .map { chunk ->
+            async {
+                chunk.forEach { (request, cacheKey, iconOverride) ->
+                    ensureActive()
+                    if (AppIconCache.get(cacheKey) != null) return@forEach
+                    val entry =
+                        loadAppIconEntry(
+                            context = context,
+                            packageName = request.packageName,
+                            iconPackPackage = iconPackPackage,
+                            iconOverride = iconOverride,
+                            userHandleId = request.userHandleId,
+                            densityDpi = densityDpi,
+                            targetSize = bitmapSize,
+                            forceCircularMask = forceCircularMask,
+                            includeArchived = includeArchived,
+                            includeMonochrome = includeMonochrome,
+                        )
+                    if (entry != null) {
+                        AppIconCache.put(cacheKey, entry)
                     }
                 }
-            }.awaitAll()
-    }
+            }
+        }.awaitAll()
 }
 
 private fun buildCacheKey(

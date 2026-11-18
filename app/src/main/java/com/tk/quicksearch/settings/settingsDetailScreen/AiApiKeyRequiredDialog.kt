@@ -1,7 +1,6 @@
 package com.tk.quicksearch.settings.settingsDetailScreen
 
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.tk.quicksearch.R
@@ -15,20 +14,13 @@ internal fun AiApiKeyRequiredDialog(
 ) {
     AppAlertDialog(
         onDismissRequest = onDismiss,
+        confirmLabel = stringResource(R.string.settings_ai_api_key_setup_action),
+        onConfirm = {
+            onDismiss()
+            onSetupKey()
+        },
+        dismissLabel = stringResource(R.string.dialog_cancel),
         title = { Text(stringResource(R.string.settings_ai_api_key_required_title)) },
         text = { Text(stringResource(R.string.settings_ai_api_key_required_message)) },
-        confirmButton = {
-            TextButton(onClick = {
-                onDismiss()
-                onSetupKey()
-            }) {
-                Text(stringResource(R.string.settings_ai_api_key_setup_action))
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text(stringResource(R.string.dialog_cancel))
-            }
-        },
     )
 }

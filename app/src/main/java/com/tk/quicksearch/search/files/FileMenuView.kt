@@ -1,5 +1,7 @@
 package com.tk.quicksearch.search.files
 
+import com.tk.quicksearch.settings.settingsDetailScreen.SettingsDetailType
+import com.tk.quicksearch.search.appSettings.AppSettingsTarget
 import android.provider.OpenableColumns
 import android.text.format.DateUtils
 import androidx.compose.foundation.layout.Arrangement
@@ -10,13 +12,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import com.tk.quicksearch.shared.ui.components.AppAlertDialog
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -30,16 +30,16 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
 import com.tk.quicksearch.pinnedNotifications.PinnedNotifications
-import com.tk.quicksearch.search.appSettings.AppSettingsDestination
 import com.tk.quicksearch.search.appSettings.LocalOpenAppSettingDestination
 import com.tk.quicksearch.search.models.DeviceFile
 import com.tk.quicksearch.search.utils.FileUtils
 import com.tk.quicksearch.shared.ui.components.AppDropdownMenu
+import com.tk.quicksearch.shared.ui.components.AppDropdownMenuDivider
+import com.tk.quicksearch.shared.ui.components.AppDropdownMenuItem
 import com.tk.quicksearch.shared.ui.components.ItemMenuLongPressOption
 import com.tk.quicksearch.shared.ui.components.ItemMenuPopup
 import com.tk.quicksearch.shared.ui.components.ItemMenuRow
@@ -51,6 +51,7 @@ import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.util.cachedDefaultHomeAppStatus
 import com.tk.quicksearch.widgets.customButtonsWidget.CustomWidgetButtonAction
 import java.util.concurrent.TimeUnit
+import com.tk.quicksearch.shared.ui.components.AppTextButton
 
 private data class FileMenuItem(
         val textResId: Int,
@@ -157,7 +158,7 @@ fun FileInfoDialog(
                         )
                         Text(
                                 text = title,
-                                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
+                                style = MaterialTheme.typography.headlineSmall,
                                 color = MaterialTheme.colorScheme.onSurface,
                                 maxLines = 3,
                                 overflow = TextOverflow.Ellipsis,
@@ -165,7 +166,7 @@ fun FileInfoDialog(
                     }
                     HorizontalDivider(
                             modifier = Modifier.padding(vertical = DesignTokens.SpacingLarge),
-                            color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f),
+                            color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = AppColors.ContentMutedAlpha),
                     )
                     Column(verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingLarge)) {
                         Row {
@@ -210,7 +211,7 @@ fun FileInfoDialog(
                 }
             },
             confirmButton = {
-                TextButton(onClick = onDismiss) {
+                AppTextButton(onClick = onDismiss) {
                     Text(text = stringResource(R.string.dialog_okay))
                 }
             },
@@ -232,7 +233,7 @@ private fun FileInfoSection(
                 imageVector = icon,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(top = 2.dp).size(20.dp),
+                modifier = Modifier.padding(top = DesignTokens.SpacingXSmall).size(DesignTokens.IconSizeSmall),
         )
         Column {
             Text(
@@ -417,7 +418,7 @@ fun FileDropdownMenu(
             add(FileMenuItem(
                     textResId = R.string.action_files_settings,
                     icon = { Icon(imageVector = MaterialSymbols.Settings, contentDescription = null) },
-                    onClick = { onDismissRequest(); openDestination(AppSettingsDestination.FILES) },
+                    onClick = { onDismissRequest(); openDestination(AppSettingsTarget.Page(SettingsDetailType.FILES)) },
                     group = FileMenuGroup.ROWS,
             ))
         }
@@ -430,21 +431,12 @@ fun FileDropdownMenu(
         ) {
             menuItems.forEachIndexed { index, item ->
                 if (index > 0) {
-                    HorizontalDivider()
+                    AppDropdownMenuDivider()
                 }
-                DropdownMenuItem(
-                        text = {
-                            Text(
-                                    text =
-                                            if (item.textArg != null) {
-                                                stringResource(item.textResId, item.textArg)
-                                            } else {
-                                                stringResource(item.textResId)
-                                            },
-                            )
-                        },
-                        leadingIcon = { item.icon() },
-                        onClick = item.onClick,
+                AppDropdownMenuItem(
+                    text = if (item.textArg != null) { stringResource(item.textResId, item.textArg) } else { stringResource(item.textResId) },
+                    leadingIcon = item.icon,
+                    onClick = item.onClick,
                 )
             }
         }
@@ -484,9 +476,6 @@ fun FileDropdownMenu(
                 title = {
                     Text(
                             text = deviceFile.displayName,
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.SemiBold,
-                            color = MaterialTheme.colorScheme.onSurface,
                             maxLines = 2,
                             overflow = TextOverflow.Ellipsis,
                     )

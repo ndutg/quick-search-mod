@@ -1,5 +1,8 @@
 package com.tk.quicksearch.settings.bookmarksSettings
 
+import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.ui.semantics.Role
+import com.tk.quicksearch.shared.ui.components.AppIconButton
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -11,9 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -29,12 +30,14 @@ import com.tk.quicksearch.R
 import com.tk.quicksearch.search.apps.rememberAppIcon
 import com.tk.quicksearch.search.core.BrowserApp
 import com.tk.quicksearch.searchEngines.IN_APP_BROWSER_PACKAGE
+import com.tk.quicksearch.shared.ui.components.AppDrawerHeader
 import com.tk.quicksearch.shared.ui.components.AppPickerDrawer
 import com.tk.quicksearch.shared.ui.components.AppPickerDrawerLeadingSize
 import com.tk.quicksearch.shared.ui.components.AppPickerDrawerRow
 import com.tk.quicksearch.shared.ui.components.AppPickerDrawerRowSpacing
 import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
+import com.tk.quicksearch.shared.ui.theme.AppShapes
 
 /** Header for a bookmark editor page, laid out like AppPickerDrawer's: optional back, title, close. */
 @Composable
@@ -43,42 +46,24 @@ internal fun BookmarkSheetHeader(
     navigationIcon: (() -> Unit)?,
     onClose: (() -> Unit)?,
 ) {
-    Row(
-        modifier =
-            Modifier
-                .fillMaxWidth()
-                .padding(
-                    start = if (navigationIcon != null) 8.dp else DesignTokens.ContentHorizontalPadding,
-                    end = 8.dp,
-                    top = DesignTokens.SpacingLarge,
-                ),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
+    AppDrawerHeader(
+        onClose = onClose,
+        modifier = Modifier
+            .padding(horizontal = DesignTokens.ContentHorizontalPadding)
+            .padding(top = DesignTokens.SpacingLarge),
+        leadingContent = navigationIcon?.let { onBack ->
+            {
+                AppIconButton(onClick = onBack, tooltip = stringResource(R.string.desc_navigate_back)) {
+                    Icon(
+                        imageVector = MaterialSymbols.ArrowBack,
+                        contentDescription = stringResource(R.string.desc_navigate_back),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            }
+        },
     ) {
-        if (navigationIcon != null) {
-            IconButton(onClick = navigationIcon) {
-                Icon(
-                    imageVector = MaterialSymbols.ArrowBack,
-                    contentDescription = stringResource(R.string.desc_navigate_back),
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
-        }
-        Text(
-            text = title,
-            style = MaterialTheme.typography.titleLarge,
-            color = MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier.weight(1f),
-        )
-        if (onClose != null) {
-            IconButton(onClick = onClose) {
-                Icon(
-                    imageVector = MaterialSymbols.Close,
-                    contentDescription = stringResource(R.string.common_close),
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
-        }
+        Text(text = title)
     }
 }
 
@@ -101,10 +86,10 @@ internal fun BookmarkBrowserField(
                 .fillMaxWidth()
                 .clip(OutlinedTextFieldDefaults.shape)
                 .border(1.dp, MaterialTheme.colorScheme.outline, OutlinedTextFieldDefaults.shape)
-                .clickable(onClick = onClick)
-                .padding(horizontal = 16.dp, vertical = 10.dp),
+                .clickable(role = Role.Button, onClick = onClick)
+                .padding(horizontal = DesignTokens.SpacingLarge, vertical = DesignTokens.SpacingMedium),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium),
     ) {
         BrowserIcon(packageName = selectedPackage, size = 24.dp)
         Column(modifier = Modifier.weight(1f)) {
@@ -123,7 +108,7 @@ internal fun BookmarkBrowserField(
             imageVector = MaterialSymbols.ChevronRight,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.size(20.dp),
+            modifier = Modifier.size(DesignTokens.IconSizeSmall),
         )
     }
 }
@@ -193,7 +178,7 @@ private fun BookmarkBrowserRows(
 ) {
     val browsers = bookmarkBrowserOptions(availableBrowsers)
     LazyColumn(
-        modifier = modifier,
+        modifier = modifier.selectableGroup(),
         verticalArrangement = Arrangement.spacedBy(AppPickerDrawerRowSpacing),
     ) {
         items(browsers, key = BrowserApp::packageName) { browser ->
@@ -243,7 +228,7 @@ private fun BrowserIcon(
         Image(
             bitmap = bitmap,
             contentDescription = null,
-            modifier = Modifier.size(size).clip(CircleShape),
+            modifier = Modifier.size(size).clip(AppShapes.full),
         )
     } else {
         Icon(

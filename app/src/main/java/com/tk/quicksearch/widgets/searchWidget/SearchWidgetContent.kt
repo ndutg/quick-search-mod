@@ -51,13 +51,12 @@ import androidx.glance.text.TextStyle
 import androidx.glance.color.ColorProvider as DayNightColorProvider
 import androidx.glance.unit.ColorProvider
 import com.tk.quicksearch.R
+import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.app.MainActivity
-import com.tk.quicksearch.media.MediaCommand
 import com.tk.quicksearch.search.data.userAppPreferences.UserAppPreferences
-import com.tk.quicksearch.widgets.customButtonsWidget.CustomButtonsWidgetMediaAction
+import com.tk.quicksearch.widgets.customButtonsWidget.WidgetCommandActionCallback
 import com.tk.quicksearch.widgets.customButtonsWidget.CustomWidgetButtonAction
 import com.tk.quicksearch.widgets.customButtonsWidget.WidgetActionActivity
-import com.tk.quicksearch.widgets.customButtonsWidget.playPauseIconRes
 import com.tk.quicksearch.widgets.customButtonsWidget.rememberWidgetButtonIcon
 import com.tk.quicksearch.widgets.utils.BorderColorOption
 import com.tk.quicksearch.widgets.utils.TextIconColorOverride
@@ -71,34 +70,22 @@ import com.tk.quicksearch.widgets.utils.WidgetTheme
 import com.tk.quicksearch.widgets.utils.applyWidgetPreferences
 import com.tk.quicksearch.widgets.utils.enforceVariantConstraints
 import com.tk.quicksearch.widgets.utils.toWidgetPreferences
-import kotlin.math.floor
 import kotlin.math.roundToInt
 
-/**
- * Media commands run in-process via [CustomButtonsWidgetMediaAction] instead of launching
- * [WidgetActionActivity], since prev/next are tapped repeatedly and an activity launch on every
- * tap would be slow and would flash over whatever the user is looking at.
- */
 private fun Context.customButtonWidgetClickAction(action: CustomWidgetButtonAction): Action =
-    if (action is CustomWidgetButtonAction.Media) {
-        actionRunCallback<CustomButtonsWidgetMediaAction>(
-            actionParametersOf(CustomButtonsWidgetMediaAction.MEDIA_COMMAND_KEY to action.command.value),
+    if (action is CustomWidgetButtonAction.Command) {
+        actionRunCallback<WidgetCommandActionCallback>(
+            actionParametersOf(
+                WidgetCommandActionCallback.TYPE to action.type.value,
+                WidgetCommandActionCallback.COMMAND_ID to action.commandId,
+            ),
         )
     } else {
         actionStartActivity(WidgetActionActivity.createIntent(this, action))
     }
 
-/**
- * Extra `remember` key for [rememberWidgetButtonIcon]: a Play/Pause button's icon depends on live
- * playback state, not just [action] itself, so without this the icon would be cached from the
- * button's first render and never flip again across the redraws that a playback change triggers.
- */
-private fun Context.mediaButtonPlaybackKey(action: CustomWidgetButtonAction): Int? =
-    if (action is CustomWidgetButtonAction.Media && action.command == MediaCommand.PLAY_PAUSE) {
-        playPauseIconRes(this)
-    } else {
-        null
-    }
+private fun Context.commandButtonIconKey(action: CustomWidgetButtonAction): Int? =
+    (action as? CustomWidgetButtonAction.Command)?.choice()?.currentIcon?.invoke(this)
 
 @Composable
 internal fun CustomButtonsOnlyWidgetContent(
@@ -124,28 +111,19 @@ internal fun CustomButtonsOnlyWidgetContent(
         }
     val density = context.resources.displayMetrics.density
     val iconSizePx = (iconSize.value * density).roundToInt().coerceAtLeast(1)
-    val useCompactSpacing = customButtons.size >= 5 || widthDp <= WidgetLayoutUtils.DEFAULT_WIDTH_DP.dp
-    val touchSpace = if (useCompactSpacing) 28.dp else 36.dp
+    val touchSpace = DesignTokens.MinTouchTarget
     val outerHorizontalPadding =
         computeSafeOuterHorizontalPadding(
             widthDp = widthDp,
             requestedPaddingDp = internalHorizontalPaddingDp,
         )
     val verticalInset = internalVerticalPaddingDp.finiteOr(0f).dp
-    val contentHorizontalPadding = 16.dp
+    val contentHorizontalPadding = WidgetLayoutUtils.customButtonsInset
     val barHeight = (heightDp - (verticalInset * 2)).coerceAtLeast(1.dp)
-    val minimumGap = if (useCompactSpacing) 4.dp else 8.dp
+    val minimumGap = WidgetLayoutUtils.customButtonsGap(customButtons.size, widthDp)
     val containerWidth = (widthDp.value - (outerHorizontalPadding.value * 2f)).coerceAtLeast(0f)
-    val availableWidth = (containerWidth - (contentHorizontalPadding.value * 2f)).coerceAtLeast(0f)
-    val maxVisibleButtons =
-        if (customButtons.isEmpty()) {
-            0
-        } else {
-            floor((availableWidth - minimumGap.value) / (touchSpace.value + minimumGap.value))
-                .toInt()
-                .coerceIn(0, customButtons.size)
-        }
-    val visibleButtons = customButtons.take(maxVisibleButtons)
+    val availableWidth = containerWidth.dp - contentHorizontalPadding * 2
+    val visibleButtons = customButtons.take(WidgetLayoutUtils.buttonCapacity(availableWidth, minimumGap))
     val gapWidth =
         if (visibleButtons.isEmpty()) {
             0.dp
@@ -182,63 +160,59 @@ internal fun CustomButtonsOnlyWidgetContent(
                     cornerRadius = cornerRadius,
                     contentHorizontalPadding = contentHorizontalPadding,
                     contentAlignment = Alignment.Center,
+                ) {}
+                Row(
+                    modifier = GlanceModifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    Row(
-                        modifier = GlanceModifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                    ) {
-                        visibleButtons.forEach { action ->
-                            val icon =
-                                remember(
-                                    action,
-                                    iconPackPackage,
-                                    iconSizePx,
-                                    textIconColor,
-                                    context.mediaButtonPlaybackKey(action),
-                                ) {
-                                    rememberWidgetButtonIcon(
-                                        context = context,
-                                        action = action,
-                                        iconSizePx = iconSizePx,
-                                        textIconColor = textIconColor,
-                                        iconPackPackage = iconPackPackage,
-                                    )
-                                }
+                    visibleButtons.forEach { action ->
+                        val icon =
+                            remember(
+                                action,
+                                iconPackPackage,
+                                iconSizePx,
+                                textIconColor,
+                                context.commandButtonIconKey(action),
+                            ) {
+                                rememberWidgetButtonIcon(
+                                    context = context,
+                                    action = action,
+                                    iconSizePx = iconSizePx,
+                                    textIconColor = textIconColor,
+                                    iconPackPackage = iconPackPackage,
+                                )
+                            }
+                        Box(
+                            modifier =
+                                GlanceModifier
+                                    .padding(horizontal = buttonHorizontalPadding),
+                            contentAlignment = Alignment.Center,
+                        ) {
                             Box(
                                 modifier =
                                     GlanceModifier
-                                        .padding(horizontal = buttonHorizontalPadding),
+                                        .size(touchSpace)
+                                        .clickable(context.customButtonWidgetClickAction(action)),
                                 contentAlignment = Alignment.Center,
                             ) {
-                                Box(
-                                    modifier =
-                                        GlanceModifier
-                                            .size(touchSpace)
-                                            .clickable(
-                                                onClick = context.customButtonWidgetClickAction(action),
-                                                rippleOverride = android.R.color.transparent,
-                                            ),
-                                    contentAlignment = Alignment.Center,
-                                ) {
-                                    val imageProvider =
-                                        when {
-                                            icon.bitmap != null -> ImageProvider(icon.bitmap)
-                                            icon.drawableResId != null -> ImageProvider(icon.drawableResId)
-                                            else -> ImageProvider(R.drawable.ic_widget_search)
-                                        }
-                                    Image(
-                                        provider = imageProvider,
-                                        contentDescription = action.contentDescription(),
-                                        modifier = GlanceModifier.size(iconSize),
-                                        colorFilter =
-                                            if (icon.shouldTint) {
-                                                ColorFilter.tint(textIconColorProvider)
-                                            } else {
-                                                null
-                                            },
-                                    )
-                                }
+                                val imageProvider =
+                                    when {
+                                        icon.bitmap != null -> ImageProvider(icon.bitmap)
+                                        icon.drawableResId != null -> ImageProvider(icon.drawableResId)
+                                        else -> ImageProvider(R.drawable.ic_widget_search)
+                                    }
+                                Image(
+                                    provider = imageProvider,
+                                    contentDescription = action.contentDescription(),
+                                    modifier = GlanceModifier.size(iconSize),
+                                    colorFilter =
+                                        if (icon.shouldTint) {
+                                            ColorFilter.tint(textIconColorProvider)
+                                        } else {
+                                            null
+                                        },
+                                )
                             }
                         }
                     }
@@ -272,7 +246,7 @@ internal fun WidgetContent(
     customButtons: List<CustomWidgetButtonAction>,
 ) {
     val context = LocalContext.current
-    val micTouchSpace = 36.dp
+    val micTouchSpace = DesignTokens.MinTouchTarget
     val iconPackPackage =
         remember(context) {
             UserAppPreferences(context).uiPreferences.getSelectedIconPackPackage()
@@ -285,7 +259,20 @@ internal fun WidgetContent(
             requestedPaddingDp = internalHorizontalPaddingDp,
         )
     val verticalInset = internalVerticalPaddingDp.finiteOr(0f).dp
-    val contentHorizontalPadding = 16.dp
+    val actionsEndInset = WidgetLayoutUtils.searchActionsInset
+    val actionsGap = WidgetLayoutUtils.searchActionsGap
+    val visibleButtons = customButtons.take(
+        WidgetLayoutUtils.searchShortcutCapacity(
+            widgetWidth = widthDp,
+            innerWidth = widthDp - outerHorizontalPadding * 2,
+            showLabel = showLabel,
+            showSearchIcon = showSearchIcon,
+            iconSize = iconSize,
+            showMic = showMicIcon,
+        ),
+    )
+    val actionsWidth = WidgetLayoutUtils.searchActionsWidth(visibleButtons.size + if (showMicIcon) 1 else 0)
+    val contentHorizontalPadding = actionsEndInset
     val barHeight = (heightDp - (verticalInset * 2)).coerceAtLeast(1.dp)
     Box(
         modifier = GlanceModifier.fillMaxSize(),
@@ -296,10 +283,7 @@ internal fun WidgetContent(
                 GlanceModifier
                     .fillMaxSize()
                     .padding(start = outerHorizontalPadding, end = outerHorizontalPadding)
-                    .clickable(
-                        onClick = actionStartActivity(launchIntent),
-                        rippleOverride = android.R.color.transparent,
-                    ),
+                    .clickable(actionStartActivity(launchIntent)),
             contentAlignment = Alignment.Center,
         ) {
             if (iconAlignLeft) {
@@ -315,18 +299,24 @@ internal fun WidgetContent(
                     contentHorizontalPadding = contentHorizontalPadding,
                     contentAlignment = Alignment.Center,
                 ) {
-                    // Text is always centered
                     if (showLabel) {
-                        Text(
-                            text = context.getString(R.string.app_name),
-                            style =
-                                TextStyle(
+                        Box(
+                            modifier = GlanceModifier.fillMaxSize().padding(
+                                start = if (actionsWidth > 0.dp && showSearchIcon) iconSize + 10.dp else 0.dp,
+                                end = actionsWidth,
+                            ),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Text(
+                                text = context.getString(R.string.app_name),
+                                style = TextStyle(
                                     color = textIconColorProvider,
                                     fontSize = 16.sp,
                                     fontWeight = FontWeight.Medium,
                                 ),
-                            maxLines = 1,
-                        )
+                                maxLines = 1,
+                            )
+                        }
                     }
 
                     // Icon on the left
@@ -361,6 +351,7 @@ internal fun WidgetContent(
                     contentAlignment = Alignment.Center,
                 ) {
                     Row(
+                        modifier = GlanceModifier.fillMaxWidth().padding(end = actionsWidth),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
@@ -389,67 +380,62 @@ internal fun WidgetContent(
                 }
             }
 
-            if ((customButtons.isNotEmpty() && widthDp > WidgetLayoutUtils.NARROW_WIDTH_DP.dp) || showMicIcon) {
+            if (visibleButtons.isNotEmpty() || showMicIcon) {
                 Box(
                     modifier =
                         GlanceModifier
                             .fillMaxSize()
-                            .padding(end = 14.dp),
+                            .padding(end = actionsEndInset),
                     contentAlignment = Alignment.CenterEnd,
                 ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalAlignment = Alignment.End,
                     ) {
-                        if (widthDp > WidgetLayoutUtils.NARROW_WIDTH_DP.dp) {
-                            customButtons.forEachIndexed { index, action ->
-                                val icon =
-                                    remember(
-                                        action,
-                                        iconPackPackage,
-                                        iconSizePx,
-                                        textIconColor,
-                                        context.mediaButtonPlaybackKey(action),
-                                    ) {
-                                        rememberWidgetButtonIcon(
-                                            context = context,
-                                            action = action,
-                                            iconSizePx = iconSizePx,
-                                            textIconColor = textIconColor,
-                                            iconPackPackage = iconPackPackage,
-                                        )
-                                    }
-                                Box(
-                                    modifier =
-                                        GlanceModifier
-                                            .size(micTouchSpace)
-                                            .clickable(
-                                                onClick = context.customButtonWidgetClickAction(action),
-                                                rippleOverride = android.R.color.transparent,
-                                            ),
-                                    contentAlignment = Alignment.Center,
+                        visibleButtons.forEachIndexed { index, action ->
+                            val icon =
+                                remember(
+                                    action,
+                                    iconPackPackage,
+                                    iconSizePx,
+                                    textIconColor,
+                                    context.commandButtonIconKey(action),
                                 ) {
-                                    val imageProvider =
-                                        when {
-                                            icon.bitmap != null -> ImageProvider(icon.bitmap)
-                                            icon.drawableResId != null -> ImageProvider(icon.drawableResId)
-                                            else -> ImageProvider(R.drawable.ic_widget_search) // Fallback
-                                        }
-                                    Image(
-                                        provider = imageProvider,
-                                        contentDescription = action.contentDescription(),
-                                        modifier = GlanceModifier.size(iconSize),
-                                        colorFilter =
-                                            if (icon.shouldTint) {
-                                                ColorFilter.tint(textIconColorProvider)
-                                            } else {
-                                                null
-                                            },
+                                    rememberWidgetButtonIcon(
+                                        context = context,
+                                        action = action,
+                                        iconSizePx = iconSizePx,
+                                        textIconColor = textIconColor,
+                                        iconPackPackage = iconPackPackage,
                                     )
                                 }
-                                if (index != customButtons.lastIndex || showMicIcon) {
-                                    Spacer(modifier = GlanceModifier.width(8.dp))
-                                }
+                            Box(
+                                modifier =
+                                    GlanceModifier
+                                        .size(micTouchSpace)
+                                        .clickable(context.customButtonWidgetClickAction(action)),
+                                contentAlignment = Alignment.Center,
+                            ) {
+                                val imageProvider =
+                                    when {
+                                        icon.bitmap != null -> ImageProvider(icon.bitmap)
+                                        icon.drawableResId != null -> ImageProvider(icon.drawableResId)
+                                        else -> ImageProvider(R.drawable.ic_widget_search) // Fallback
+                                    }
+                                Image(
+                                    provider = imageProvider,
+                                    contentDescription = action.contentDescription(),
+                                    modifier = GlanceModifier.size(iconSize),
+                                    colorFilter =
+                                        if (icon.shouldTint) {
+                                            ColorFilter.tint(textIconColorProvider)
+                                        } else {
+                                            null
+                                        },
+                                )
+                            }
+                            if (index != visibleButtons.lastIndex || showMicIcon) {
+                                Spacer(modifier = GlanceModifier.width(actionsGap))
                             }
                         }
 
@@ -458,10 +444,7 @@ internal fun WidgetContent(
                                 modifier =
                                     GlanceModifier
                                         .size(micTouchSpace)
-                                        .clickable(
-                                            onClick = actionStartActivity(voiceLaunchIntent),
-                                            rippleOverride = android.R.color.transparent,
-                                        ),
+                                        .clickable(actionStartActivity(voiceLaunchIntent)),
                                 contentAlignment = Alignment.Center,
                             ) {
                                 Image(

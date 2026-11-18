@@ -1,5 +1,8 @@
 package com.tk.quicksearch.settings.searchEngineSettings.dialogs
 
+import com.tk.quicksearch.shared.ui.components.AppIconButton
+import com.tk.quicksearch.shared.ui.theme.AppShapes
+import com.tk.quicksearch.shared.ui.components.AppOutlinedTextField
 import android.graphics.BitmapFactory
 import android.util.Base64
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -14,16 +17,11 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import com.tk.quicksearch.shared.ui.components.AppAlertDialog
-import com.tk.quicksearch.shared.ui.components.dialogTextFieldColors
 import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
-import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -51,6 +49,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import com.tk.quicksearch.shared.ui.components.AppTextButton
 
 @Composable
 fun EditCustomSearchEngineDialog(
@@ -62,6 +61,7 @@ fun EditCustomSearchEngineDialog(
     onDelete: () -> Unit,
     onDismiss: () -> Unit,
 ) {
+    var showDeleteConfirm by remember(customEngine.id) { mutableStateOf(false) }
     val context = LocalContext.current
     var nameInput by remember(customEngine.id) {
         mutableStateOf(
@@ -146,9 +146,9 @@ fun EditCustomSearchEngineDialog(
                 Text(
                     text = stringResource(R.string.settings_edit_search_engine_dialog_title),
                 )
-                IconButton(onClick = onDelete) {
+                AppIconButton(onClick = { showDeleteConfirm = true }, tooltip = stringResource(R.string.dialog_delete)) {
                     Icon(
-                        imageVector = MaterialSymbols.Delete,
+                        imageVector = MaterialSymbols.DeleteOutline,
                         contentDescription = stringResource(R.string.dialog_delete),
                         tint = MaterialTheme.colorScheme.error,
                     )
@@ -164,7 +164,7 @@ fun EditCustomSearchEngineDialog(
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     EditableIcon(
@@ -174,11 +174,11 @@ fun EditCustomSearchEngineDialog(
                         onClick = { pickIconLauncher.launch(arrayOf("image/*")) },
                     )
 
-                    OutlinedTextField(
+                    AppOutlinedTextField(
                         value = nameInput,
                         onValueChange = { nameInput = it },
                         modifier = Modifier.fillMaxWidth(),
-                        label = { Text(text = stringResource(R.string.settings_app_sort_name)) },
+                        label = stringResource(R.string.settings_app_sort_name),
                         singleLine = true,
                         maxLines = 1,
                         isError = !isNameValid && nameInput.text.isNotBlank(),
@@ -187,15 +187,15 @@ fun EditCustomSearchEngineDialog(
                                 Text(text = stringResource(R.string.settings_add_search_engine_error_required))
                             }
                         },
-                        colors = dialogTextFieldColors(),
+                        shape = AppShapes.extraSmall,
                     )
                 }
 
-                OutlinedTextField(
+                AppOutlinedTextField(
                     value = urlInput,
                     onValueChange = { urlInput = it.withoutWhitespaces() },
                     modifier = Modifier.fillMaxWidth(),
-                    label = { Text(text = stringResource(R.string.settings_app_shortcuts_url_label)) },
+                    label = stringResource(R.string.settings_app_shortcuts_url_label),
                     singleLine = true,
                     maxLines = 1,
                     isError = showUrlError,
@@ -223,17 +223,17 @@ fun EditCustomSearchEngineDialog(
                             )
                         }
                     },
-                    colors = dialogTextFieldColors(),
+                    shape = AppShapes.extraSmall,
                 )
 
-                OutlinedTextField(
+                AppOutlinedTextField(
                     value = shortcutInput,
                     onValueChange = {
                         val normalized = normalizeShortcutCodeInput(it.text)
                         shortcutInput = it.copy(text = normalized)
                     },
                     modifier = Modifier.fillMaxWidth(),
-                    label = { Text(text = stringResource(R.string.settings_alias_label)) },
+                    label = stringResource(R.string.settings_alias_label),
                     singleLine = true,
                     maxLines = 1,
                     isError = showShortcutError,
@@ -257,19 +257,18 @@ fun EditCustomSearchEngineDialog(
                             Text(text = errorMessage)
                         }
                     },
-                    colors = dialogTextFieldColors(),
+                    shape = AppShapes.extraSmall,
                 )
 
                 BrowserPickerField(
                     availableBrowsers = availableBrowsers,
                     selectedPackage = selectedBrowserPackage,
                     onSelect = { selectedBrowserPackage = it },
-                    onExpand = { coroutineScope.launch { scrollState.animateScrollTo(Int.MAX_VALUE) } },
                 )
             }
         },
         confirmButton = {
-            Button(
+            AppTextButton(
                 onClick = {
                     if (canSave) {
                         onSave(trimmedName, validTemplate, normalizedShortcut, iconBase64, selectedBrowserPackage)
@@ -281,9 +280,23 @@ fun EditCustomSearchEngineDialog(
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) {
+            AppTextButton(onClick = onDismiss) {
                 Text(text = stringResource(R.string.dialog_cancel))
             }
         },
     )
+
+    if (showDeleteConfirm) {
+        AppAlertDialog(
+            onDismissRequest = { showDeleteConfirm = false },
+            title = { Text(stringResource(R.string.dialog_delete_item_title, customEngine.name)) },
+            confirmLabel = stringResource(R.string.dialog_delete),
+            onConfirm = {
+                showDeleteConfirm = false
+                onDelete()
+            },
+            dismissLabel = stringResource(R.string.dialog_cancel),
+            destructive = true,
+        )
+    }
 }

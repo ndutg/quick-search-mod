@@ -1,5 +1,6 @@
 package com.tk.quicksearch.search.apps
 
+import com.tk.quicksearch.shared.ui.theme.AppColors
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
@@ -14,7 +15,6 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.LazyGridState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -40,8 +40,9 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
+import com.tk.quicksearch.shared.ui.theme.AppShapes
 
-internal val LazyGridScrollbarTouchWidth = DesignTokens.SpacingLarge
+internal val LazyGridScrollbarTouchWidth = DesignTokens.MinTouchTarget
 private val ThumbWidth = DesignTokens.SpacingXSmall
 private val DraggedThumbWidth = 6.dp
 private const val ThumbHideDelayMillis = 1200L
@@ -95,7 +96,7 @@ internal fun LazyGridVerticalScrollbar(
                     if (isDragging) {
                         MaterialTheme.colorScheme.primary
                     } else {
-                        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.45f)
+                        MaterialTheme.colorScheme.onSurface.copy(alpha = AppColors.ContentMutedAlpha)
                     },
             label = "thumbColor",
     )
@@ -116,7 +117,6 @@ internal fun LazyGridVerticalScrollbar(
                     modifier
                             .fillMaxHeight()
                             .width(LazyGridScrollbarTouchWidth)
-                            .padding(end = ThumbEndInset)
                             .pointerInput(state) {
                                 detectTapGestures { offset ->
                                     val snapshot = currentMetrics.value ?: return@detectTapGestures
@@ -191,10 +191,11 @@ internal fun LazyGridVerticalScrollbar(
                                     val fraction = dragFraction ?: resolved.scrollFraction
                                     IntOffset(0, (maxOffsetPx * fraction).roundToInt())
                                 }
+                                .padding(end = ThumbEndInset)
                                 .alpha(thumbAlpha)
                                 .width(thumbWidth)
                                 .height(with(density) { thumbHeightPx.toDp() })
-                                .clip(RoundedCornerShape(percent = 50))
+                                .clip(AppShapes.full)
                                 .background(thumbColor),
         )
     }

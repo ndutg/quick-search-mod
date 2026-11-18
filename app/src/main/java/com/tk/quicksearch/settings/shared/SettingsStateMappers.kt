@@ -1,5 +1,6 @@
 package com.tk.quicksearch.settings.shared
 
+import com.tk.quicksearch.search.contacts.models.ContactActionProvider
 import com.tk.quicksearch.search.core.CustomTool
 import com.tk.quicksearch.search.core.SearchUiState
 import com.tk.quicksearch.search.other.OtherSearchItemRegistry
@@ -62,7 +63,7 @@ internal fun SearchUiState.toSettingsScreenState(): SettingsScreenState {
         availableLlmModelsByProvider = searchEngines.availableLlmModelsByProvider,
         enabledFileTypes = fileSearch.enabledFileTypes,
         showFolders = fileSearch.showFolders,
-        filePreviewsEnabled = fileSearch.filePreviewsEnabled,
+        booleanSettings = booleanSettings,
         showSystemFiles = fileSearch.showSystemFiles,
         folderWhitelistPatterns = fileSearch.folderWhitelistPatterns,
         folderBlacklistPatterns = fileSearch.folderBlacklistPatterns,
@@ -102,15 +103,12 @@ internal fun SearchUiState.toSettingsScreenState(): SettingsScreenState {
         themedIconsEnabled = appearance.themedIconsEnabled,
         deviceThemeEnabled = appearance.deviceThemeEnabled,
         amoledThemeEnabled = appearance.amoledThemeEnabled,
+        searchChromeBlurEnabled = appearance.searchChromeBlurEnabled,
         accentColorMode = appearance.accentColorMode,
         customAccentColorArgb = appearance.customAccentColorArgb,
         openKeyboardOnLaunch = appearance.openKeyboardOnLaunch,
         clearQueryOnLaunch = appearance.clearQueryOnLaunch,
         autoCloseOverlay = appearance.autoCloseOverlay,
-        calculatorEnabled = tools.calculatorEnabled,
-        unitConverterEnabled = tools.unitConverterEnabled,
-        dateCalculatorEnabled = tools.dateCalculatorEnabled,
-        colorVisualizerEnabled = tools.colorVisualizerEnabled,
         currencyConverterEnabled = tools.currencyConverterEnabled,
         worldClockEnabled = tools.worldClockEnabled,
         dictionaryEnabled = tools.dictionaryEnabled,
@@ -124,11 +122,7 @@ internal fun SearchUiState.toSettingsScreenState(): SettingsScreenState {
         disabledAppShortcutIds = appShortcuts.disabledAppShortcutIds,
         primaryContactButton = appShortcuts.primaryContactButton,
         secondaryContactButton = appShortcuts.secondaryContactButton,
-        isWhatsAppInstalled = appShortcuts.isWhatsAppInstalled,
-        isWhatsAppBusinessInstalled = appShortcuts.isWhatsAppBusinessInstalled,
-        isTelegramInstalled = appShortcuts.isTelegramInstalled,
-        isSignalInstalled = appShortcuts.isSignalInstalled,
-        isGoogleMeetInstalled = appShortcuts.isGoogleMeetInstalled,
+        installedContactProviders = appShortcuts.installedContactProviders,
         directDialEnabled = appShortcuts.directDialEnabled,
         numberSearchEnabled = appShortcuts.numberSearchEnabled,
     )
@@ -239,7 +233,6 @@ private fun SearchUiState.toSearchEngineSettingsState() =
 private data class FileSearchMapperState(
     val enabledFileTypes: Set<com.tk.quicksearch.search.models.FileType>,
     val showFolders: Boolean,
-    val filePreviewsEnabled: Boolean,
     val showSystemFiles: Boolean,
     val folderWhitelistPatterns: Set<String>,
     val folderBlacklistPatterns: Set<String>,
@@ -250,7 +243,6 @@ private fun SearchUiState.toFileSearchSettingsState() =
     FileSearchMapperState(
         enabledFileTypes = enabledFileTypes,
         showFolders = showFolders,
-        filePreviewsEnabled = filePreviewsEnabled,
         showSystemFiles = showSystemFiles,
         folderWhitelistPatterns = folderWhitelistPatterns,
         folderBlacklistPatterns = folderBlacklistPatterns,
@@ -290,6 +282,7 @@ private data class AppearanceMapperState(
     val themedIconsEnabled: Boolean,
     val deviceThemeEnabled: Boolean,
     val amoledThemeEnabled: Boolean,
+    val searchChromeBlurEnabled: Boolean,
     val accentColorMode: com.tk.quicksearch.search.core.AccentColorMode,
     val customAccentColorArgb: Int,
     val openKeyboardOnLaunch: Boolean,
@@ -331,6 +324,7 @@ private fun SearchUiState.toAppearanceSettingsState() =
         themedIconsEnabled = themedIconsEnabled,
         deviceThemeEnabled = deviceThemeEnabled,
         amoledThemeEnabled = amoledThemeEnabled,
+        searchChromeBlurEnabled = searchChromeBlurEnabled,
         accentColorMode = accentColorMode,
         customAccentColorArgb = customAccentColorArgb,
         openKeyboardOnLaunch = openKeyboardOnLaunch,
@@ -339,10 +333,6 @@ private fun SearchUiState.toAppearanceSettingsState() =
     )
 
 private data class ToolsMapperState(
-    val calculatorEnabled: Boolean,
-    val unitConverterEnabled: Boolean,
-    val dateCalculatorEnabled: Boolean,
-    val colorVisualizerEnabled: Boolean,
     val currencyConverterEnabled: Boolean,
     val worldClockEnabled: Boolean,
     val dictionaryEnabled: Boolean,
@@ -354,10 +344,6 @@ private data class ToolsMapperState(
 
 private fun SearchUiState.toToolsSettingsState() =
     ToolsMapperState(
-        calculatorEnabled = calculatorEnabled,
-        unitConverterEnabled = unitConverterEnabled,
-        dateCalculatorEnabled = dateCalculatorEnabled,
-        colorVisualizerEnabled = colorVisualizerEnabled,
         currencyConverterEnabled = currencyConverterEnabled,
         worldClockEnabled = worldClockEnabled,
         dictionaryEnabled = dictionaryEnabled,
@@ -374,11 +360,7 @@ private data class AppShortcutsMapperState(
     val disabledAppShortcutIds: Set<String>,
     val primaryContactButton: com.tk.quicksearch.search.contacts.models.ContactButtonAction,
     val secondaryContactButton: com.tk.quicksearch.search.contacts.models.ContactButtonAction,
-    val isWhatsAppInstalled: Boolean,
-    val isWhatsAppBusinessInstalled: Boolean,
-    val isTelegramInstalled: Boolean,
-    val isSignalInstalled: Boolean,
-    val isGoogleMeetInstalled: Boolean,
+    val installedContactProviders: Set<ContactActionProvider>,
     val directDialEnabled: Boolean,
     val numberSearchEnabled: Boolean,
 )
@@ -391,11 +373,7 @@ private fun SearchUiState.toAppShortcutsSettingsState() =
         disabledAppShortcutIds = disabledAppShortcutIds,
         primaryContactButton = primaryContactButton,
         secondaryContactButton = secondaryContactButton,
-        isWhatsAppInstalled = isWhatsAppInstalled,
-        isWhatsAppBusinessInstalled = isWhatsAppBusinessInstalled,
-        isTelegramInstalled = isTelegramInstalled,
-        isSignalInstalled = isSignalInstalled,
-        isGoogleMeetInstalled = isGoogleMeetInstalled,
+        installedContactProviders = installedContactProviders,
         directDialEnabled = directDialEnabled,
         numberSearchEnabled = numberSearchEnabled,
     )

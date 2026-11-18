@@ -3,15 +3,12 @@ package com.tk.quicksearch.search.searchScreen
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import com.tk.quicksearch.search.core.AiSearchStatus
-import com.tk.quicksearch.search.core.SearchSection
 import com.tk.quicksearch.search.core.SearchTarget
 import com.tk.quicksearch.search.core.SectionRenderParams
 import com.tk.quicksearch.search.core.SearchUiState
 import com.tk.quicksearch.search.core.isLikelyWebUrl
 import com.tk.quicksearch.searchEngines.defaultBrowserTarget
-import com.tk.quicksearch.searchEngines.resolveDefaultBrowserPackage
 import com.tk.quicksearch.search.searchScreen.searchScreenLayout.SectionRenderingState
-import com.tk.quicksearch.shared.featureFlags.FeatureFlags
 
 internal fun submitSearchBarAction(
     state: SearchUiState,
@@ -130,7 +127,7 @@ internal fun submitSearchBarAction(
                     }
 
                     if (isUrlQuery && trimmedQuery.isNotBlank()) {
-                        val defaultBrowserPackage = resolveDefaultBrowserPackage(context)
+                        val defaultBrowserPackage = state.defaultBrowserPackage
                         val browserTarget =
                                 defaultBrowserTarget(state.searchTargetsOrder, defaultBrowserPackage)
                         if (browserTarget != null) {
@@ -173,12 +170,7 @@ internal fun submitSearchBarAction(
                         return false
                     }
 
-                    val firstNote =
-                        if (FeatureFlags.isSearchSectionEnabled(SearchSection.NOTES)) {
-                            renderingState.noteResults.firstOrNull()
-                        } else {
-                            null
-                        }
+                    val firstNote = renderingState.noteResults.firstOrNull()
                     if (firstNote != null) {
                         notesParams.onNoteClick(firstNote)
                         return false

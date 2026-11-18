@@ -1,21 +1,20 @@
 package com.tk.quicksearch.searchEngines.inline
 
+import androidx.compose.ui.semantics.Role
+import com.tk.quicksearch.shared.ui.components.AppIconButton
+import com.tk.quicksearch.shared.ui.theme.AppMotion
+import com.tk.quicksearch.shared.ui.theme.AppShapes
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.runtime.staticCompositionLocalOf
-import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.MutableTransitionState
-import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
-import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -27,42 +26,33 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items as rowItems
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.layout.layout
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.lerp
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.core.AppIconShape
+import com.tk.quicksearch.search.core.SearchBarStyle
 import com.tk.quicksearch.search.core.SearchTarget
 import com.tk.quicksearch.searchEngines.getId
 import com.tk.quicksearch.searchEngines.compact.SearchEngineCard
@@ -79,78 +69,22 @@ import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.util.hapticConfirm
 
-/** Corner radius shared by the inset strip and the bottom search bar it attaches to. */
-private val INSET_CORNER_RADIUS = 28.dp
-
 /**
- * Geometry shared by the bottom search bar and the inset engine strip that wraps around it. The
- * strip paints the card both of them live in, so the bar's insets and the distance the strip has to
- * reach down behind it are derived from the same numbers instead of being tuned separately.
+ * Hairline along the top of the full-bleed engine strip and the bands that match it. Kept faint so
+ * it separates the strip from the results without reading as a glow over a dark background.
  */
-/**
- * How far the full-bleed card reaches past the content padding. The overlay provides its own wider
- * content padding so its card meets the overlay's edges instead of the screen's.
- */
-val LocalInsetFullBleedHorizontalExtension =
-    staticCompositionLocalOf { InsetSearchBarGeometry.FullBleedHorizontalExtension }
-
-object InsetSearchBarGeometry {
-    /**
-     * Matches `TextFieldDefaults.MinHeight`. Only a starting point: a large font scale grows the
-     * bar past it, and an overlap that falls short leaves the container's bottom edge drawing a
-     * hairline inside the bar, so callers pass a measured overlap once the bar has been laid out.
-     */
-    private val BarHeight = 56.dp
-
-    /** Lets the card sit slightly outside the regular content inset. */
-    val ContainerHorizontalExtension = DesignTokens.SpacingXSmall
-
-    /**
-     * Cancels the search screen's horizontal content padding so the card reaches the screen edges.
-     * Used while the keyboard is open: nothing reserves space for the gesture handle then, so the
-     * resting inset would only read as an empty gap around the card.
-     */
-    val FullBleedHorizontalExtension = DesignTokens.SpacingLarge
-
-    /** Horizontal extension of the card, [fullBleedFraction] of the way from resting to full bleed. */
-    @Composable
-    fun containerHorizontalExtension(fullBleedFraction: Float): Dp =
-        lerp(
-            ContainerHorizontalExtension,
-            LocalInsetFullBleedHorizontalExtension.current,
-            fullBleedFraction,
-        )
-
-    /** Pulls the bar in from the card's side edges. */
-    val BarHorizontalInset = DesignTokens.SpacingSmall
-
-    /**
-     * Bar inset while the card is full bleed. The card grows outward then, so the bar widens a
-     * little too rather than leaving a wider margin than the resting card has.
-     */
-    private val FullBleedBarHorizontalInset = 0.dp
-
-    /** Bar inset [fullBleedFraction] of the way from resting to full bleed. */
-    fun barHorizontalInset(fullBleedFraction: Float): Dp =
-        lerp(BarHorizontalInset, FullBleedBarHorizontalInset, fullBleedFraction)
-
-    /** Slight gap between the engine row and the top of the bar in the combined compact card. */
-    val BarTopSpacing = DesignTokens.SpacingXXSmall
-
-    /** Gap between the bottom of the bar and the bottom of the card. */
-    val BarBottomSpacing = DesignTokens.SpacingMedium
-
-    val ContainerOverlap = overlapFor(BarHeight)
-
-    /** The distance the container has to reach down to cover a bar of [barHeight]. */
-    fun overlapFor(barHeight: Dp): Dp =
-        BarTopSpacing + barHeight.coerceAtLeast(BarHeight) + BarBottomSpacing
-}
+@Composable
+internal fun compactTopDividerColor(showWallpaperBackground: Boolean): Color =
+    if (showWallpaperBackground) {
+        AppColors.WallpaperDivider.copy(alpha = AppColors.WallpaperDivider.alpha * 0.5f)
+    } else {
+        AppColors.AccentTintLight
+    }
 
 internal object SearchEngineSectionConstants {
     val ICON_SIZE = SearchTargetConstants.DEFAULT_ICON_SIZE
     val SPACING = 20.dp
-    val ROW_SPACING = 10.dp
+    val ROW_SPACING = DesignTokens.SpacingMedium
     val PREDICTION_HIGHLIGHT_HEIGHT_EXTRA = 12.dp
     val PREDICTION_HIGHLIGHT_WIDTH_EXTRA = 8.dp
     val PREDICTION_HIGHLIGHT_CONTENT_PADDING =
@@ -161,55 +95,15 @@ internal object SearchEngineSectionConstants {
     val VERTICAL_PADDING = SearchTargetConstants.VERTICAL_PADDING
     val SEARCH_ICON_SPACING = SearchTargetConstants.SEARCH_ICON_SPACING
     val TOOL_ICON_TEXT_SPACING = DesignTokens.SpacingSmall
-    val TOOL_BUTTON_CORNER_RADIUS = 24.dp
     val TOOL_BUTTON_HORIZONTAL_PADDING = DesignTokens.SpacingLarge
     val TOOL_BUTTON_VERTICAL_PADDING = DesignTokens.SpacingMedium
 
-    /**
-     * Same radius as the search bar on every corner: the strip's bottom corners land exactly on the
-     * bar's top corners, so tucking it behind the bar yields one continuous outline.
-     */
-    val INSET_CONTAINER_SHAPE = RoundedCornerShape(INSET_CORNER_RADIUS)
-
-    /** Squares off the bottom corners as the card goes full bleed against the keyboard. */
-    fun insetContainerShape(fullBleedFraction: Float): RoundedCornerShape {
-        if (fullBleedFraction <= 0f) return INSET_CONTAINER_SHAPE
-        val bottomRadius = lerp(INSET_CORNER_RADIUS, 0.dp, fullBleedFraction)
-        return RoundedCornerShape(
-            topStart = INSET_CORNER_RADIUS,
-            topEnd = INSET_CORNER_RADIUS,
-            bottomStart = bottomRadius,
-            bottomEnd = bottomRadius,
-        )
-    }
-
-    /** How far the container reaches down behind the bar it is attached to. */
+    /** How far the card reaches up behind the bar it is attached to. */
     val INSET_CONTAINER_OVERLAP = InsetSearchBarGeometry.ContainerOverlap
 
     /** Trimmed row padding so the full engine row still fits inside the narrower inset strip. */
     val INSET_HORIZONTAL_PADDING = DesignTokens.SpacingSmall
 }
-
-/** Draws the inset container wider and behind the search bar without changing sibling placement. */
-internal fun Modifier.attachToBottomSearchBar(
-    overlap: Dp,
-    horizontalExtension: Dp,
-): Modifier =
-    layout { measurable, constraints ->
-        val horizontalExtensionPx = horizontalExtension.roundToPx()
-        val attachedWidth = constraints.maxWidth + (horizontalExtensionPx * 2)
-        val placeable =
-            measurable.measure(
-                constraints.copy(
-                    minWidth = attachedWidth,
-                    maxWidth = attachedWidth,
-                ),
-            )
-        val overlapPx = overlap.roundToPx()
-        layout(constraints.maxWidth, (placeable.height - overlapPx).coerceAtLeast(0)) {
-            placeable.placeRelative(-horizontalExtensionPx, 0)
-        }
-    }
 
 @Composable
 private fun InlineCardEnterAnimation(
@@ -219,11 +113,7 @@ private fun InlineCardEnterAnimation(
     AnimatedVisibility(
         visibleState = enterState,
         enter =
-            fadeIn(animationSpec = tween(durationMillis = 170, easing = FastOutSlowInEasing)) +
-                slideInVertically(
-                    initialOffsetY = { fullHeight -> -(fullHeight / 5) },
-                    animationSpec = tween(durationMillis = 190, easing = FastOutSlowInEasing),
-                ),
+            fadeIn(animationSpec = tween(durationMillis = AppMotion.DurationShort, easing = AppMotion.EmphasizedEasing)),
     ) {
         content()
     }
@@ -265,7 +155,8 @@ fun SearchEngineIconsSection(
     showOnlyToolAction: Boolean = false,
     useInsetContainer: Boolean = false,
     insetOverlap: Dp = SearchEngineSectionConstants.INSET_CONTAINER_OVERLAP,
-    insetFullBleedFraction: Float = 0f,
+    insetFullBleedFraction: () -> Float = { 0f },
+    insetCardStyle: InsetCardStyle? = null,
 ) {
     val hasToolAction = toolActionLabel != null && onToolActionClick != null
     if (enabledEngines.isEmpty() && detectedShortcutTarget == null && !hasToolAction) return
@@ -274,11 +165,7 @@ fun SearchEngineIconsSection(
 
     // Match compact section background with the persistent search bar for visual consistency.
     val backgroundColor =
-        if (useInsetContainer) {
-            insetCardBackground(true, AppColors.getSearchBarBackground(showWallpaperBackground))
-        } else {
-            insetCardBackground(true, AppColors.getSearchEngineSectionBackground(showWallpaperBackground))
-        }
+        insetCardBackground(true, AppColors.getSearchEngineSectionBackground(showWallpaperBackground))
     if (detectedShortcutTarget != null) {
         // Check if query starts with the shortcut and remove it
         // The shortcut corresponds to the detected engine
@@ -287,7 +174,7 @@ fun SearchEngineIconsSection(
                 modifier =
                     modifier.extendToScreenEdges().padding(
                         horizontal = DesignTokens.SpacingXLarge,
-                        vertical = 8.dp,
+                        vertical = DesignTokens.SpacingSmall,
                     ),
             ) {
                 SearchEngineCard(
@@ -306,107 +193,78 @@ fun SearchEngineIconsSection(
             }
         }
     } else {
-        val compactTopDividerColor =
-            if (showWallpaperBackground) {
-                AppColors.WallpaperDivider
-            } else {
-                AppColors.Accent.copy(alpha = 0.22f)
-            }
-        val containerShape =
-            if (useInsetContainer) {
-                SearchEngineSectionConstants.insetContainerShape(insetFullBleedFraction)
-            } else {
-                RectangleShape
-            }
-        Surface(
-            modifier =
-                modifier
-                    .then(
-                        if (useInsetContainer) {
-                            Modifier.attachToBottomSearchBar(
-                                overlap = insetOverlap,
-                                horizontalExtension =
-                                    InsetSearchBarGeometry.containerHorizontalExtension(
-                                        insetFullBleedFraction,
-                                    ),
-                            )
-                        } else {
-                            Modifier.extendToScreenEdges()
-                        },
+        val compactTopDividerColor = compactTopDividerColor(showWallpaperBackground)
+        val sectionContent: @Composable ColumnScope.() -> Unit = {
+            if ((showOnlyToolAction || enabledEngines.isEmpty()) && hasToolAction) {
+                AnimatedVisibility(
+                    visible = true,
+                    enter =
+                        fadeIn(animationSpec = tween(durationMillis = AppMotion.DurationShort, easing = AppMotion.EmphasizedDecelerateEasing)),
+                    exit =
+                        fadeOut(animationSpec = tween(durationMillis = AppMotion.DurationExit, easing = AppMotion.EmphasizedAccelerateEasing)),
+                ) {
+                    CompactToolActionContent(
+                        label = toolActionLabel,
+                        icon = toolActionIcon,
+                        appIconPackage = toolActionAppIconPackage,
+                        onClick = onToolActionClick,
+                        addTopPadding = true,
                     )
-                    .insetCardBackdrop(true, containerShape)
-                    .graphicsLayer {
-                        shadowElevation = 0f
-                    },
-            color = backgroundColor,
-            shape = containerShape,
-        ) {
-            Column(
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(
-                            bottom =
-                                if (useInsetContainer) insetOverlap else 0.dp,
-                        ),
+                }
+            } else {
+                SearchEngineContent(
+                    query = query,
+                    useInsetContainer = useInsetContainer,
+                    enabledEngines = enabledEngines,
+                    scrollState = scrollState,
+                    onSearchEngineClick = onSearchEngineClick,
+                    onSearchEngineLongPress = onSearchEngineLongPress,
+                    showOverlayExpandChevron = showOverlayExpandChevron,
+                    onOverlayExpandClick = onOverlayExpandClick,
+                    isOverlayExpanded = isOverlayExpanded,
+                    compactRowCount = compactRowCount,
+                    predictedTarget = predictedTarget,
+                    appIconShape = appIconShape,
+                    iconPackPackage = iconPackPackage,
+                )
+                AnimatedVisibility(
+                    visible = hasToolAction,
+                    enter =
+                        fadeIn(animationSpec = tween(durationMillis = AppMotion.DurationShort, easing = AppMotion.EmphasizedDecelerateEasing)),
+                    exit =
+                        fadeOut(animationSpec = tween(durationMillis = AppMotion.DurationExit, easing = AppMotion.EmphasizedAccelerateEasing)),
+                ) {
+                    CompactToolActionContent(
+                        label = toolActionLabel ?: return@AnimatedVisibility,
+                        icon = toolActionIcon,
+                        appIconPackage = toolActionAppIconPackage,
+                        onClick = onToolActionClick ?: return@AnimatedVisibility,
+                        addTopPadding = false,
+                    )
+                }
+            }
+        }
+        if (useInsetContainer) {
+            InsetSearchCard(
+                style = insetCardStyle ?: rememberInsetCardStyle(SearchBarStyle(), showWallpaperBackground),
+                overlap = insetOverlap,
+                fullBleedFraction = insetFullBleedFraction,
+                modifier = modifier,
+                content = sectionContent,
+            )
+        } else {
+            Surface(
+                modifier = modifier.extendToScreenEdges().insetCardBackdrop(true, RectangleShape),
+                color = backgroundColor,
+                shape = RectangleShape,
             ) {
-                if (!useInsetContainer) {
+                Column(modifier = Modifier.fillMaxWidth()) {
                     HorizontalDivider(
                         color = compactTopDividerColor,
                         thickness = SearchEngineSectionConstants.COMPACT_TOP_DIVIDER_THICKNESS,
                     )
-                }
-                if ((showOnlyToolAction || enabledEngines.isEmpty()) && hasToolAction) {
-                    AnimatedVisibility(
-                        visible = true,
-                        enter =
-                            fadeIn(animationSpec = tween(durationMillis = 180)) +
-                                expandVertically(animationSpec = tween(durationMillis = 220)),
-                        exit =
-                            fadeOut(animationSpec = tween(durationMillis = 130)) +
-                                shrinkVertically(animationSpec = tween(durationMillis = 180)),
-                    ) {
-                        CompactToolActionContent(
-                            label = toolActionLabel,
-                            icon = toolActionIcon,
-                            appIconPackage = toolActionAppIconPackage,
-                            onClick = onToolActionClick,
-                            addTopPadding = true,
-                        )
-                    }
-                } else {
-                    SearchEngineContent(
-                        query = query,
-                        useInsetContainer = useInsetContainer,
-                        enabledEngines = enabledEngines,
-                        scrollState = scrollState,
-                        onSearchEngineClick = onSearchEngineClick,
-                        onSearchEngineLongPress = onSearchEngineLongPress,
-                        showOverlayExpandChevron = showOverlayExpandChevron,
-                        onOverlayExpandClick = onOverlayExpandClick,
-                        isOverlayExpanded = isOverlayExpanded,
-                        compactRowCount = compactRowCount,
-                        predictedTarget = predictedTarget,
-                        appIconShape = appIconShape,
-                        iconPackPackage = iconPackPackage,
-                    )
-                    AnimatedVisibility(
-                        visible = hasToolAction,
-                        enter =
-                            fadeIn(animationSpec = tween(durationMillis = 180)) +
-                                expandVertically(animationSpec = tween(durationMillis = 220)),
-                        exit =
-                            fadeOut(animationSpec = tween(durationMillis = 130)) +
-                                shrinkVertically(animationSpec = tween(durationMillis = 180)),
-                    ) {
-                        CompactToolActionContent(
-                            label = toolActionLabel ?: return@AnimatedVisibility,
-                            icon = toolActionIcon,
-                            appIconPackage = toolActionAppIconPackage,
-                            onClick = onToolActionClick ?: return@AnimatedVisibility,
-                            addTopPadding = false,
-                        )
-                    }
+                    sectionContent()
+                    LocalSearchEngineAreaFooter.current?.invoke(this)
                 }
             }
         }
@@ -439,6 +297,7 @@ private fun SearchEngineContent(
                 .then(
                     if (singleEngine != null) {
                         Modifier.combinedClickable(
+                            role = Role.Button,
                             onClick = {
                                 hapticConfirm(view)()
                                 onSearchEngineClick(query, singleEngine)
@@ -465,7 +324,10 @@ private fun SearchEngineContent(
                 onOverlayExpandClick = onOverlayExpandClick,
                 isOverlayExpanded = isOverlayExpanded,
             )
-            Spacer(modifier = Modifier.width(SearchEngineSectionConstants.SEARCH_ICON_SPACING))
+            // The 48dp icon button already pads the chevron; only the bare icon needs a gap.
+            if (onOverlayExpandClick == null) {
+                Spacer(modifier = Modifier.width(SearchEngineSectionConstants.SEARCH_ICON_SPACING))
+            }
         }
 
         ScrollableEngineIcons(
@@ -511,13 +373,14 @@ private fun CompactToolActionContent(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Surface(
-            shape = androidx.compose.foundation.shape.RoundedCornerShape(SearchEngineSectionConstants.TOOL_BUTTON_CORNER_RADIUS),
+            shape = AppShapes.inlineInput,
             color = AppColors.InlineEngineHighlightBackground,
             border = BorderStroke(DesignTokens.BorderWidth, AppColors.InlineEngineHighlightBorder),
             modifier =
                 Modifier
                     .fillMaxWidth()
                     .combinedClickable(
+                        role = Role.Button,
                         onClick = {
                             hapticConfirm(view)()
                             onClick()
@@ -551,7 +414,7 @@ private fun CompactToolActionContent(
                 }
                 Text(
                     text = label,
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurface,
                     fontWeight = FontWeight.Medium,
                 )
@@ -577,21 +440,19 @@ private fun OverlayExpandChevron(
         } else {
             stringResource(R.string.desc_expand)
         }
-    Icon(
-        imageVector = imageVector,
-        contentDescription = contentDescription,
-        modifier =
-            Modifier
-                .size(SearchEngineSectionConstants.SEARCH_ICON_SIZE)
-                .then(
-                    if (onOverlayExpandClick != null) {
-                        Modifier.clickable(onClick = onOverlayExpandClick)
-                    } else {
-                        Modifier
-                    },
-                ),
-        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-    )
+    val icon: @Composable () -> Unit = {
+        Icon(
+            imageVector = imageVector,
+            contentDescription = contentDescription,
+            modifier = Modifier.size(SearchEngineSectionConstants.SEARCH_ICON_SIZE),
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+    if (onOverlayExpandClick != null) {
+        AppIconButton(onClick = onOverlayExpandClick, tooltip = contentDescription, content = icon)
+    } else {
+        icon()
+    }
 }
 
 /** Scrollable row of search engine icons. Calculates item width to fit 7 items per visible row on phones. */
@@ -607,6 +468,8 @@ private fun ScrollableEngineIcons(
     appIconShape: AppIconShape,
     iconPackPackage: String?,
 ) {
+    val currentQuery = rememberUpdatedState(query)
+    val queryProvider = remember { { currentQuery.value } }
     enabledEngines.singleOrNull()?.let { engine ->
         SingleEngineLabel(
             engine = engine,
@@ -618,7 +481,7 @@ private fun ScrollableEngineIcons(
     }
     if (enabledEngines.size <= EVENLY_SPACED_ENGINE_MAX_COUNT) {
         EvenlySpacedEngineRow(
-            query = query,
+            query = queryProvider,
             enabledEngines = enabledEngines,
             onSearchEngineClick = onSearchEngineClick,
             onSearchEngineLongPress = onSearchEngineLongPress,
@@ -656,7 +519,7 @@ private fun ScrollableEngineIcons(
                     Modifier
                         .fillMaxWidth()
                         .height(
-                            (SearchEngineSectionConstants.ICON_SIZE * visibleRowCount) +
+                            (DesignTokens.MinTouchTarget * visibleRowCount) +
                                 (if (visibleRowCount == 2) SearchEngineSectionConstants.ROW_SPACING else 0.dp) +
                                 predictionHighlightExtraHeight,
                         ),
@@ -674,7 +537,7 @@ private fun ScrollableEngineIcons(
                         column.top?.let { topEngine ->
                             SearchEngineIconItem(
                                 engine = topEngine,
-                                query = query,
+                                query = queryProvider,
                                 iconSize = SearchEngineSectionConstants.ICON_SIZE,
                                 itemWidth = itemWidthDp,
                                 onSearchEngineClick = onSearchEngineClick,
@@ -689,7 +552,7 @@ private fun ScrollableEngineIcons(
                         column.bottom?.let { bottomEngine ->
                             SearchEngineIconItem(
                                 engine = bottomEngine,
-                                query = query,
+                                query = queryProvider,
                                 iconSize = SearchEngineSectionConstants.ICON_SIZE,
                                 itemWidth = itemWidthDp,
                                 onSearchEngineClick = onSearchEngineClick,
@@ -720,7 +583,7 @@ private fun ScrollableEngineIcons(
                 ) { engine ->
                     SearchEngineIconItem(
                         engine = engine,
-                        query = query,
+                        query = queryProvider,
                         iconSize = SearchEngineSectionConstants.ICON_SIZE,
                         itemWidth = itemWidthDp,
                         onSearchEngineClick = onSearchEngineClick,
@@ -745,7 +608,8 @@ private fun ScrollableEngineIcons(
 private fun calculateItemWidth(maxWidth: androidx.compose.ui.unit.Dp, itemsPerRow: Int): androidx.compose.ui.unit.Dp {
     val totalSpacing = SearchEngineSectionConstants.SPACING * (itemsPerRow - 1)
     val totalHorizontalContentPadding = SearchEngineSectionConstants.PREDICTION_HIGHLIGHT_CONTENT_PADDING * 2
-    return (maxWidth - totalSpacing - totalHorizontalContentPadding) / itemsPerRow
+    return ((maxWidth - totalSpacing - totalHorizontalContentPadding) / itemsPerRow)
+        .coerceAtLeast(DesignTokens.MinTouchTarget)
 }
 
 @Composable

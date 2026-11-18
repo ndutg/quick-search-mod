@@ -1,14 +1,12 @@
 package com.tk.quicksearch.widgets.customButtonsWidget
 
+import com.tk.quicksearch.shared.ui.components.AppFilterChip
 import android.content.Context
 import android.graphics.Bitmap
 import android.util.Base64
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.graphics.drawable.toBitmap
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.layout.Arrangement
@@ -22,11 +20,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -39,22 +33,17 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.PopupProperties
 import androidx.compose.ui.zIndex
 import androidx.annotation.StringRes
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
 import com.tk.quicksearch.shared.ui.components.AppPickerDrawer
 import com.tk.quicksearch.shared.ui.components.AppPickerDrawerRowSpacing
 import com.tk.quicksearch.shared.ui.components.AppPickerDrawerMessage
@@ -63,7 +52,6 @@ import com.tk.quicksearch.shared.ui.components.AppPickerDrawerSearch
 import com.tk.quicksearch.shared.ui.components.TipBanner
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.core.SearchUiState
-import com.tk.quicksearch.search.core.SearchViewModel
 import com.tk.quicksearch.search.data.appShortcutRepository.StaticShortcut
 import com.tk.quicksearch.search.data.appShortcutRepository.loadAppIconBase64
 import com.tk.quicksearch.search.data.appShortcutRepository.rememberShortcutIcon
@@ -72,19 +60,12 @@ import com.tk.quicksearch.search.models.AppInfo
 import com.tk.quicksearch.search.models.ContactInfo
 import com.tk.quicksearch.search.models.DeviceFile
 import com.tk.quicksearch.search.models.NoteInfo
-import com.tk.quicksearch.media.MediaCommand
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
-import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.util.hapticToggle
 import com.tk.quicksearch.searchEngines.loadCustomIconAsBase64
-import com.tk.quicksearch.widgets.utils.WidgetPreferences
 import com.tk.quicksearch.widgets.utils.WidgetConfigConstants
-import com.tk.quicksearch.widgets.utils.WidgetButtonSlotConfig
-import com.tk.quicksearch.widgets.widgetConfigScreen.components.WidgetColorPickerDialog
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
@@ -107,7 +88,8 @@ fun CustomWidgetButtonPickerDialog(
 ) {
     val context = LocalContext.current
     var query by remember { mutableStateOf(TextFieldValue("")) }
-    var selectedFilter by rememberSaveable { mutableStateOf(CustomWidgetResultFilter.ALL) }
+    var selectedFilter by rememberSaveable { mutableStateOf(CustomWidgetResultFilter.ALL.id) }
+    val resultFilter = CustomWidgetResultFilter.entries.firstOrNull { it.id == selectedFilter } ?: CustomWidgetResultFilter.ALL
     val keyboardController = LocalSoftwareKeyboardController.current
 
     LaunchedEffect(Unit) { onQueryChange("") }
@@ -128,7 +110,7 @@ fun CustomWidgetButtonPickerDialog(
             if (query.text.trim().isEmpty()) {
                 emptyList()
             } else {
-                buildCustomWidgetSearchResults(searchState, query.text, context).filter(selectedFilter::matches)
+                buildCustomWidgetSearchResults(searchState, query.text, context).filter(resultFilter.matches)
             }
         }
 
@@ -151,8 +133,8 @@ fun CustomWidgetButtonPickerDialog(
         onDismissStarted = clearQueryForClose,
         header = {
             CustomWidgetResultFilterChips(
-                selectedFilter = selectedFilter,
-                onFilterSelected = { selectedFilter = it },
+                selectedFilter = resultFilter,
+                onFilterSelected = { selectedFilter = it.id },
             )
         },
     ) {
@@ -230,30 +212,27 @@ private fun CustomWidgetSearchResultRow(
     )
 }
 
-private enum class CustomWidgetResultFilter(
+private data class CustomWidgetResultFilter(
+    val id: String,
     @StringRes val labelRes: Int,
+    val matches: (CustomWidgetSearchResult) -> Boolean,
 ) {
-    ALL(R.string.widget_custom_buttons_filter_all),
-    APPS(R.string.section_apps),
-    APP_SHORTCUTS(R.string.section_app_shortcuts),
-    CONTACTS(R.string.contacts_action_button_contacts),
-    FILES(R.string.section_files),
-    SETTINGS(R.string.section_settings),
-    NOTES(R.string.section_notes),
-    MEDIA(R.string.section_media),
-    ;
-
-    fun matches(result: CustomWidgetSearchResult): Boolean =
-        when (this) {
-            ALL -> true
-            APPS -> result is CustomWidgetSearchResult.App
-            APP_SHORTCUTS -> result is CustomWidgetSearchResult.AppShortcut
-            CONTACTS -> result is CustomWidgetSearchResult.Contact
-            FILES -> result is CustomWidgetSearchResult.File
-            SETTINGS -> result is CustomWidgetSearchResult.Setting
-            NOTES -> result is CustomWidgetSearchResult.Note
-            MEDIA -> result is CustomWidgetSearchResult.Media
+    companion object {
+        val ALL = CustomWidgetResultFilter("all", R.string.widget_custom_buttons_filter_all) { true }
+        val entries = listOf(
+            ALL,
+            CustomWidgetResultFilter("app", R.string.section_apps) { it is CustomWidgetSearchResult.App },
+            CustomWidgetResultFilter("shortcut", R.string.section_app_shortcuts) { it is CustomWidgetSearchResult.AppShortcut },
+            CustomWidgetResultFilter("contact", R.string.contacts_action_button_contacts) { it is CustomWidgetSearchResult.Contact },
+            CustomWidgetResultFilter("file", R.string.section_files) { it is CustomWidgetSearchResult.File },
+            CustomWidgetResultFilter("setting", R.string.section_settings) { it is CustomWidgetSearchResult.Setting },
+            CustomWidgetResultFilter("note", R.string.section_notes) { it is CustomWidgetSearchResult.Note },
+        ) + CustomWidgetButtonType.entries.filter { it.command != null }.map { type ->
+            CustomWidgetResultFilter(type.value, type.categoryRes) {
+                it is CustomWidgetSearchResult.Command && it.action.type == type
+            }
         }
+    }
 }
 
 @Composable
@@ -267,23 +246,11 @@ private fun CustomWidgetResultFilterChips(
     ) {
         items(CustomWidgetResultFilter.entries) { filter ->
             val selected = filter == selectedFilter
-            FilterChip(
+            AppFilterChip(
                 selected = selected,
                 onClick = { onFilterSelected(filter) },
-                label = { Text(text = stringResource(filter.labelRes)) },
-                shape = RoundedCornerShape(50.dp),
-                border =
-                    FilterChipDefaults.filterChipBorder(
-                        enabled = true,
-                        selected = selected,
-                        borderColor = AppColors.SettingsDivider,
-                        selectedBorderColor = Color.Transparent,
-                    ),
-                colors =
-                    FilterChipDefaults.filterChipColors(
-                        selectedContainerColor = MaterialTheme.colorScheme.primary,
-                        selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
-                    ),
+                label = stringResource(filter.labelRes),
+                unselectedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
     }
@@ -341,10 +308,7 @@ private sealed class CustomWidgetSearchResult {
         val note: NoteInfo,
     ) : CustomWidgetSearchResult()
 
-    data class Media(
-        val command: MediaCommand,
-        val label: String,
-    ) : CustomWidgetSearchResult()
+    data class Command(val action: CustomWidgetButtonAction.Command) : CustomWidgetSearchResult()
 
     fun displayLabel(): String =
         when (this) {
@@ -375,9 +339,7 @@ private sealed class CustomWidgetSearchResult {
                 note.title
             }
 
-            is Media -> {
-                label
-            }
+            is Command -> action.displayLabel()
         }
 
     fun toAction(): CustomWidgetButtonAction =
@@ -482,12 +444,7 @@ private sealed class CustomWidgetSearchResult {
                 )
             }
 
-            is Media -> {
-                CustomWidgetButtonAction.Media(
-                    command = command,
-                    title = label,
-                )
-            }
+            is Command -> action
         }
 
     fun toPersistedAction(context: Context): CustomWidgetButtonAction =
@@ -561,7 +518,7 @@ private fun buildCustomWidgetSearchResults(
     context: Context,
 ): List<CustomWidgetSearchResult> =
     buildList {
-        matchingMediaResults(context, query).forEach { add(it) }
+        matchingCommandResults(context, query).forEach { add(it) }
         state.searchResults.forEach { add(CustomWidgetSearchResult.App(it)) }
         state.appShortcutResults.forEach { add(CustomWidgetSearchResult.AppShortcut(it)) }
         state.contactResults.forEach { add(CustomWidgetSearchResult.Contact(it)) }
@@ -570,20 +527,18 @@ private fun buildCustomWidgetSearchResults(
         state.noteResults.forEach { add(CustomWidgetSearchResult.Note(it)) }
     }
 
-/**
- * Media transport controls are hardcoded rather than sourced from search, since they are not
- * device content to look up but fixed actions the custom-buttons widget can dispatch.
- */
-private fun matchingMediaResults(context: Context, query: String): List<CustomWidgetSearchResult.Media> {
+private fun matchingCommandResults(context: Context, query: String): List<CustomWidgetSearchResult.Command> {
     val normalizedQuery = query.trim().lowercase()
     if (normalizedQuery.isEmpty()) return emptyList()
-    return MediaCommand.entries.mapNotNull { command ->
-        val label = context.getString(command.labelRes)
-        val haystack = (command.searchKeywords + label.lowercase()).joinToString(" ")
-        if (haystack.contains(normalizedQuery)) {
-            CustomWidgetSearchResult.Media(command = command, label = label)
-        } else {
-            null
+    return buildList {
+        for (type in CustomWidgetButtonType.entries) {
+            for (choice in type.command?.choices.orEmpty()) {
+                val label = context.getString(choice.labelRes)
+                val haystack = (choice.keywords + label.lowercase()).joinToString(" ")
+                if (haystack.contains(normalizedQuery)) {
+                    add(CustomWidgetSearchResult.Command(CustomWidgetButtonAction.Command(type, choice.id, label)))
+                }
+            }
         }
     }
 }
@@ -618,9 +573,8 @@ private fun CustomWidgetButtonAction.matchesResult(result: CustomWidgetSearchRes
             this is CustomWidgetButtonAction.Note && noteId == result.note.noteId
         }
 
-        is CustomWidgetSearchResult.Media -> {
-            this is CustomWidgetButtonAction.Media && command == result.command
-        }
+        is CustomWidgetSearchResult.Command ->
+            this is CustomWidgetButtonAction.Command && type == result.action.type && commandId == result.action.commandId
     }
 
 internal fun List<CustomWidgetButtonAction?>.normalizedSlots(maxSlots: Int): List<CustomWidgetButtonAction?> {

@@ -237,18 +237,18 @@ class ContactActionHandler(
             }
 
             is ContactMethod.WhatsAppCall -> {
-                handleWhatsAppCallWithPermission(method.dataId)
+                handleWhatsAppCallWithPermission(method.dataId, method.data)
             }
 
             is ContactMethod.WhatsAppMessage -> {
-                val success = ContactIntentHelpers.openWhatsAppChat(context, method.dataId) { resId -> showToastCallback(resId) }
+                val success = ContactIntentHelpers.openWhatsAppChat(context, method.data) { resId -> showToastCallback(resId) }
                 if (success) {
                     clearQueryIfEnabled()
                 }
             }
 
             is ContactMethod.WhatsAppVideoCall -> {
-                handleWhatsAppVideoCallWithPermission(method.dataId)
+                handleWhatsAppVideoCallWithPermission(method.dataId, method.data)
             }
 
             is ContactMethod.TelegramMessage -> {
@@ -347,58 +347,66 @@ class ContactActionHandler(
         action: ContactButtonAction,
         isPrimary: Boolean,
     ) {
-        when (val resolvedAction = ContactButtonResolver.resolveForContact(contactInfo, action, isPrimary, number)) {
-            ContactButtonAction.CALL -> beginRegularCallFlow(contactInfo.displayName, number)
-            ContactButtonAction.SMS -> performSms(number)
-            ContactButtonAction.WHATSAPP_MESSAGE ->
-                ContactIntentHelpers.openWhatsAppChat(context, number) { resId -> showToastCallback(resId) }
-            ContactButtonAction.WHATSAPP_BUSINESS_MESSAGE -> {
-                val method =
-                    ContactButtonResolver
-                        .findMethod(contactInfo, resolvedAction, number)
-                        ?.takeIf { it.dataId != null }
-                if (method != null) {
-                    handleContactMethod(contactInfo, method, trackHistory = false)
-                } else {
-                    ContactIntentHelpers.openWhatsAppBusinessChat(context, number) { resId -> showToastCallback(resId) }
-                }
-            }
-            ContactButtonAction.TELEGRAM_MESSAGE ->
-                ContactIntentHelpers.openTelegramChat(context, number) { resId -> showToastCallback(resId) }
-            ContactButtonAction.SIGNAL_MESSAGE ->
-                ContactIntentHelpers.openSignalChat(context, number) { resId -> showToastCallback(resId) }
-            ContactButtonAction.TELEGRAM_CALL -> {
-                val preferredMethod =
-                    contactInfo.contactMethods
-                        .firstOrNull { it is ContactMethod.TelegramCall && it.dataId != null } as? ContactMethod.TelegramCall
-                if (preferredMethod?.dataId != null) {
-                    handleTelegramCallWithPermission(preferredMethod.dataId)
-                } else {
-                    handleTelegramCallWithPermission(phoneNumber = number)
-                }
-            }
-            else -> {
-                val method =
-                    ContactButtonResolver
-                        .findMethod(contactInfo, resolvedAction, number)
-                        ?.takeIf { it.dataId != null || resolvedAction in ACTIONS_WITHOUT_DATA_ID }
-                when {
-                    method != null -> handleContactMethod(contactInfo, method, trackHistory = false)
-                    isPrimary -> beginRegularCallFlow(contactInfo.displayName, number)
-                    else -> performSms(number)
-                }
-            }
+        val resolvedAction = ContactButtonResolver.resolveForContact(contactInfo, action, isPrimary, number)
+        resolvedAction.launch?.let { launch ->
+            launch(this, contactInfo, number)
+            return
         }
+
+        val method = ContactButtonResolver.findMethod(contactInfo, resolvedAction, number)
+            ?.takeIf { it.dataId != null || !resolvedAction.requiresDataId }
+        when {
+            method != null -> handleContactMethod(contactInfo, method, trackHistory = false)
+            isPrimary -> launchPhoneButton(contactInfo, number)
+            else -> launchSmsButton(number)
+        }
+    }
+
+    internal fun launchPhoneButton(contact: ContactInfo, number: String) =
+        beginRegularCallFlow(contact.displayName, number)
+
+    internal fun launchSmsButton(number: String) = performSms(number)
+
+    internal fun launchWhatsAppButton(number: String) {
+        val success = ContactIntentHelpers.openWhatsAppChat(context, number) { showToastCallback(it) }
+        if (success) clearQueryIfEnabled()
+    }
+
+    internal fun launchWhatsAppBusinessButton(contact: ContactInfo, number: String) {
+        val method = ContactButtonResolver.findMethod(contact, ContactButtonAction.WHATSAPP_BUSINESS_MESSAGE, number)
+            ?.takeIf { it.dataId != null }
+        if (method != null) {
+            handleContactMethod(contact, method, trackHistory = false)
+        } else {
+            ContactIntentHelpers.openWhatsAppBusinessChat(context, number) { showToastCallback(it) }
+        }
+    }
+
+    internal fun launchTelegramMessageButton(number: String) {
+        ContactIntentHelpers.openTelegramChat(context, number) { showToastCallback(it) }
+    }
+
+    internal fun launchSignalMessageButton(number: String) {
+        ContactIntentHelpers.openSignalChat(context, number) { showToastCallback(it) }
+    }
+
+    internal fun launchTelegramCallButton(contact: ContactInfo, number: String) {
+        val dataId = contact.contactMethods.firstNotNullOfOrNull { (it as? ContactMethod.TelegramCall)?.dataId }
+        if (dataId != null) handleTelegramCallWithPermission(dataId)
+        else handleTelegramCallWithPermission(phoneNumber = number)
     }
 
     /**
      * Handles WhatsApp call with permission checking.
      * WhatsApp calls require CALL_PHONE permission.
      */
-    private fun handleWhatsAppCallWithPermission(dataId: Long?) {
+    private fun handleWhatsAppCallWithPermission(
+        dataId: Long?,
+        whatsAppId: String?,
+    ) {
         val hasPermission = PermissionHelper.checkCallPermission(context)
         if (hasPermission) {
-            val success = ContactIntentHelpers.openWhatsAppCall(context, dataId) { resId -> showToastCallback(resId) }
+            val success = ContactIntentHelpers.openWhatsAppCall(context, dataId, whatsAppId) { resId -> showToastCallback(resId) }
             if (success) {
                 clearQueryIfEnabled()
             }
@@ -407,6 +415,7 @@ class ContactActionHandler(
                 PendingThirdPartyCall(
                     app = CallingApp.WHATSAPP,
                     dataId = dataId,
+                    phoneNumber = whatsAppId,
                 ),
             )
         }
@@ -416,7 +425,10 @@ class ContactActionHandler(
      * Handles WhatsApp video call with permission checking.
      * WhatsApp video calls require CALL_PHONE permission and valid dataId.
      */
-    private fun handleWhatsAppVideoCallWithPermission(dataId: Long?) {
+    private fun handleWhatsAppVideoCallWithPermission(
+        dataId: Long?,
+        whatsAppId: String?,
+    ) {
         if (dataId == null) {
             Log.w("ContactActionHandler", "WhatsApp video call missing dataId")
             showToastCallback(R.string.error_whatsapp_video_call_missing_data)
@@ -425,7 +437,7 @@ class ContactActionHandler(
 
         val hasPermission = PermissionHelper.checkCallPermission(context)
         if (hasPermission) {
-            val success = ContactIntentHelpers.openWhatsAppVideoCall(context, dataId) { resId -> showToastCallback(resId) }
+            val success = ContactIntentHelpers.openWhatsAppVideoCall(context, dataId, whatsAppId) { resId -> showToastCallback(resId) }
             if (success) {
                 clearQueryIfEnabled()
             }
@@ -434,6 +446,7 @@ class ContactActionHandler(
                 PendingThirdPartyCall(
                     app = CallingApp.WHATSAPP,
                     dataId = dataId,
+                    phoneNumber = whatsAppId,
                     isVideoCall = true,
                 ),
             )
@@ -532,9 +545,9 @@ class ContactActionHandler(
             CallingApp.WHATSAPP -> {
                 val success =
                     if (pendingCall.isVideoCall) {
-                        ContactIntentHelpers.openWhatsAppVideoCall(context, pendingCall.dataId) { resId -> showToastCallback(resId) }
+                        ContactIntentHelpers.openWhatsAppVideoCall(context, pendingCall.dataId, pendingCall.phoneNumber) { resId -> showToastCallback(resId) }
                     } else {
-                        ContactIntentHelpers.openWhatsAppCall(context, pendingCall.dataId) { resId -> showToastCallback(resId) }
+                        ContactIntentHelpers.openWhatsAppCall(context, pendingCall.dataId, pendingCall.phoneNumber) { resId -> showToastCallback(resId) }
                     }
                 if (success) {
                     clearQueryIfEnabled()
@@ -575,10 +588,5 @@ class ContactActionHandler(
 
     private companion object {
         // Actions whose contact method can be opened from its data (address, number) without a data row ID.
-        val ACTIONS_WITHOUT_DATA_ID =
-            setOf(
-                ContactButtonAction.EMAIL,
-                ContactButtonAction.TELEGRAM_VIDEO_CALL,
-            )
     }
 }

@@ -28,11 +28,7 @@ import com.tk.quicksearch.searchEngines.*
 import com.tk.quicksearch.search.searchScreen.ExpandedSection
 import com.tk.quicksearch.search.searchScreen.hasAnySearchResults
 import com.tk.quicksearch.search.searchScreen.renderSection
-import com.tk.quicksearch.search.searchScreen.shared.reportCardlessTrailingEdge
-import com.tk.quicksearch.search.searchScreen.rememberSettledRegularSearchRenderingState
-import com.tk.quicksearch.search.searchScreen.rememberSettledTopMatches
-import com.tk.quicksearch.search.searchScreen.rememberTopMatches
-import com.tk.quicksearch.search.searchScreen.shouldDeferTopMatchesForLocalSearch
+import com.tk.quicksearch.search.searchScreen.SearchTopMatchesState
 import com.tk.quicksearch.search.searchScreen.ContactsSectionParams
 import com.tk.quicksearch.search.searchScreen.FilesSectionParams
 import com.tk.quicksearch.search.searchScreen.AppShortcutsSectionParams
@@ -45,15 +41,11 @@ import com.tk.quicksearch.search.searchScreen.PredictedSubmitTarget
 import com.tk.quicksearch.search.searchScreen.PinnedNonAppItemsSection
 import com.tk.quicksearch.search.searchScreen.components.SectionPermissionResultCard
 import com.tk.quicksearch.search.other.OtherSearchItemActionHandler
-import com.tk.quicksearch.search.other.OtherSearchItemRegistry
 import com.tk.quicksearch.R
-import com.tk.quicksearch.widgetsPanel.HomeWidgetStack
-import com.tk.quicksearch.widgetsPanel.rememberHomePinnedWidgets
-import com.tk.quicksearch.widgetsPanel.rememberHomeWidgetHost
 
 /** Unified content layout that handles both one-handed mode and top-aligned layouts. */
 @Composable
-fun ContentLayout(
+internal fun ContentLayout(
     modifier: Modifier = Modifier,
     state: SearchUiState,
     renderingState: SectionRenderingState,
@@ -102,6 +94,7 @@ fun ContentLayout(
     onOpenPermissionsSettings: () -> Unit = {},
     onHomePinnedSectionOrderChange: (List<SearchSection>) -> Unit = {},
     selectedTopMatchIndex: Int? = null,
+    topMatches: SearchTopMatchesState,
     isScrollInProgress: () -> Boolean = { false },
 ) {
     val context = LocalContext.current
@@ -142,23 +135,13 @@ fun ContentLayout(
             expandedCardMaxHeight = expandedCardMaxHeight,
         )
     val hasQuery = state.query.isNotBlank()
-    val isLocalSearchRefreshing =
-        shouldDeferTopMatchesForLocalSearch(
-            query = state.query,
-            isAppSearchInProgress = state.isAppSearchInProgress,
-            isSecondarySearchInProgress = state.isSecondarySearchInProgress,
-        )
-    val regularRenderingState =
-        rememberSettledRegularSearchRenderingState(
-            query = state.query,
-            currentState = renderingState,
-            isAppSearchRefreshing = state.isAppSearchInProgress,
-            secondarySectionsRefreshing = state.secondarySearchSectionsInProgress,
-        )
+    // Settled once at screen level, where the same top matches drive keyboard submit.
+    val isLocalSearchRefreshing = topMatches.isLocalSearchRefreshing
+    val regularRenderingState = topMatches.regularRenderingState
     // Home sections reserve their full height as soon as their data arrives and only fade in, so
     // nothing above them reflows while the rest of the agenda is still loading.
     var suggestionsAppGridHasAppeared by remember { mutableStateOf(false) }
-    val appearedHomeContentKeys = remember { mutableSetOf<String>() }
+    val appearedHomeContentKeys = rememberHomeAppearedContentKeys()
     val effectiveAppsParams = appsParams.copy(
         predictedTarget = predictedTarget,
         onGridAppeared = {
@@ -233,12 +216,12 @@ fun ContentLayout(
             state.searchTargetsOrder,
             state.disabledSearchTargetIds,
             isUrlQuery,
-            context,
+            state.defaultBrowserPackage,
         ) {
             if (isUrlQuery) {
                 orderedBrowserTargets(
                     targets = state.searchTargetsOrder,
-                    defaultBrowserPackage = resolveDefaultBrowserPackage(context),
+                    defaultBrowserPackage = state.defaultBrowserPackage,
                 )
             } else {
                 state.searchTargetsOrder.filter { it.getId() !in state.disabledSearchTargetIds }
@@ -334,31 +317,7 @@ fun ContentLayout(
     // until the grid has appeared makes cards below the grid (such as Screen Time) pop back in
     // at their final position instead of being smoothly pushed down by the expanding grid.
     val hideOtherContent = waitingForSuggestions
-    val topMatches =
-        rememberTopMatches(
-            query = state.query,
-            renderingState = regularRenderingState,
-            context = sectionContextForRecentHistoryExpansion,
-            params = sectionParams,
-            limit = state.topMatchesLimit,
-            topMatchesSectionOrder = state.topMatchesSectionOrder,
-            disabledTopMatchesSections = state.disabledTopMatchesSections,
-            secondaryRankingSignal = state.secondaryRankingSignal,
-            filterStaleCandidates = isLocalSearchRefreshing,
-            otherSearchItemIds =
-                OtherSearchItemRegistry.visibleSearchItemIds(
-                    query = state.query,
-                    pinnedItemOrder = state.pinnedNonAppItemOrder,
-                    screenTimeState = state.screenTimeState,
-                ),
-        )
-    val settledTopMatches =
-        rememberSettledTopMatches(
-            query = state.query,
-            currentMatches = topMatches,
-            isSearchRefreshing = isLocalSearchRefreshing,
-            limit = state.topMatchesLimit,
-        )
+    val settledTopMatches = topMatches.settled
     val displayedTopMatches = settledTopMatches.matches
     val canShowTopMatches =
         state.topMatchesEnabled &&
@@ -372,8 +331,6 @@ fun ContentLayout(
     // Holding them back for that short window makes the whole result set appear at once.
     val holdRegularSectionsForTopMatches =
         canShowTopMatches && !settledTopMatches.isReady && displayedTopMatches.isEmpty()
-    val showTopMatchesSection =
-        canShowTopMatches && (showTopMatches || isLocalSearchRefreshing)
     val hasMoreResults =
         hasMoreResults(
             renderingState = regularRenderingState,
@@ -512,7 +469,6 @@ fun ContentLayout(
     @Composable
     fun renderTopMatches() {
         ContentLayoutTopMatches(
-            showTopMatchesSection = showTopMatchesSection,
             displayedTopMatches = displayedTopMatches,
             sectionParams = sectionParams,
             effectiveShowWallpaperBackground = effectiveShowWallpaperBackground,
@@ -522,7 +478,6 @@ fun ContentLayout(
             selectedTopMatchIndex = selectedTopMatchIndex,
             isReversed = isReversed,
             onOtherSearchItemAction = onOtherSearchItemAction,
-            showTopMatches = showTopMatches,
             hasMoreResults = hasMoreResults,
             appsSectionAbove = isReversed && rendersAppsSection,
         )
@@ -645,7 +600,7 @@ fun ContentLayout(
                 }
             if (
                 skipItemlessHomeSections &&
-                section.supportsPinnedHomeCollapse() &&
+                section != SearchSection.APPS &&
                 !homePinnedSectionHasItems(section, sectionContext)
             ) {
                 return
@@ -744,57 +699,30 @@ fun ContentLayout(
         bottomAnchoredResultsGap(
             resultCardGap = if (isExpanded) 0.dp else resultCardBottomGap,
             state = state,
-            showTopMatchesSection = showTopMatchesSection,
+            showTopMatchesSection = showTopMatches,
             topMatches = displayedTopMatches,
             rendersAppsSection = rendersAppsSection,
         )
-    val contentModifier = modifier.padding(bottom = bottomGap).reportCardlessTrailingEdge()
+    val contentModifier =
+        modifier.padding(bottom = bottomGap).reversedListTopDivider(isReversed, effectiveShowWallpaperBackground)
 
-    val homeWidgets = rememberHomePinnedWidgets(enabled = !isOverlayPresentation)
-    // The container only depends on whether any widget is pinned, so typing a query keeps the same
-    // layout tree instead of rebuilding every section.
-    val homeWidgetHost = if (homeWidgets.isNotEmpty()) rememberHomeWidgetHost() else null
-    val showHomeWidgets =
-        !hasQuery &&
-            !hideResults &&
-            !isSectionAliasMode &&
-            !isExpanded &&
-            !hideOtherContent &&
-            !hidePinnedAndAppsWhenSearchHistoryExpanded &&
-            !isHomeCalendarExpanded
-
-    if (homeWidgetHost != null) {
-        HomeWidgetStack(
-            layoutOrder = finalLayoutOrder,
-            isReversed = isReversed,
-            widgets = homeWidgets,
-            showWidgets = showHomeWidgets,
-            host = homeWidgetHost,
-            spacing = 14.dp,
-            isScrollInProgress = isScrollInProgress,
-            modifier = contentModifier,
-            leadingContent = {
-                if (showTopMatchesSection && !isReversed) renderTopMatches()
-            },
-            trailingContent = {
-                renderDeferredSearchHistory()
-                if (showTopMatchesSection && isReversed) renderTopMatches()
-            },
-            itemContent = { itemType -> renderLayoutItem(itemType) },
-        )
-        return
-    }
-
-    Column(modifier = contentModifier, verticalArrangement = Arrangement.spacedBy(14.dp)) {
-        if (showTopMatchesSection && !isReversed) {
-            renderTopMatches()
-        }
-        finalLayoutOrder.forEach { itemType -> renderLayoutItem(itemType) }
-
-        renderDeferredSearchHistory()
-
-        if (showTopMatchesSection && isReversed) {
-            renderTopMatches()
-        }
-    }
+    ContentLayoutColumn(
+        layoutOrder = finalLayoutOrder,
+        isReversed = isReversed,
+        showTopMatchesSection = showTopMatches,
+        showHomeWidgets =
+            !hasQuery &&
+                !hideResults &&
+                !isSectionAliasMode &&
+                !isExpanded &&
+                !hideOtherContent &&
+                !hidePinnedAndAppsWhenSearchHistoryExpanded &&
+                !isHomeCalendarExpanded,
+        isOverlayPresentation = isOverlayPresentation,
+        isScrollInProgress = isScrollInProgress,
+        modifier = contentModifier,
+        topMatches = { renderTopMatches() },
+        deferredSearchHistory = { renderDeferredSearchHistory() },
+        item = { itemType -> renderLayoutItem(itemType) },
+    )
 }

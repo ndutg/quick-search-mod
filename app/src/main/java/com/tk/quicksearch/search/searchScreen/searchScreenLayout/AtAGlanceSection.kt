@@ -1,5 +1,9 @@
 package com.tk.quicksearch.search.searchScreen.searchScreenLayout
 
+import androidx.compose.foundation.layout.sizeIn
+import androidx.compose.foundation.layout.wrapContentSize
+import com.tk.quicksearch.settings.settingsDetailScreen.SettingsDetailType
+import com.tk.quicksearch.search.appSettings.AppSettingsTarget
 import com.tk.quicksearch.search.searchScreen.shared.compactEdgeToEdge
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.MutableTransitionState
@@ -13,8 +17,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import com.tk.quicksearch.search.searchScreen.shared.LocalSearchCardLayoutEnabled
+import com.tk.quicksearch.search.searchScreen.shared.LocalSegmentedRowsStyle
+import com.tk.quicksearch.search.searchScreen.shared.SegmentedRowsStyle
+import com.tk.quicksearch.search.searchScreen.shared.SearchResultCardDefaults
+import com.tk.quicksearch.search.searchScreen.shared.ResultSegment
+import com.tk.quicksearch.search.searchScreen.shared.segmentedRowsActive
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.SideEffect
@@ -23,6 +33,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,13 +41,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
+import com.tk.quicksearch.search.apps.notificationDots.NotificationDotsPermission
 import com.tk.quicksearch.reminders.ReminderEditorRequests
-import com.tk.quicksearch.search.appSettings.AppSettingsDestination
 import com.tk.quicksearch.search.appSettings.LocalOpenAppSettingDestination
 import com.tk.quicksearch.search.models.ContactInfo
-import com.tk.quicksearch.search.searchScreen.LocalOverlayDividerColor
 import com.tk.quicksearch.search.searchScreen.shared.SearchResultCard
-import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 
 /**
@@ -67,7 +76,11 @@ internal class AtAGlanceItems(
 private class RetainedAtAGlanceItems {
     var lastShown: List<AtAGlanceItem> = emptyList()
     var visibility: MutableTransitionState<Boolean>? = null
+    var hasShownRows = false
 }
+
+private const val AT_A_GLANCE_CARD_APPEARED_KEY = "at-a-glance-card"
+private const val AT_A_GLANCE_ROW_APPEARED_KEY_PREFIX = "at-a-glance-row-"
 
 /**
  * Keeps [live]'s last rows around while the card collapses after its last row goes. While
@@ -79,9 +92,23 @@ private fun rememberRetainedAtAGlanceItems(
     live: List<AtAGlanceItem>,
 ): AtAGlanceItems {
     val holder = remember { RetainedAtAGlanceItems() }
-    val visibility =
+    val appearedKeys = rememberHomeAppearedContentKeys()
+    var visibility =
         holder.visibility?.takeIf { enabled } ?: MutableTransitionState(live.isNotEmpty()).also { holder.visibility = it }
-    if (!enabled) holder.visibility = null
+    // The glance sources reload from empty whenever Home is rebuilt (returning from Widgets or
+    // Settings). A card that already appeared earlier in this activity comes back without its entrance.
+    if (enabled && live.isNotEmpty() && !holder.hasShownRows) {
+        holder.hasShownRows = true
+        if (!appearedKeys.add(AT_A_GLANCE_CARD_APPEARED_KEY) && !visibility.targetState) {
+            visibility = MutableTransitionState(true).also { holder.visibility = it }
+        }
+    }
+    if (!enabled) {
+        holder.visibility = null
+        // Sources reload after clearing a query. Let the first returning rows use the
+        // appeared-key check again, so an existing card returns at its final height.
+        holder.hasShownRows = false
+    }
     if (live.isNotEmpty()) holder.lastShown = live
     // Reading the transition state here recomposes once the card has finished collapsing.
     val collapsed = !visibility.targetState && visibility.isIdle
@@ -107,12 +134,16 @@ internal fun rememberAtAGlanceItems(
     reversed: Boolean,
     onShowContactMethods: (ContactInfo) -> Unit,
 ): AtAGlanceItems {
+    val context = LocalContext.current
+    val refreshKey = rememberResumeRefreshKey()
+    val hasNotificationAccess =
+        remember(refreshKey) { NotificationDotsPermission.hasNotificationListenerAccess(context) }
     val battery = rememberBatteryGlances(enabled)
-    val notifications = rememberNotificationGlances(enabled)
+    val notifications = rememberNotificationGlances(enabled, hasNotificationAccess)
     val alarm = rememberUpcomingAlarmGlance(enabled)
     val reminders = rememberUpcomingRemindersGlance(enabled)
     val birthdays = rememberBirthdaysGlance(enabled, onShowContactMethods)
-    val lowStorage = rememberLowStorageGlance(enabled)
+    val sampledStatusRows = rememberSampledGlanceStatusRows(enabled)
     val doNotDisturb = rememberDoNotDisturbGlance(enabled)
     val wifiSignIn = rememberWifiSignInGlance(enabled)
     val flashlight = rememberFlashlightGlance(enabled)
@@ -120,13 +151,13 @@ internal fun rememberAtAGlanceItems(
     val hotspot = rememberHotspotGlance(enabled)
     val tomorrowEvents = rememberTomorrowEventsGlance(enabled)
     val customInfo = rememberCustomInfoGlance(enabled)
-    val appNotifications = rememberAppNotificationsGlance(enabled, excludedKeys = setOfNotNull(notifications.otp?.key))
+    val appNotifications = rememberAppNotificationsGlance(enabled, hasNotificationAccess, excludedKeys = setOfNotNull(notifications.otp?.key))
     // Most time-critical first: live and expiring items, then things due soon, then what needs a
     // look, then today's and tomorrow's context, and the passive device states last.
     val groups =
         listOf(
             notifications.ongoingCalls.map { call ->
-                AtAGlanceItem(key = "ongoing-call-${call.key}") { OngoingCallRow(call, notifications.nowMillis) }
+                AtAGlanceItem(key = "ongoing-call-${call.key}") { OngoingCallRow(call, notifications.nowMillis()) }
             },
             listOfNotNull(
                 notifications.otp?.let { otp ->
@@ -134,7 +165,7 @@ internal fun rememberAtAGlanceItems(
                 },
             ),
             notifications.timers.map { timer ->
-                AtAGlanceItem(key = "timer-${timer.key}") { TimerRow(timer, notifications.nowMillis) }
+                AtAGlanceItem(key = "timer-${timer.key}") { TimerRow(timer, notifications.nowMillis()) }
             },
             listOfNotNull(alarm?.let { AtAGlanceItem(key = "alarm") { UpcomingAlarmRow(it) } }),
             (
@@ -143,7 +174,7 @@ internal fun rememberAtAGlanceItems(
                         AtAGlanceItem(key = "reminder-${reminder.reminderId}") {
                             UpcomingReminderRow(
                                 reminder = reminder,
-                                nowMillis = reminders.nowMillis,
+                                nowMillis = reminders.nowMillis(),
                                 isPendingDone = reminder.reminderId in reminders.pendingDoneIds,
                                 onClick = { ReminderEditorRequests.openEdit(reminder) },
                                 onDone = { reminders.markDone(reminder) },
@@ -220,20 +251,14 @@ internal fun rememberAtAGlanceItems(
             listOfNotNull(hotspot?.let { AtAGlanceItem(key = "hotspot") { HotspotRow(it) } }),
             listOfNotNull(flashlight?.let { AtAGlanceItem(key = "flashlight") { FlashlightRow(it) } }),
             listOfNotNull(battery.charging?.let { AtAGlanceItem(key = "charging") { ChargingRow(it) } }),
-            listOfNotNull(lowStorage?.let { AtAGlanceItem(key = "low-storage") { LowStorageRow(it) } }),
-        )
+        ) + sampledStatusRows.map { listOf(it) }
     return rememberRetainedAtAGlanceItems(enabled, (if (reversed) groups.asReversed() else groups).flatten())
 }
-
-@Composable
-internal fun atAGlanceDividerColor(showWallpaperBackground: Boolean) =
-    LocalOverlayDividerColor.current
-        ?: if (showWallpaperBackground) AppColors.WallpaperDivider else MaterialTheme.colorScheme.outlineVariant
 
 /** The icon pack At a Glance app icons are drawn with, so they match the app grid. */
 internal val LocalGlanceIconPackPackage = staticCompositionLocalOf<String?> { null }
 
-/** Renders [items] separated by dividers, optionally with a divider before or after the group. */
+/** Renders animated glance rows as segments, or with dividers in Compact Layout. */
 @Composable
 internal fun AtAGlanceRows(
     items: List<AtAGlanceItem>,
@@ -241,11 +266,12 @@ internal fun AtAGlanceRows(
     dividerBefore: Boolean = false,
     dividerAfter: Boolean = false,
 ) {
-    val dividerColor = atAGlanceDividerColor(showWallpaperBackground)
+    val dividerColor = SearchResultCardDefaults.dividerColor(showWallpaperBackground)
+    val segmented = segmentedRowsActive()
     val rows = rememberAnimatedGlanceRows(items)
     if (rows.isEmpty()) return
     Column(modifier = Modifier.fillMaxWidth()) {
-        if (dividerBefore) HorizontalDivider(modifier = Modifier.compactEdgeToEdge(), color = dividerColor)
+        if (dividerBefore && !segmented) HorizontalDivider(modifier = Modifier.compactEdgeToEdge(), color = dividerColor)
         rows.forEachIndexed { index, row ->
             key(row.item.key) {
                 AnimatedVisibility(
@@ -253,14 +279,21 @@ internal fun AtAGlanceRows(
                     enter = expandVertically(expandFrom = Alignment.Top) + fadeIn(),
                     exit = shrinkVertically(shrinkTowards = Alignment.Top) + fadeOut(),
                 ) {
-                    Column {
-                        if (index > 0) HorizontalDivider(modifier = Modifier.compactEdgeToEdge(), color = dividerColor)
-                        row.item.content()
+                    ResultSegment(
+                        index = index + if (dividerBefore) 1 else 0,
+                        count = rows.size + (if (dividerBefore) 1 else 0) + (if (dividerAfter) 1 else 0),
+                    ) {
+                        Column {
+                            if (index > 0 && !segmented) {
+                                HorizontalDivider(modifier = Modifier.compactEdgeToEdge(), color = dividerColor)
+                            }
+                            row.item.content()
+                        }
                     }
                 }
             }
         }
-        if (dividerAfter) HorizontalDivider(modifier = Modifier.compactEdgeToEdge(), color = dividerColor)
+        if (dividerAfter && !segmented) HorizontalDivider(modifier = Modifier.compactEdgeToEdge(), color = dividerColor)
     }
 }
 
@@ -273,6 +306,7 @@ private class AnimatedGlanceRow(
 private class AnimatedGlanceRows {
     var rows: List<AnimatedGlanceRow> = emptyList()
     var initialized = false
+    val seenKeys = mutableSetOf<String>()
 }
 
 /**
@@ -283,11 +317,18 @@ private class AnimatedGlanceRows {
 @Composable
 private fun rememberAnimatedGlanceRows(items: List<AtAGlanceItem>): List<AnimatedGlanceRow> {
     val holder = remember { AnimatedGlanceRows() }
+    val appearedKeys = rememberHomeAppearedContentKeys()
     val previous = holder.rows.associateBy { it.item.key }
     fun rowFor(item: AtAGlanceItem): AnimatedGlanceRow {
         val visibility =
-            previous[item.key]?.visibility
-                ?: MutableTransitionState(!holder.initialized).apply { targetState = true }
+            previous[item.key]?.visibility ?: run {
+                // A row that already appeared in this activity, now reloading after a page switch,
+                // shows at once; one that arrives while this group is on screen still grows in.
+                val firstInThisGroup = holder.seenKeys.add(item.key)
+                val appearedBefore = !appearedKeys.add(AT_A_GLANCE_ROW_APPEARED_KEY_PREFIX + item.key)
+                MutableTransitionState(!holder.initialized || (firstInThisGroup && appearedBefore))
+                    .apply { targetState = true }
+            }
         return AnimatedGlanceRow(item, visibility)
     }
     val currentIndex = items.withIndex().associate { (index, item) -> item.key to index }
@@ -327,8 +368,15 @@ internal fun AtAGlanceTitle(showWallpaperBackground: Boolean) {
         title = stringResource(R.string.settings_at_a_glance_title),
         showWallpaperBackground = showWallpaperBackground,
         modifier =
-            Modifier.clickable(enabled = openAppSettingDestination != null, role = Role.Button) {
-                openAppSettingDestination?.invoke(AppSettingsDestination.AT_A_GLANCE)
+            if (openAppSettingDestination == null) {
+                Modifier
+            } else {
+                Modifier.clickable(role = Role.Button) {
+                    openAppSettingDestination.invoke(AppSettingsTarget.Page(SettingsDetailType.AT_A_GLANCE))
+                }.sizeIn(
+                    minWidth = DesignTokens.MinTouchTarget,
+                    minHeight = DesignTokens.MinTouchTarget,
+                ).wrapContentSize(Alignment.CenterStart)
             },
     )
 }
@@ -340,8 +388,16 @@ internal fun AtAGlanceTitle(showWallpaperBackground: Boolean) {
 @Composable
 internal fun AtAGlanceCardShell(
     showWallpaperBackground: Boolean,
+    segmented: Boolean = false,
     content: @Composable () -> Unit,
 ) {
+    if (segmented && LocalSearchCardLayoutEnabled.current) {
+        val containerColor = SearchResultCardDefaults.containerColor(showWallpaperBackground)
+        CompositionLocalProvider(LocalSegmentedRowsStyle provides SegmentedRowsStyle(containerColor)) {
+            Column(modifier = Modifier.fillMaxWidth()) { content() }
+        }
+        return
+    }
     SearchResultCard(
         modifier = Modifier.fillMaxWidth(),
         showWallpaperBackground = showWallpaperBackground,
@@ -349,7 +405,7 @@ internal fun AtAGlanceCardShell(
         Column(
             modifier =
                 Modifier.fillMaxWidth()
-                    .padding(horizontal = DesignTokens.SpacingMedium, vertical = 4.dp),
+                    .padding(horizontal = DesignTokens.SpacingMedium, vertical = DesignTokens.SpacingXSmall),
         ) {
             content()
         }
@@ -373,9 +429,9 @@ internal fun AtAGlanceCard(
         exit = shrinkVertically(shrinkTowards = Alignment.Top) + fadeOut(),
     ) {
         // Matches the spacing of the home column the title and card sit in.
-        Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
+        Column(verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium)) {
             if (showTitle) AtAGlanceTitle(showWallpaperBackground)
-            AtAGlanceCardShell(showWallpaperBackground = showWallpaperBackground) {
+            AtAGlanceCardShell(showWallpaperBackground = showWallpaperBackground, segmented = true) {
                 AtAGlanceRows(items = items, showWallpaperBackground = showWallpaperBackground)
             }
         }
@@ -413,7 +469,7 @@ internal fun NowPlayingCard(
         exit = shrinkVertically(shrinkTowards = Alignment.Top) + fadeOut(),
     ) {
         // Matches the spacing of the home column the title and card sit in.
-        Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
+        Column(verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium)) {
             if (showTitle) AtAGlanceTitle(showWallpaperBackground)
             AtAGlanceCardShell(showWallpaperBackground = showWallpaperBackground) {
                 NowPlayingRow(glance, onDismiss = { visibility.targetState = false })

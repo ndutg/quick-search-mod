@@ -1,5 +1,7 @@
 package com.tk.quicksearch.search.searchScreen
 
+import com.tk.quicksearch.onboarding.welcomeMorphHoldsKeyboard
+import com.tk.quicksearch.onboarding.welcomeMorphRunning
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -14,6 +16,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
@@ -34,6 +37,7 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.core.AiSearchStatus
+import com.tk.quicksearch.search.core.SearchBarStyle
 import com.tk.quicksearch.search.core.SearchSection
 import com.tk.quicksearch.search.core.SearchTarget
 import com.tk.quicksearch.search.core.SearchUiState
@@ -46,6 +50,8 @@ import com.tk.quicksearch.search.searchScreen.shared.LocalSearchCardLayoutEnable
 import com.tk.quicksearch.search.searchScreen.searchScreenLayout.SectionRenderingState
 import com.tk.quicksearch.search.searchScreen.searchScreenLayout.SearchContentArea
 import com.tk.quicksearch.search.searchScreen.components.LocalSearchResultQuery
+import com.tk.quicksearch.search.searchScreen.components.LocalOpenKeyboardPillMemory
+import com.tk.quicksearch.search.searchScreen.components.LocalSearchReturningFromInAppPage
 import com.tk.quicksearch.shared.ui.theme.LocalAmoledThemeActive
 import com.tk.quicksearch.shared.ui.theme.LocalSearchColorTheme
 import com.tk.quicksearch.shared.util.rememberPhysicalKeyboardConnected
@@ -162,10 +168,17 @@ internal fun SearchScreenContent(
     val keyboardController = LocalSoftwareKeyboardController.current
     val density = LocalDensity.current
     val isPhysicalKeyboardConnected = rememberPhysicalKeyboardConnected()
-    val openKeyboardOnLaunchOnStartup = remember { state.openKeyboardOnLaunch }
+    // Returning from Settings/Widgets rebuilds this screen but skips launch auto-focus, so the
+    // startup keyboard gating must not wait for a keyboard that will never open.
+    val returningFromInAppPage = LocalSearchReturningFromInAppPage.current
+    val openKeyboardOnLaunchOnStartup = remember { state.openKeyboardOnLaunch && !returningFromInAppPage }
     var canShowOpenKeyboardPill by
             remember(isOverlayPresentation) { mutableStateOf(!isOverlayPresentation && !openKeyboardOnLaunchOnStartup) }
-    var delayedOpenKeyboardActionVisible by remember { mutableStateOf(false) }
+    val openKeyboardPillMemory = LocalOpenKeyboardPillMemory.current
+    // Already on screen before switching pages: show it again as-is, without the enter animation.
+    var delayedOpenKeyboardActionVisible by remember {
+        mutableStateOf(returningFromInAppPage && openKeyboardPillMemory.visibleWhenLeft)
+    }
     var hideOpenKeyboardActionInstantly by remember { mutableStateOf(false) }
     var hasSeenStartupKeyboardVisible by
             remember(isOverlayPresentation) { mutableStateOf(false) }
@@ -283,6 +296,12 @@ internal fun SearchScreenContent(
     val shouldShowNumberKeyboardOperators =
             isImeVisible && (manuallySwitchedToNumberKeyboard || isCalculatorMode)
     val showBottomSearchBar = showSearchField && state.bottomSearchBarEnabled
+    val barStyle =
+            if (SearchBarStyle.hasFixedShape(state.bottomSearchBarEnabled, state.isSearchEngineCompactMode)) {
+                state.searchBarStyle.withFixedShape()
+            } else {
+                state.searchBarStyle
+            }
     val surfaceColors = rememberSearchSurfaceColors(state)
     val amoledSurfacesActive = surfaceColors.amoledSurfacesActive
     val searchColorTheme = surfaceColors.searchColorTheme
@@ -299,18 +318,23 @@ internal fun SearchScreenContent(
                     !isPhysicalKeyboardConnected &&
                     canShowOpenKeyboardPill &&
                     hasClosedStartupKeyboardAfterLaunch &&
-                    !isSearchHistoryExpanded
+                    !state.restoreSearchKeyboard &&
+                    !isSearchHistoryExpanded && !welcomeMorphRunning()
 
     LaunchedEffect(shouldShowOpenKeyboardAction) {
         if (!shouldShowOpenKeyboardAction) {
             delayedOpenKeyboardActionVisible = false
             return@LaunchedEffect
         }
+        if (delayedOpenKeyboardActionVisible) return@LaunchedEffect
 
         hideOpenKeyboardActionInstantly = false
         delayedOpenKeyboardActionVisible = false
         delay(OPEN_KEYBOARD_ACTION_APPEAR_DELAY_MS)
         delayedOpenKeyboardActionVisible = true
+    }
+    SideEffect {
+        openKeyboardPillMemory.visibleWhenLeft = shouldShowOpenKeyboardAction && delayedOpenKeyboardActionVisible
     }
     val keyboardSwitchText =
             if (isToolMode) {
@@ -476,31 +500,7 @@ internal fun SearchScreenContent(
         )
     }
 
-    var lastTriggeredQuery by remember { mutableStateOf<String?>(null) }
-    LaunchedEffect(
-        state.query,
-        state.allApps,
-        renderingState.displayApps,
-        state.allAppShortcuts,
-        renderingState.appShortcutResults,
-        renderingState.contactResults,
-        state.pinnedContacts,
-        renderingState.fileResults,
-        state.pinnedFiles,
-        renderingState.settingResults,
-        state.allDeviceSettings,
-        renderingState.calendarEvents,
-        renderingState.noteResults,
-        state.pinnedNotes,
-        triggerWords,
-    ) {
-        if (state.query == lastTriggeredQuery) return@LaunchedEffect
-        lastTriggeredQuery = null
-        if (state.query.isBlank()) return@LaunchedEffect
-        if (openMatchingTrigger(state.query)) {
-            lastTriggeredQuery = state.query
-        }
-    }
+    AutoOpenMatchingTrigger(state, renderingState, triggerWords, openMatchingTrigger)
 
     val searchBarGeometry = rememberSearchBarGeometry(
         state = state,
@@ -544,7 +544,7 @@ internal fun SearchScreenContent(
                 placeholderText = searchHintText,
                 showWelcomeAnimation = state.showSearchBarWelcomeAnimation,
                 showWallpaperBackground = state.showWallpaperBackground,
-                autoFocusOnStart = state.openKeyboardOnLaunch,
+                autoFocusOnStart = state.openKeyboardOnLaunch && !welcomeMorphHoldsKeyboard(),
                 releaseFocusOnLeave = !isOverlayPresentation && state.clearQueryOnLaunch,
                 restoreKeyboardOnEnter = !isOverlayPresentation && state.restoreSearchKeyboard,
                 onRestoreKeyboardHandled = onRestoreSearchKeyboardHandled,
@@ -561,8 +561,9 @@ internal fun SearchScreenContent(
                 focusRequester = searchFocusRequester,
                 forceRestingOutline = showBottomSearchBar,
                 transparentBackground = useInsetEngineStrip,
-                cornerRadius = state.searchBarStyle.cornerRadius(),
-                searchBarStyle = state.searchBarStyle,
+                cornerRadius = barStyle.cornerRadius(),
+                // Inside the compact engine card the card carries the outline, not the bar.
+                searchBarStyle = if (useInsetEngineStrip) barStyle.copy(borderWidthDp = 0f) else barStyle,
                 modifier = searchFieldModifier,
                 onMoveTopResultSelectionUp = { moveSelectedTopMatch(-1) },
                 onMoveTopResultSelectionDown = { moveSelectedTopMatch(1) },
@@ -638,6 +639,7 @@ internal fun SearchScreenContent(
         LocalAmoledThemeActive provides amoledSurfacesActive,
         LocalSearchResultQuery provides state.query.trim(),
         LocalInsetCardBackdrop provides searchBarGeometry.insetCardBackdrop,
+        LocalSearchChromeBlurEnabled provides state.searchChromeBlurEnabled,
         com.tk.quicksearch.tools.calculator.LocalCalculatorResultQueryHandler provides onQueryChanged,
     ) {
     Column(modifier = contentModifier, verticalArrangement = Arrangement.Top) {
@@ -659,7 +661,7 @@ internal fun SearchScreenContent(
                                         Modifier.weight(1f)
                                     }
                             if (showSearchField && showBottomSearchBar) {
-                                base.padding(top = DesignTokens.SpacingXXSmall)
+                                base.padding(top = DesignTokens.SpacingXSmall)
                             } else {
                                 base
                             }
@@ -701,7 +703,7 @@ internal fun SearchScreenContent(
                 onOpenGesturesSettingsClick = onOpenGesturesSettingsClick,
                 onOpenSettingsClick = onSettingsClick,
                 showOpenSettingsOption = !state.settingsIconEnabled,
-                showCalculator = state.calculatorState.isToolMode || state.calculatorState.result != null || state.calculatorState.parsedDateMillis != null || state.calculatorState.dateDiffLabel != null || state.calculatorState.timeResultLabel != null,
+                showCalculator = state.calculatorState.isVisible,
                 showCurrencyConverter = showCurrencyConverter,
                 showWorldClock = showWorldClock,
                 showDictionary = showDictionary,
@@ -725,6 +727,8 @@ internal fun SearchScreenContent(
                     )
                 },
                 selectedTopMatchIndex = selectedTopMatchIndex,
+                topMatches = topMatchSubmission.topMatches,
+                isBottomChromeAnimating = searchBarGeometry.isInsetEngineStripAnimating,
         )
         }
 

@@ -1,6 +1,6 @@
 package com.tk.quicksearch.search.core
 
-import android.widget.Toast
+import com.tk.quicksearch.shared.ui.components.AppMessages
 import com.tk.quicksearch.R
 import com.tk.quicksearch.overlay.OverlayModeController
 import com.tk.quicksearch.search.apps.IconPackService
@@ -25,7 +25,6 @@ import kotlinx.coroutines.withContext
 internal interface SearchPreferencesStateAccess {
     var enabledFileTypes: Set<FileType>
     var showFolders: Boolean
-    var filePreviewsEnabled: Boolean
     var showSystemFiles: Boolean
     var folderWhitelistPatterns: Set<String>
     var folderBlacklistPatterns: Set<String>
@@ -50,6 +49,7 @@ internal interface SearchPreferencesStateAccess {
     var themedIconsEnabled: Boolean
     var deviceThemeEnabled: Boolean
     var amoledThemeEnabled: Boolean
+    var searchChromeBlurEnabled: Boolean
     var maskUnsupportedIconPackIcons: Boolean
     var wallpaperBackgroundAlpha: Float
     var wallpaperBlurRadius: Float
@@ -94,34 +94,6 @@ internal class SearchPreferencesDelegate(
 ) {
     @Volatile internal var lastModelRefreshAtMillis = 0L
     @Volatile internal var lastModelRefreshProviderIds: Set<AiSearchLlmProviderId> = emptySet()
-
-    fun setCalculatorEnabled(enabled: Boolean) {
-        scope.launch(Dispatchers.IO) {
-            userPreferences.setCalculatorEnabled(enabled)
-            updateFeatureState { it.copy(calculatorEnabled = enabled) }
-        }
-    }
-
-    fun setUnitConverterEnabled(enabled: Boolean) {
-        scope.launch(Dispatchers.IO) {
-            userPreferences.setUnitConverterEnabled(enabled)
-            updateFeatureState { it.copy(unitConverterEnabled = enabled) }
-        }
-    }
-
-    fun setDateCalculatorEnabled(enabled: Boolean) {
-        scope.launch(Dispatchers.IO) {
-            userPreferences.setDateCalculatorEnabled(enabled)
-            updateFeatureState { it.copy(dateCalculatorEnabled = enabled) }
-        }
-    }
-
-    fun setColorVisualizerEnabled(enabled: Boolean) {
-        scope.launch(Dispatchers.IO) {
-            userPreferences.setColorVisualizerEnabled(enabled)
-            updateFeatureState { it.copy(colorVisualizerEnabled = enabled) }
-        }
-    }
 
     fun setCurrencyConverterEnabled(enabled: Boolean) {
         scope.launch(Dispatchers.IO) {
@@ -595,21 +567,29 @@ internal class SearchPreferencesDelegate(
             userPreferences.clearHomeTextColorOverride()
             stateAccess.backgroundSource = source
             stateAccess.homeTextColorOverride = null
-            val autoTheme =
-                if (source != BackgroundSource.THEME && stateAccess.appTheme != AppTheme.MONOCHROME) {
-                    userPreferences.setAppTheme(AppTheme.MONOCHROME)
-                    stateAccess.appTheme = AppTheme.MONOCHROME
-                    AppTheme.MONOCHROME
-                } else {
-                    null
-                }
+            // A Colorful theme stays over a wallpaper or custom image and keeps its own accent; the
+            // wallpaper accent only pairs with the Default theme.
+            val dropWallpaperAccent =
+                source != BackgroundSource.THEME &&
+                    stateAccess.appTheme != AppTheme.MONOCHROME &&
+                    stateAccess.accentColorMode == AccentColorMode.FROM_WALLPAPER
+            if (dropWallpaperAccent) {
+                userPreferences.setAccentColorMode(AccentColorMode.NONE)
+                stateAccess.accentColorMode = AccentColorMode.NONE
+            }
             updateConfigState {
                 it.copy(
                     backgroundSource = source,
                     showWallpaperBackground = source != BackgroundSource.THEME,
-                    appTheme = autoTheme ?: it.appTheme,
+                    accentColorMode = if (dropWallpaperAccent) AccentColorMode.NONE else it.accentColorMode,
                     homeTextColorOverride = null,
                 )
+            }
+            if (dropWallpaperAccent) {
+                withContext(Dispatchers.Main) {
+                    val app = applicationProvider()
+                    AppMessages.show(app, app.getString(R.string.settings_accent_color_default_theme_required_toast))
+                }
             }
             stateAccess.saveStartupSurfaceSnapshotAsync(
                 forcePreviewRefresh = true,
@@ -670,9 +650,6 @@ internal class SearchPreferencesDelegate(
         }
     }
 
-    fun onSystemDarkModeChanged(isDarkMode: Boolean, currentAppThemeMode: AppThemeMode) {
-    }
-
     fun setThemedIconsEnabled(enabled: Boolean) {
         scope.launch(Dispatchers.IO) {
             if (stateAccess.themedIconsEnabled == enabled) return@launch
@@ -723,6 +700,15 @@ internal class SearchPreferencesDelegate(
             userPreferences.setAmoledThemeEnabled(enabled)
             stateAccess.amoledThemeEnabled = enabled
             updateConfigState { it.copy(amoledThemeEnabled = enabled) }
+        }
+    }
+
+    fun setSearchChromeBlurEnabled(enabled: Boolean) {
+        scope.launch(Dispatchers.IO) {
+            if (stateAccess.searchChromeBlurEnabled == enabled) return@launch
+            userPreferences.setSearchChromeBlurEnabled(enabled)
+            stateAccess.searchChromeBlurEnabled = enabled
+            updateConfigState { it.copy(searchChromeBlurEnabled = enabled) }
         }
     }
 

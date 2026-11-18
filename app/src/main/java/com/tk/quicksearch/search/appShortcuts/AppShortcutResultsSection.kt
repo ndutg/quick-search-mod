@@ -1,5 +1,14 @@
 package com.tk.quicksearch.search.appShortcuts
 
+import androidx.compose.ui.semantics.Role
+import com.tk.quicksearch.settings.settingsDetailScreen.SettingsDetailType
+import com.tk.quicksearch.search.appSettings.AppSettingsTarget
+import com.tk.quicksearch.shared.ui.theme.AppShapes
+import com.tk.quicksearch.search.searchScreen.components.ExpandButtonSegment
+import com.tk.quicksearch.search.searchScreen.shared.segmentedRowsActive
+import com.tk.quicksearch.search.searchScreen.shared.resultRowsContainerPadding
+import com.tk.quicksearch.search.searchScreen.shared.ResultSegment
+import com.tk.quicksearch.search.searchScreen.shared.ResultRowDivider
 import com.tk.quicksearch.search.searchScreen.shared.compactEdgeToEdge
 import com.tk.quicksearch.search.apps.appLock.AppLockGate
 import android.content.Intent
@@ -16,15 +25,13 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
@@ -40,11 +47,12 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.shared.ui.components.AppDropdownMenu
+import com.tk.quicksearch.shared.ui.components.AppDropdownMenuDivider
+import com.tk.quicksearch.shared.ui.components.AppDropdownMenuItem
 import com.tk.quicksearch.shared.ui.components.ItemMenuLongPressOption
 import com.tk.quicksearch.shared.ui.components.ItemMenuPopup
 import com.tk.quicksearch.shared.ui.components.ItemMenuRow
@@ -62,7 +70,6 @@ import com.tk.quicksearch.search.data.appShortcutRepository.rememberShortcutIcon
 import com.tk.quicksearch.search.data.appShortcutRepository.shortcutDisplayName
 import com.tk.quicksearch.search.data.appShortcutRepository.shortcutKey
 import com.tk.quicksearch.search.data.userAppPreferences.UserAppPreferences
-import com.tk.quicksearch.search.appSettings.AppSettingsDestination
 import com.tk.quicksearch.search.appSettings.LocalOpenAppSettingDestination
 import com.tk.quicksearch.search.core.LocalItemCustomizationRemover
 import com.tk.quicksearch.search.searchScreen.LocalOverlayDividerColor
@@ -71,7 +78,6 @@ import com.tk.quicksearch.search.searchScreen.PredictedSubmitTarget
 import com.tk.quicksearch.search.searchScreen.SearchScreenConstants
 import com.tk.quicksearch.search.searchScreen.components.ExpandableResultsCard
 import com.tk.quicksearch.search.searchScreen.components.topPredictedRowContainer
-import com.tk.quicksearch.search.searchScreen.components.topPredictedRowContentPadding
 import com.tk.quicksearch.search.searchScreen.components.resultRowVerticalPadding
 import com.tk.quicksearch.search.searchScreen.components.rememberQueryHighlightedText
 import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
@@ -142,6 +148,7 @@ fun AppShortcutResultsSection(
                         fillExpandedHeight = fillExpandedHeight,
                         showWallpaperBackground = showWallpaperBackground,
                         overlayCardColor = overlayCardColor,
+                    segmented = true,
                 ) { contentModifier, cardState ->
                         val displayShortcuts =
                                 if (cardState.displayAsExpanded) {
@@ -222,9 +229,14 @@ private fun AppShortcutsCardContent(
         bottomContentPadding: Dp,
         showPinnedItemMenu: Boolean,
 ) {
+        val segmentCount = displayShortcuts.size + if (shouldShowExpandButton) 1 else 0
+        val segmented = segmentedRowsActive()
         Column(
                 modifier =
-                        Modifier.padding(horizontal = DesignTokens.SpacingMedium, vertical = 4.dp)
+                        Modifier.padding(
+                                horizontal = resultRowsContainerPadding(DesignTokens.SpacingMedium),
+                                vertical = resultRowsContainerPadding(4.dp),
+                        )
                                 .padding(bottom = bottomContentPadding),
         ) {
                 displayShortcuts.forEachIndexed { index, shortcut ->
@@ -234,10 +246,10 @@ private fun AppShortcutsCardContent(
                                         predictedShortcutId != null && shortcutId == predictedShortcutId
                                 val showPredictedOnRow =
                                         isPredictedShortcut && !useCardLevelPrediction
+                                ResultSegment(index = index, count = segmentCount) {
                                 AppShortcutRow(
                                         shortcut = shortcut,
                                         isPinned = pinnedShortcutIds.contains(shortcutId),
-                                        isExcluded = excludedShortcutIds.contains(shortcutId),
                                         hasNickname = !getShortcutNickname(shortcutId).isNullOrBlank(),
                                         hasTrigger = getShortcutTrigger(shortcutId)?.word?.isNotBlank() == true,
                                         onShortcutClick = onShortcutClick,
@@ -254,17 +266,16 @@ private fun AppShortcutsCardContent(
                                         isPredicted = showPredictedOnRow,
                                         showPinnedItemMenu = showPinnedItemMenu,
                                 )
+                                }
                                 if (index < displayShortcuts.lastIndex && !showPredictedOnRow) {
-                                        HorizontalDivider(
-                                                modifier = Modifier.compactEdgeToEdge().fillMaxWidth(),
-                                                color = overlayDividerColor
-                                                                ?: if (showWallpaperBackground) AppColors.WallpaperDivider else MaterialTheme.colorScheme.outlineVariant,
-                                        )
+                                        ResultRowDivider(showWallpaperBackground, color = overlayDividerColor)
                                 }
                         }
                 }
 
-                if (shouldShowExpandButton) {
+                if (shouldShowExpandButton && segmented) {
+                        ExpandButtonSegment(index = segmentCount - 1, count = segmentCount, onClick = onExpandClick, textResId = R.string.action_expand_more_shortcuts)
+                } else if (shouldShowExpandButton) {
                         ExpandButtonDivider(showWallpaperBackground)
                         ExpandButton(
                                 onClick = onExpandClick,
@@ -280,7 +291,6 @@ private fun AppShortcutsCardContent(
 internal fun AppShortcutRow(
         shortcut: StaticShortcut,
         isPinned: Boolean,
-        isExcluded: Boolean,
         hasNickname: Boolean,
         hasTrigger: Boolean = false,
         onShortcutClick: (StaticShortcut) -> Unit,
@@ -327,6 +337,7 @@ internal fun AppShortcutRow(
                                 .heightIn(min = ROW_MIN_HEIGHT.dp)
                                 .topPredictedRowContainer(isTopPredicted = isPredicted)
                                 .combinedClickable(
+                                        role = Role.Button,
                                         onClick = {
                                                 hapticConfirm(view)()
                                                 onShortcutClick(shortcut)
@@ -338,9 +349,8 @@ internal fun AppShortcutRow(
                                                                 null
                                                         },
                                 )
-                                .topPredictedRowContentPadding()
-                                .padding(vertical = resultRowVerticalPadding(12.dp)),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                                .padding(vertical = resultRowVerticalPadding(DesignTokens.SpacingMedium)),
+                horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium),
                 verticalAlignment = Alignment.CenterVertically,
         ) {
                 val leadingIconStartPadding =
@@ -374,7 +384,7 @@ internal fun AppShortcutRow(
                                 }
                         Text(
                                 text = rememberQueryHighlightedText(displayName),
-                                style = MaterialTheme.typography.bodyMedium,
+                                style = MaterialTheme.typography.bodyLarge,
                                 color = MaterialTheme.colorScheme.onSurface,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
@@ -382,7 +392,7 @@ internal fun AppShortcutRow(
                         if (!secondaryText.isNullOrBlank()) {
                                 Text(
                                         text = rememberQueryHighlightedText(secondaryText),
-                                        style = MaterialTheme.typography.bodySmall,
+                                        style = MaterialTheme.typography.bodyMedium,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                                         maxLines = 1,
                                         overflow = TextOverflow.Ellipsis,
@@ -510,9 +520,18 @@ private fun AppShortcutDropdownMenu(
         val displayName = shortcutDisplayName(shortcut)
         val density = LocalDensity.current
         val iconSizePx = remember(density) { with(density) { 40.dp.roundToPx().coerceAtLeast(1) } }
-        val iconBitmap = rememberShortcutIcon(shortcut = shortcut, iconSizePx = iconSizePx)
-        val appIconResult = rememberAppIcon(packageName = shortcut.packageName, iconPackPackage = iconPackPackage)
-        val headerIcon = iconBitmap ?: appIconResult.bitmap
+        // Every result row composes its menu while closed; only load its icons and state once
+        // it has been opened (and keep them for the close animation).
+        var hasOpened by remember { mutableStateOf(expanded) }
+        LaunchedEffect(expanded) { if (expanded) hasOpened = true }
+        val isActive = expanded || hasOpened
+        val iconBitmap = if (isActive) rememberShortcutIcon(shortcut = shortcut, iconSizePx = iconSizePx) else null
+        val headerIcon =
+                iconBitmap ?: if (isActive) {
+                        rememberAppIcon(packageName = shortcut.packageName, iconPackPackage = iconPackPackage).bitmap
+                } else {
+                        null
+                }
         val isUserCreated = isUserCreatedShortcut(shortcut)
         val notificationAction = CustomWidgetButtonAction.AppShortcut(
                 packageName = shortcut.packageName,
@@ -525,10 +544,14 @@ private fun AppShortcutDropdownMenu(
                 enabled = shortcut.enabled,
                 intents = shortcut.intents,
         )
-        val isPinnedToNotifications = PinnedNotifications.isPinned(context, notificationAction)
+        val isPinnedToNotifications = remember(shortcut, expanded) {
+                isActive && PinnedNotifications.isPinned(context, notificationAction)
+        }
         val openAppSettingDestination = LocalOpenAppSettingDestination.current
         val hasIconOverride = remember(shortcut, expanded) {
-                !UserAppPreferences(context).getAppShortcutIconOverride(shortcutKey(shortcut)).isNullOrBlank()
+                isActive &&
+                        UserAppPreferences(context).getAllAppShortcutIconOverrides()[shortcutKey(shortcut)]
+                                .isNullOrBlank().not()
         }
 
         // Removing keeps the menu open, so the menu tracks it until it's next opened.
@@ -636,7 +659,7 @@ private fun AppShortcutDropdownMenu(
                         add(AppShortcutMenuItem(
                                 textResId = R.string.action_app_shortcuts_settings,
                                 icon = { Icon(imageVector = MaterialSymbols.Settings, contentDescription = null) },
-                                onClick = { onDismissRequest(); openDestination(AppSettingsDestination.APP_SHORTCUTS) },
+                                onClick = { onDismissRequest(); openDestination(AppSettingsTarget.Page(SettingsDetailType.APP_SHORTCUTS)) },
                                 group = ItemMenuGroup.BEHAVIOR,
                         ))
                 }
@@ -652,7 +675,7 @@ private fun AppShortcutDropdownMenu(
                         add(AppShortcutMenuItem(
                                 textResId = if (appLabel != null) R.string.action_uninstall_named else R.string.action_uninstall_app,
                                 textArg = appLabel,
-                                icon = { Icon(imageVector = MaterialSymbols.Delete, contentDescription = null) },
+                                icon = { Icon(imageVector = MaterialSymbols.DeleteOutline, contentDescription = null) },
                                 onClick = {
                                         onDismissRequest()
                                         AppLockGate.runAfterUnlock(context, shortcut.packageName, shortcut.appLabel) {
@@ -677,12 +700,12 @@ private fun AppShortcutDropdownMenu(
                 ) {
                         menuItems.forEachIndexed { index, item ->
                                 if (index > 0) {
-                                        HorizontalDivider()
+                                        AppDropdownMenuDivider()
                                 }
-                                DropdownMenuItem(
-                                        text = { Text(text = stringResource(item.textResId)) },
-                                        leadingIcon = { item.icon() },
-                                        onClick = item.onClick,
+                                AppDropdownMenuItem(
+                                    text = stringResource(item.textResId),
+                                    leadingIcon = item.icon,
+                                    onClick = item.onClick,
                                 )
                         }
                 }
@@ -708,7 +731,7 @@ private fun AppShortcutDropdownMenu(
                                         Image(
                                                 bitmap = bitmap,
                                                 contentDescription = displayName,
-                                                modifier = Modifier.size(40.dp).clip(RoundedCornerShape(10.dp)),
+                                                modifier = Modifier.size(40.dp).clip(AppShapes.iconTile),
                                                 contentScale = ContentScale.Fit,
                                         )
                                 }
@@ -717,9 +740,6 @@ private fun AppShortcutDropdownMenu(
                                 Column {
                                         Text(
                                                 text = displayName,
-                                                style = MaterialTheme.typography.titleMedium,
-                                                fontWeight = FontWeight.SemiBold,
-                                                color = MaterialTheme.colorScheme.onSurface,
                                                 maxLines = 2,
                                                 overflow = TextOverflow.Ellipsis,
                                         )

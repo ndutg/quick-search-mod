@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.LazyGridState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,7 +29,6 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -38,8 +36,8 @@ import com.tk.quicksearch.search.models.AppInfo
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import java.util.Locale
 import kotlin.math.roundToInt
+import com.tk.quicksearch.shared.ui.theme.AppShapes
 
-internal val AllAppsDialogSeekEdgeNudge = DesignTokens.SpacingMedium
 private val LetterPopupSize = 80.dp
 private val LetterPopupPointerWidth = 14.dp
 private val LetterPopupPointerHeight = 22.dp
@@ -101,8 +99,8 @@ internal fun AllAppsScrollLetterPopup(
                         modifier =
                                 Modifier
                                         .size(LetterPopupSize)
-                                        .shadow(DesignTokens.ElevationLevel3, CircleShape)
-                                        .clip(CircleShape)
+                                        .shadow(DesignTokens.ElevationLevel3, AppShapes.full)
+                                        .clip(AppShapes.full)
                                         .background(bubbleColor),
                         contentAlignment = Alignment.Center,
                 ) {
@@ -110,7 +108,6 @@ internal fun AllAppsScrollLetterPopup(
                             text = resolvedLetter.toString(),
                             color = letterColor,
                             style = MaterialTheme.typography.displaySmall,
-                            fontWeight = FontWeight.Bold,
                     )
                 }
                 ScrollbarPointer(
@@ -176,12 +173,6 @@ internal fun firstIndexBySeekLetter(appNames: List<String>): Map<Char, Int> {
         }
     }
     return map
-}
-
-internal fun seekLettersForApps(appNames: List<String>): List<Char> {
-    if (appNames.isEmpty()) return emptyList()
-    val hasHash = appNames.any { appSeekLetter(it) == '#' }
-    return if (hasHash) AlphabetSeekLetters else AlphabetSeekLetters.filter { it != '#' }
 }
 
 internal fun indexForSeekLetter(

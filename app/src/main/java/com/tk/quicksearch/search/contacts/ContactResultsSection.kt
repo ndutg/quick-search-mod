@@ -1,5 +1,11 @@
 package com.tk.quicksearch.search.contacts
 
+import com.tk.quicksearch.shared.ui.components.AppIconButton
+import com.tk.quicksearch.search.searchScreen.components.ExpandButtonSegment
+import com.tk.quicksearch.search.searchScreen.shared.segmentedRowsActive
+import com.tk.quicksearch.search.searchScreen.shared.resultRowsContainerPadding
+import com.tk.quicksearch.search.searchScreen.shared.ResultSegment
+import com.tk.quicksearch.search.searchScreen.shared.ResultRowDivider
 import com.tk.quicksearch.search.searchScreen.shared.compactEdgeToEdge
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,11 +20,19 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
+import androidx.compose.foundation.ScrollState
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -206,6 +220,14 @@ private fun ContactsResultCard(
         hasPredictedContact && (!displayAsExpanded || contacts.size == 1)
 
     val scrollState = androidx.compose.foundation.rememberScrollState()
+    // The expanded card scrolls a plain Column, so alias searches (hundreds of rows) are composed
+    // a page at a time as the user nears the end instead of all at once.
+    val expandedRowCount =
+        rememberProgressiveRowCount(
+            contacts = contacts,
+            scrollState = scrollState,
+            enabled = isExpanded,
+        )
 
     Column(
         modifier = Modifier.fillMaxWidth(),
@@ -222,10 +244,11 @@ private fun ContactsResultCard(
             fillExpandedHeight = fillExpandedHeight,
             showWallpaperBackground = showWallpaperBackground,
             overlayCardColor = overlayCardColor,
+            segmented = true,
         ) { contentModifier, cardState ->
             val displayContacts =
                 if (cardState.displayAsExpanded) {
-                    contacts
+                    if (isExpanded) contacts.take(expandedRowCount) else contacts
                 } else {
                     contacts.take(SearchScreenConstants.INITIAL_RESULT_COUNT)
                 }
@@ -325,11 +348,12 @@ private fun ContactList(
     bottomContentPadding: Dp,
     showPinnedItemMenu: Boolean,
 ) {
+    val segmentCount = displayContacts.size + if (shouldShowExpandButton) 1 else 0
     Column(
         modifier =
             Modifier.padding(
-                horizontal = DesignTokens.SpacingMedium,
-                vertical = DesignTokens.SpacingXSmall,
+                horizontal = resultRowsContainerPadding(DesignTokens.SpacingMedium),
+                vertical = resultRowsContainerPadding(DesignTokens.SpacingXSmall),
             ).padding(bottom = bottomContentPadding),
     ) {
         displayContacts.forEachIndexed { index, contactInfo ->
@@ -337,6 +361,8 @@ private fun ContactList(
                 predictedContactId != null &&
                     contactInfo.contactId == predictedContactId
             val showPredictedOnRow = isPredictedContact && !useCardLevelPrediction
+            ResultSegment(index = index, count = segmentCount) {
+            Column {
             key(contactInfo.contactId) {
                 ContactResultRow(
                     contactInfo = contactInfo,
@@ -380,15 +406,21 @@ private fun ContactList(
                     modifier = Modifier.padding(top = DesignTokens.SpacingSmall),
                 )
             }
+            }
+            }
             if (index != displayContacts.lastIndex && !showPredictedOnRow) {
-                HorizontalDivider(
-                    modifier = Modifier.compactEdgeToEdge().fillMaxWidth(),
-                    color = overlayDividerColor ?: if (showWallpaperBackground) AppColors.WallpaperDivider else MaterialTheme.colorScheme.outlineVariant,
-                )
+                ResultRowDivider(showWallpaperBackground, color = overlayDividerColor)
             }
         }
 
-        if (shouldShowExpandButton) {
+        if (shouldShowExpandButton && segmentedRowsActive()) {
+            ExpandButtonSegment(
+                index = segmentCount - 1,
+                count = segmentCount,
+                onClick = onExpandClick,
+                textResId = R.string.action_expand_more_contacts,
+            )
+        } else if (shouldShowExpandButton) {
             ExpandButtonDivider(showWallpaperBackground)
             // Flat sections (card layout off) keep the standard button size, like other More buttons.
             val cardLayoutEnabled = LocalSearchCardLayoutEnabled.current
@@ -401,14 +433,14 @@ private fun ContactList(
                             if (cardLayoutEnabled) {
                                 Modifier
                                     .height(ContactUiConstants.EXPAND_BUTTON_HEIGHT.dp)
-                                    .padding(top = DesignTokens.SpacingXXSmall)
+                                    .padding(top = DesignTokens.SpacingXSmall)
                             } else {
                                 Modifier
                             },
                         ),
                 textResId = R.string.action_expand_more_contacts,
             )
-            if (cardLayoutEnabled) Spacer(modifier = Modifier.height(8.dp))
+            if (cardLayoutEnabled) Spacer(modifier = Modifier.height(DesignTokens.SpacingSmall))
         }
     }
 }
@@ -420,11 +452,11 @@ private fun ContactActionHintBubble(
 ) {
     val arrowHeight = 10.dp
     val arrowWidth = 28.dp
-    val cornerRadius = 16.dp
+    val cornerRadius = DesignTokens.CornerLarge
     val arrowInset =
-        ContactUiConstants.ACTION_BUTTON_SIZE.dp * 0.5f + DesignTokens.SpacingSmall + 24.dp
-    val backgroundColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.08f)
-    val borderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.4f)
+        DesignTokens.MinTouchTarget * 0.5f + DesignTokens.SpacingSmall + 24.dp
+    val backgroundColor = MaterialTheme.colorScheme.primary.copy(alpha = AppColors.TintSubtleAlpha)
+    val borderColor = MaterialTheme.colorScheme.primary.copy(alpha = AppColors.ContentFaintAlpha)
 
     Box(
         modifier =
@@ -557,21 +589,54 @@ private fun ContactActionHintBubble(
                 text = stringResource(R.string.contacts_action_hint_message),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurface,
-                lineHeight = MaterialTheme.typography.bodySmall.lineHeight * 1.2f,
                 modifier =
-                    Modifier.align(Alignment.CenterStart).padding(end = 28.dp),
+                    Modifier.align(Alignment.CenterStart).padding(end = DesignTokens.Spacing40),
             )
-            IconButton(
+            AppIconButton(
                 onClick = onDismiss,
-                modifier = Modifier.align(Alignment.CenterEnd).size(28.dp),
+                tooltip = stringResource(R.string.common_close),
+                modifier = Modifier.size(DesignTokens.ButtonHeightSmall),
+                anchorModifier = Modifier.align(Alignment.CenterEnd),
             ) {
                 Icon(
                     imageVector = MaterialSymbols.Close,
                     contentDescription = stringResource(R.string.common_close),
                     tint = MaterialTheme.colorScheme.onSecondaryContainer,
-                    modifier = Modifier.size(18.dp),
+                    modifier = Modifier.size(DesignTokens.ButtonIconSizeSmall),
                 )
             }
         }
     }
+}
+
+private const val EXPANDED_ROWS_PAGE_SIZE = 30
+private val EXPANDED_ROWS_PREFETCH_DISTANCE = 600.dp
+
+/** How many expanded rows to compose; grows a page whenever the scroll nears the end. */
+@Composable
+private fun rememberProgressiveRowCount(
+    contacts: List<ContactInfo>,
+    scrollState: ScrollState,
+    enabled: Boolean,
+): Int {
+    // A new result set starts from one page again; a re-emission of the same rows does not.
+    val rowCountState =
+        remember(contacts.size, contacts.firstOrNull()?.contactId) {
+            mutableIntStateOf(EXPANDED_ROWS_PAGE_SIZE)
+        }
+    var rowCount by rowCountState
+    val prefetchDistancePx = with(LocalDensity.current) { EXPANDED_ROWS_PREFETCH_DISTANCE.roundToPx() }
+    val latestContactCount by rememberUpdatedState(contacts.size)
+    LaunchedEffect(rowCountState, scrollState, enabled, prefetchDistancePx) {
+        if (!enabled) return@LaunchedEffect
+        snapshotFlow {
+            // Includes rowCount so a page that still leaves the viewport unfilled loads the next.
+            (scrollState.maxValue - scrollState.value <= prefetchDistancePx) to rowCount
+        }.collect { (isNearEnd, count) ->
+            if (isNearEnd && count < latestContactCount) {
+                rowCount = count + EXPANDED_ROWS_PAGE_SIZE
+            }
+        }
+    }
+    return if (enabled) rowCount.coerceAtMost(contacts.size) else contacts.size
 }

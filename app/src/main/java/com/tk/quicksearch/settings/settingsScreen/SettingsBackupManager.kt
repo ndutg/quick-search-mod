@@ -2,27 +2,29 @@ package com.tk.quicksearch.settings.settingsScreen
 
 import android.content.Context
 import android.net.Uri
+import com.tk.quicksearch.R
 import com.tk.quicksearch.customInfo.CustomInfoRepository
 import com.tk.quicksearch.customInfo.CustomInfoScheduler
 import com.tk.quicksearch.reminders.ReminderScheduler
 import com.tk.quicksearch.search.apps.IconPackManager
 import com.tk.quicksearch.search.data.preferences.BasePreferences
+import com.tk.quicksearch.search.data.preferences.BootstrapPreferences
 import com.tk.quicksearch.search.data.preferences.CustomLlmProviderPreferences
-import com.tk.quicksearch.search.data.preferences.GeminiPreferences
-import com.tk.quicksearch.search.data.preferences.UiPreferences
 import com.tk.quicksearch.search.data.NotesRepository
 import com.tk.quicksearch.search.data.ReminderRepository
 import com.tk.quicksearch.search.data.notes.NotesRoomStore
 import com.tk.quicksearch.search.data.bookmarks.BookmarkBackupCodec
 import com.tk.quicksearch.search.data.bookmarks.BookmarkRepository
 import com.tk.quicksearch.widgets.utils.requestNoteWidgetsRefresh
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.search.data.userAppPreferences.UserAppPreferences
 import com.tk.quicksearch.search.models.NoteInfo
-import com.tk.quicksearch.shared.featureFlags.FeatureFlags
 import com.tk.quicksearch.tools.aiSearch.AiSearchLlmProviderId
+import com.tk.quicksearch.tools.aiSearch.AiSearchLlmProviderRegistry
 import com.tk.quicksearch.tools.aiSearch.CustomLlmProviderConfig
 import java.io.File
 import java.io.IOException
+import java.io.Writer
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -30,34 +32,104 @@ import org.json.JSONObject
  * Serializes and restores backup-eligible SharedPreferences into a portable JSON file.
  */
 object SettingsBackupManager {
-    enum class ExportItem {
+    /** Entries are serialized by name. Preference matchers run in declaration order. */
+    enum class ExportItem(
+        internal val option: BackupSectionOption? = null,
+        internal val defaultSelected: Boolean = true,
+        internal val matchPreference: ((file: String, key: String) -> Boolean)? = null,
+        internal val restoreLegacyPreferences: Boolean = true,
+        internal val payload: BackupSectionPayload? = null,
+    ) {
         SETTINGS,
-        PINNED_ITEMS,
-        SHORTCUTS,
-        NOTES,
-        SEARCH_ENGINES,
-        API_KEYS,
-        CALENDAR_EVENTS,
-        REMINDERS,
-        BOOKMARKS,
-        SEARCH_HISTORY,
+        PINNED_ITEMS(
+            option = BackupSectionOption(
+                R.string.settings_backup_export_option_pinned_items_title,
+                { MaterialSymbols.PushPin },
+                { source ->
+                    listOf(
+                        BasePreferences.KEY_PINNED,
+                        BasePreferences.KEY_PINNED_CONTACT_IDS,
+                        BasePreferences.KEY_PINNED_FILE_URIS,
+                        BasePreferences.KEY_PINNED_SETTINGS,
+                        BasePreferences.KEY_PINNED_CALENDAR_EVENT_IDS,
+                        BasePreferences.KEY_PINNED_REMINDER_IDS,
+                        BasePreferences.KEY_PINNED_APP_SHORTCUTS,
+                    ).any { key -> source.preferences.getStringSet(key, emptySet()).orEmpty().isNotEmpty() }
+                },
+            ),
+            matchPreference = ::isPinnedItemKey,
+        ),
+        SHORTCUTS(
+            matchPreference = { file, key -> isShortcutKey(file, key) || file == "app_shortcut_cache" },
+        ),
+        NOTES(
+            option = BackupSectionOption(
+                R.string.section_notes,
+                { MaterialSymbols.Description },
+                { NotesRoomStore(it.context).hasAny() },
+            ),
+            matchPreference = ::isNotesKey,
+        ),
+        SEARCH_ENGINES(matchPreference = ::isSearchEngineKey),
+        REMINDERS(
+            option = BackupSectionOption(
+                R.string.section_reminders,
+                { MaterialSymbols.NotificationsActive },
+                {
+                    val reminders = it.preferences.getString(BasePreferences.KEY_REMINDERS_DATA, null).orEmpty()
+                    reminders.isNotBlank() && reminders != "[]"
+                },
+            ),
+            matchPreference = ::isRemindersKey,
+        ),
+        BOOKMARKS(
+            option = BackupSectionOption(
+                R.string.section_bookmarks,
+                { MaterialSymbols.Bookmark },
+                { BookmarkRepository(it.context).hasBookmarks() },
+            ),
+            payload = BackupSectionPayload(
+                field = "bookmarks",
+                export = { BookmarkBackupCodec.serialize(BookmarkRepository(it).getAll()) },
+                restore = { context, array ->
+                    BookmarkRepository(context).replaceFromBackup(BookmarkBackupCodec.parse(array))
+                },
+            ),
+        ),
+        SEARCH_HISTORY(
+            option = BackupSectionOption(
+                R.string.recent_queries_toggle_title,
+                { MaterialSymbols.History },
+                { it.preferences.getBoolean(BasePreferences.KEY_RECENT_QUERIES_ENABLED, true) },
+            ),
+            matchPreference = ::isSearchHistoryKey,
+            restoreLegacyPreferences = false,
+        ),
+        API_KEYS(
+            option = BackupSectionOption(
+                R.string.settings_backup_export_option_api_keys,
+                { MaterialSymbols.Key },
+                { UserAppPreferences(it.context).hasAnyLlmApiKey() },
+            ),
+            defaultSelected = false,
+        ),
+        ;
+
+        companion object {
+            internal val selectableItems = entries.filter { it.option != null }
+            internal val requiredItems = entries.filter { it.option == null }.toSet()
+            internal val defaultSelection = entries.filter { it.defaultSelected }.toSet()
+            private val preferenceSections = entries.filter { it.matchPreference != null }
+            internal val payloadSections = entries.filter { it.payload != null }
+
+            internal fun forPreference(file: String, key: String): ExportItem? =
+                preferenceSections.firstOrNull { it.matchPreference?.invoke(file, key) == true }
+                    ?: SETTINGS.takeIf { file == BasePreferences.PREFS_NAME }
+        }
     }
 
-    /** Export item names written by older app versions, mapped to their current item. */
-    private val legacyExportItemNames = mapOf("GEMINI_API" to ExportItem.API_KEYS)
-
     data class ExportOptions(
-        val selectedItems: Set<ExportItem> =
-            setOf(
-                ExportItem.SETTINGS,
-                ExportItem.PINNED_ITEMS,
-                ExportItem.SHORTCUTS,
-                ExportItem.NOTES,
-                ExportItem.SEARCH_ENGINES,
-                ExportItem.REMINDERS,
-                ExportItem.BOOKMARKS,
-                ExportItem.SEARCH_HISTORY,
-            ),
+        val selectedItems: Set<ExportItem> = ExportItem.defaultSelection,
     ) {
         fun includes(item: ExportItem): Boolean = item in selectedItems
     }
@@ -67,8 +139,6 @@ object SettingsBackupManager {
     private const val FIELD_FORMAT_VERSION = "formatVersion"
     private const val FIELD_EXPORTED_AT_EPOCH_MS = "exportedAtEpochMs"
     private const val FIELD_PREFERENCES = "preferences"
-    // Legacy field: backups before multi-provider keys only carried the Gemini key.
-    private const val FIELD_GEMINI_API_KEY = "geminiApiKey"
     private const val FIELD_LLM_API_KEYS = "llmApiKeys"
     // Stored inside FIELD_LLM_API_KEYS alongside the LLM provider keys.
     private const val TAVILY_API_KEY_FIELD = "tavily"
@@ -76,7 +146,6 @@ object SettingsBackupManager {
     private const val FIELD_CUSTOM_LLM_PROVIDERS = "customLlmProviders"
     private const val FIELD_SELECTED_EXPORT_ITEMS = "selectedExportItems"
     private const val FIELD_NOTES = "notes"
-    private const val FIELD_BOOKMARKS = "bookmarks"
     // The icon pack lives in session prefs, which aren't exported, so it travels as its own field.
     private const val FIELD_SELECTED_ICON_PACK = "selectedIconPack"
     private const val FIELD_TYPE = "type"
@@ -115,6 +184,9 @@ object SettingsBackupManager {
             BasePreferences.KEY_INSTALL_TIME,
             // Permission prompts are per device, so a restore should still ask on the first reminder.
             BasePreferences.KEY_REMINDER_PERMISSIONS_REQUESTED,
+            BasePreferences.KEY_NOTES_DATA,
+            "custom_calendar_events_data",
+            "custom_calendar_event_id_counter",
             "excluded_contact_ids",
             "excluded_file_uris",
             "excluded_file_extensions",
@@ -134,14 +206,7 @@ object SettingsBackupManager {
             "default_engine_hint_banner_dismissed",
             "last_overlay_keyboard_open_height_dp",
             "update_check_shown_this_session",
-            // Personal contexts are exported from their encrypted store via FIELD_LLM_PERSONAL_CONTEXTS.
-            BasePreferences.KEY_GEMINI_PERSONAL_CONTEXT,
-            BasePreferences.KEY_OPENAI_PERSONAL_CONTEXT,
-            BasePreferences.KEY_ANTHROPIC_PERSONAL_CONTEXT,
-            BasePreferences.KEY_GROQ_PERSONAL_CONTEXT,
-            BasePreferences.KEY_META_PERSONAL_CONTEXT,
-            BasePreferences.KEY_OPENCODE_PERSONAL_CONTEXT,
-        )
+        ) + AiSearchLlmProviderRegistry.definitions.map { it.personalContextPreference }
 
     fun exportToUri(
         context: Context,
@@ -150,41 +215,50 @@ object SettingsBackupManager {
     ) {
         val includeApiKeys = options.includes(ExportItem.API_KEYS)
         val userPreferences = UserAppPreferences(context)
-        val payload =
-            JSONObject()
-                .put(FIELD_FORMAT_VERSION, FORMAT_VERSION)
-                .put(FIELD_EXPORTED_AT_EPOCH_MS, System.currentTimeMillis())
-                .put(FIELD_PREFERENCES, buildPreferencesJson(context, options))
-                .put(
-                    FIELD_SELECTED_EXPORT_ITEMS,
-                    JSONArray(options.selectedItems.map { it.name }.sorted()),
-                )
-                .put(FIELD_LLM_PERSONAL_CONTEXTS, serializePersonalContexts(userPreferences))
-                .apply {
-                    if (includeApiKeys) {
-                        put(FIELD_LLM_API_KEYS, serializeApiKeys(userPreferences))
-                        put(
-                            FIELD_CUSTOM_LLM_PROVIDERS,
-                            serializeCustomLlmProviders(CustomLlmProviderPreferences(context).getProviders()),
-                        )
-                    }
-                    if (options.includes(ExportItem.NOTES)) {
-                        put(FIELD_NOTES, serializeNotes(NotesRepository(context).getAllNotes()))
-                    }
-                    if (options.includes(ExportItem.BOOKMARKS)) {
-                        put(FIELD_BOOKMARKS, BookmarkBackupCodec.serialize(BookmarkRepository(context).getAll()))
-                    }
-                    if (options.includes(ExportItem.SETTINGS)) {
-                        userPreferences.getSelectedIconPackPackage()?.let { put(FIELD_SELECTED_ICON_PACK, it) }
-                    }
-                }
-
+        val notes = if (options.includes(ExportItem.NOTES)) NotesRepository(context).getAllNotes() else null
         val outputStream =
             context.contentResolver.openOutputStream(outputUri)
                 ?: throw IOException("Unable to open output stream")
 
+        // Written field by field so the whole backup is never held as one JSON tree and string.
         outputStream.bufferedWriter(Charsets.UTF_8).use { writer ->
-            writer.write(payload.toString(2))
+            var firstField = true
+            fun field(name: String, writeValue: () -> Unit) {
+                writer.write(if (firstField) "{\n" else ",\n")
+                firstField = false
+                writer.write(JSONObject.quote(name))
+                writer.write(": ")
+                writeValue()
+            }
+            field(FIELD_FORMAT_VERSION) { writer.write(FORMAT_VERSION.toString()) }
+            field(FIELD_EXPORTED_AT_EPOCH_MS) { writer.write(System.currentTimeMillis().toString()) }
+            field(FIELD_PREFERENCES) { writePreferencesJson(writer, context, options, notes) }
+            field(FIELD_SELECTED_EXPORT_ITEMS) {
+                writer.write(JSONArray(options.selectedItems.map { it.name }.sorted()).toString())
+            }
+            field(FIELD_LLM_PERSONAL_CONTEXTS) { writer.write(serializePersonalContexts(userPreferences).toString()) }
+            if (includeApiKeys) {
+                field(FIELD_LLM_API_KEYS) { writer.write(serializeApiKeys(userPreferences).toString()) }
+                field(FIELD_CUSTOM_LLM_PROVIDERS) {
+                    writer.write(serializeCustomLlmProviders(CustomLlmProviderPreferences(context).getProviders()).toString())
+                }
+            }
+            if (notes != null) {
+                field(FIELD_NOTES) { writer.write(serializeNotes(notes).toString()) }
+            }
+            ExportItem.payloadSections.forEach { section ->
+                if (options.includes(section)) {
+                    section.payload?.let { payload ->
+                        field(payload.field) { writer.write(payload.export(context).toString()) }
+                    }
+                }
+            }
+            if (options.includes(ExportItem.SETTINGS)) {
+                userPreferences.getSelectedIconPackPackage()?.let { iconPack ->
+                    field(FIELD_SELECTED_ICON_PACK) { writer.write(JSONObject.quote(iconPack)) }
+                }
+            }
+            writer.write("\n}\n")
         }
     }
 
@@ -227,11 +301,11 @@ object SettingsBackupManager {
             CustomInfoRepository(context).all().forEach { CustomInfoScheduler.cancel(context, it.id) }
         }
 
+        var importedCustomEngines = false
         preferenceNames.forEach { prefName ->
             val sharedPreferences = context.getSharedPreferences(prefName, Context.MODE_PRIVATE)
             val prefEntries = preferencesJson.optJSONObject(prefName)
             if (prefEntries == null && selectedExportItems != null) return@forEach
-            val importOptions = selectedExportItems?.let { ExportOptions(it) }
 
             val editor =
                 sharedPreferences
@@ -245,15 +319,11 @@ object SettingsBackupManager {
             if (prefEntries != null) {
                 prefEntries.keys().forEach { key ->
                     if (shouldExcludeKey(prefName, key)) return@forEach
-                    // Backups from before the history option never carry history; don't restore it from them.
-                    if (selectedExportItems == null && isSearchHistoryKey(prefName, key)) return@forEach
-                    if (
-                        importOptions != null &&
-                            !shouldIncludeKeyForExport(prefName, key, importOptions)
-                    ) {
-                        return@forEach
-                    }
+                    if (!shouldRestorePreference(prefName, key, selectedExportItems)) return@forEach
                     val valueObject = prefEntries.optJSONObject(key) ?: return@forEach
+                    if (prefName == BasePreferences.PREFS_NAME && key == BasePreferences.KEY_CUSTOM_SEARCH_ENGINES) {
+                        importedCustomEngines = true
+                    }
                     when (valueObject.optString(FIELD_TYPE)) {
                         TYPE_STRING -> editor.putString(key, valueObject.optString(FIELD_VALUE))
                         TYPE_BOOLEAN -> editor.putBoolean(key, valueObject.optBoolean(FIELD_VALUE))
@@ -282,7 +352,15 @@ object SettingsBackupManager {
             }
         }
 
+        SettingsBackupStorageBridge.afterPreferencesImport(
+            context = context,
+            fullRestore = selectedExportItems == null,
+            importedCustomEngines = importedCustomEngines,
+        )
+
         if (selectedExportItems == null || ExportItem.SETTINGS in selectedExportItems) {
+            val importedLanguage = UserAppPreferences(context).getAppLanguageTag()
+            BootstrapPreferences.setAppLanguageTag(context, importedLanguage)
             importSelectedIconPack(context, root)
         }
 
@@ -297,26 +375,25 @@ object SettingsBackupManager {
             val notesStore = NotesRoomStore(context)
             val notes =
                 root.optJSONArray(FIELD_NOTES)?.let(::parseNotes)
-                    ?: notesStore.parseLegacySnapshot(
-                        context.getSharedPreferences(BasePreferences.PREFS_NAME, Context.MODE_PRIVATE)
-                            .getString(BasePreferences.KEY_NOTES_DATA, null).orEmpty(),
-                    )
-            notesStore.replaceFromBackup(notes)
-            requestNoteWidgetsRefresh(context)
+                    // A full restore replaces everything, notes included; a partial one without
+                    // notes in it leaves the current notes alone.
+                    ?: if (selectedExportItems == null) emptyList() else null
+            if (notes != null) {
+                notesStore.replaceAll(notes)
+                requestNoteWidgetsRefresh(context)
+            }
         }
 
-        // Only backups that carry bookmarks replace them; older backups leave the current ones alone.
-        val backedUpBookmarks = root.optJSONArray(FIELD_BOOKMARKS)
-        if (backedUpBookmarks != null &&
-            (selectedExportItems == null || ExportItem.BOOKMARKS in selectedExportItems)
-        ) {
-            BookmarkRepository(context).replaceFromBackup(BookmarkBackupCodec.parse(backedUpBookmarks))
+        // Payloads are restored only when present. Older backups may predate a section.
+        ExportItem.payloadSections.forEach { section ->
+            if (selectedExportItems == null || section in selectedExportItems) {
+                section.payload?.let { payload ->
+                    root.optJSONArray(payload.field)?.let { payload.restore(context, it) }
+                }
+            }
         }
 
-        val importsCalendarEvents =
-            selectedExportItems == null || ExportItem.CALENDAR_EVENTS in selectedExportItems
-        // Older backups can hold calendar events created in Quick Search; rescheduling moves them into reminders.
-        if (importsReminders || importsCalendarEvents) {
+        if (importsReminders) {
             ReminderScheduler.rescheduleAll(context)
         }
         if (importsCustomInfo) {
@@ -344,38 +421,58 @@ object SettingsBackupManager {
         return buildSet {
             for (index in 0 until itemsArray.length()) {
                 val itemName = itemsArray.optString(index)
-                (legacyExportItemNames[itemName] ?: runCatching { ExportItem.valueOf(itemName) }.getOrNull())
+                runCatching { ExportItem.valueOf(itemName) }.getOrNull()
                     ?.let { add(it) }
             }
         }
     }
 
-    private fun buildPreferencesJson(
+    /** Writes the preferences section one entry at a time instead of building it in memory. */
+    private fun writePreferencesJson(
+        writer: Writer,
         context: Context,
         options: ExportOptions,
-    ): JSONObject {
-        val preferencesJson = JSONObject()
-        collectEligiblePreferenceNames(context)
-            .sorted()
-            .forEach { prefName ->
-                val pref = context.getSharedPreferences(prefName, Context.MODE_PRIVATE)
-                val prefEntriesJson = JSONObject()
-                pref.all
-                    .asSequence()
-                    .filterNot { shouldExcludeKey(prefName, it.key) }
-                    .filter { shouldIncludeKeyForExport(prefName, it.key, options) }
-                    .sortedBy { it.key }
-                    .forEach { (key, value) ->
-                        serializePreferenceValue(value)?.let { serialized ->
-                            prefEntriesJson.put(key, serialized)
-                        }
-                    }
-                if (prefEntriesJson.length() > 0) {
-                    preferencesJson.put(prefName, prefEntriesJson)
-                }
-            }
-        return preferencesJson
+        notes: List<NoteInfo>?,
+    ) {
+        val sections =
+            collectEligiblePreferenceNames(context)
+                .sorted()
+                .asSequence()
+                .map { prefName -> prefName to preferenceEntriesForExport(context, prefName, options, notes) }
+        SettingsBackupStorageBridge.writeSections(writer, sections)
     }
+
+    private fun preferenceEntriesForExport(
+        context: Context,
+        prefName: String,
+        options: ExportOptions,
+        notes: List<NoteInfo>?,
+    ): Sequence<Pair<String, JSONObject>> =
+        sequence {
+            val stored = context.getSharedPreferences(prefName, Context.MODE_PRIVATE).all
+            val entries =
+                if (prefName == BasePreferences.PREFS_NAME) {
+                    SettingsBackupStorageBridge.exportableUserPreferences(context, stored)
+                } else {
+                    stored
+                }
+            // Notes live in Room. Keep the legacy JSON copy in the backup so builds that read
+            // notes only from the preferences section restore them too.
+            val legacyNotes =
+                if (prefName == BasePreferences.PREFS_NAME && notes != null) {
+                    serializePreferenceValue(NotesRoomStore.serializeLegacySnapshot(notes))
+                } else {
+                    null
+                }
+            entries.keys
+                .filterNot { shouldExcludeKey(prefName, it) }
+                .filter { shouldIncludeKeyForExport(prefName, it, options) }
+                .sorted()
+                .forEach { key ->
+                    serializePreferenceValue(entries[key])?.let { yield(key to it) }
+                }
+            legacyNotes?.let { yield(BasePreferences.KEY_NOTES_DATA to it) }
+        }
 
     private fun collectEligiblePreferenceNames(
         context: Context,
@@ -406,132 +503,23 @@ object SettingsBackupManager {
     ): Boolean {
         if (prefName != BasePreferences.PREFS_NAME) return false
         return key in excludedUserPreferenceKeys ||
-            key.startsWith(FeatureFlags.PREFERENCE_KEY_PREFIX) ||
-            FeatureFlags.shouldExcludePreferenceFromExport(key)
+            key.startsWith("feature_flag_")
     }
 
-    private fun shouldIncludeKeyForExport(
-        prefName: String,
-        key: String,
-        options: ExportOptions,
-    ): Boolean {
-        if (isSearchHistoryKey(prefName, key)) {
-            return options.includes(ExportItem.SEARCH_HISTORY)
-        }
-        if (isPinnedItemKey(prefName, key)) {
-            return options.includes(ExportItem.PINNED_ITEMS)
-        }
-        if (isShortcutKey(prefName, key)) {
-            return options.includes(ExportItem.SHORTCUTS)
-        }
-        if (isNotesKey(prefName, key)) {
-            return options.includes(ExportItem.NOTES)
-        }
-        if (isSearchEngineKey(prefName, key)) {
-            return options.includes(ExportItem.SEARCH_ENGINES)
-        }
-        if (isCalendarEventsKey(prefName, key)) {
-            return options.includes(ExportItem.CALENDAR_EVENTS)
-        }
-        if (isRemindersKey(prefName, key)) {
-            return options.includes(ExportItem.REMINDERS)
-        }
-        if (prefName == "app_shortcut_cache") {
-            return options.includes(ExportItem.SHORTCUTS)
-        }
-        if (prefName != BasePreferences.PREFS_NAME) {
-            return false
-        }
-        return options.includes(ExportItem.SETTINGS)
-    }
+    internal fun shouldIncludeKeyForExport(prefName: String, key: String, options: ExportOptions): Boolean =
+        ExportItem.forPreference(prefName, key)?.let(options::includes) == true
 
-    private fun isSearchHistoryKey(
+    internal fun shouldRestorePreference(
         prefName: String,
         key: String,
-    ): Boolean =
-        (prefName == BasePreferences.SESSION_PREFS_NAME && key == BasePreferences.KEY_RECENT_QUERIES) ||
-            (prefName == BasePreferences.PREFS_NAME && key == BasePreferences.KEY_RECENT_RESULT_OPENS)
-
-    private fun isPinnedItemKey(
-        prefName: String,
-        key: String,
+        selectedItems: Set<ExportItem>?,
     ): Boolean {
-        if (prefName != BasePreferences.PREFS_NAME) return false
-        return key == BasePreferences.KEY_PINNED ||
-            key == BasePreferences.KEY_PINNED_NON_APP_ITEM_ORDER ||
-            key == BasePreferences.KEY_PINNED_CONTACT_IDS ||
-            key == BasePreferences.KEY_PINNED_CONTACT_ORDER ||
-            key == BasePreferences.KEY_PINNED_FILE_URIS ||
-            key == BasePreferences.KEY_PINNED_FILE_ORDER ||
-            key == BasePreferences.KEY_PINNED_SETTINGS ||
-            key == BasePreferences.KEY_PINNED_SETTINGS_ORDER ||
-            key == BasePreferences.KEY_PINNED_CALENDAR_EVENT_IDS ||
-            key == BasePreferences.KEY_PINNED_CALENDAR_EVENT_ORDER ||
-            key == BasePreferences.KEY_PINNED_NOTE_IDS ||
-            key == BasePreferences.KEY_PINNED_NOTE_ORDER ||
-            key == BasePreferences.KEY_PINNED_REMINDER_IDS ||
-            key == BasePreferences.KEY_PINNED_REMINDER_ORDER ||
-            key == BasePreferences.KEY_PINNED_APP_SHORTCUTS ||
-            key == BasePreferences.KEY_PINNED_APP_SHORTCUT_ORDER ||
-            key == BasePreferences.KEY_APP_FOLDERS ||
-            key == UiPreferences.KEY_PINNED_APP_GRID_ORDER
-    }
-
-    private fun isShortcutKey(
-        prefName: String,
-        key: String,
-    ): Boolean {
-        if (prefName != BasePreferences.PREFS_NAME) return false
-        return key == BasePreferences.KEY_DISABLED_APP_SHORTCUTS ||
-            key.startsWith(BasePreferences.KEY_APP_SHORTCUT_ICON_OVERRIDE_PREFIX) ||
-            key.startsWith(BasePreferences.KEY_NICKNAME_APP_SHORTCUT_PREFIX)
-    }
-
-    private fun isSearchEngineKey(
-        prefName: String,
-        key: String,
-    ): Boolean {
-        if (prefName != BasePreferences.PREFS_NAME) return false
-        return key == BasePreferences.KEY_DISABLED_SEARCH_ENGINES ||
-            key == BasePreferences.KEY_SEARCH_ENGINE_ORDER ||
-            key == BasePreferences.KEY_CUSTOM_SEARCH_ENGINES ||
-            key == BasePreferences.KEY_SEARCH_ENGINE_COMPACT_MODE ||
-            key == BasePreferences.KEY_SEARCH_ENGINE_COMPACT_ROW_COUNT ||
-            key == BasePreferences.KEY_SEARCH_ENGINE_ALIAS_SUFFIX_ENABLED ||
-            key == BasePreferences.KEY_ALIAS_TRIGGER_AFTER_SPACE ||
-            key == BasePreferences.KEY_AMAZON_DOMAIN ||
-            key.startsWith(BasePreferences.KEY_ALIAS_CODE_PREFIX)
-    }
-
-    private fun isNotesKey(
-        prefName: String,
-        key: String,
-    ): Boolean {
-        if (prefName != BasePreferences.PREFS_NAME) return false
-        return key == BasePreferences.KEY_NOTES_DATA ||
-            key == BasePreferences.KEY_NOTE_ID_COUNTER ||
-            key == BasePreferences.KEY_PINNED_NOTE_IDS ||
-            key == BasePreferences.KEY_PINNED_NOTE_ORDER ||
-            key == BasePreferences.KEY_QUICK_NOTE_ID ||
-            key == BasePreferences.KEY_QUICK_NOTE_ENABLED ||
-            key.startsWith(BasePreferences.KEY_TRIGGER_NOTE_PREFIX)
-    }
-
-    private fun isCalendarEventsKey(
-        prefName: String,
-        key: String,
-    ): Boolean {
-        if (prefName != BasePreferences.PREFS_NAME) return false
-        return key == BasePreferences.KEY_CUSTOM_CALENDAR_EVENTS_DATA
-    }
-
-    private fun isRemindersKey(
-        prefName: String,
-        key: String,
-    ): Boolean {
-        if (prefName != BasePreferences.PREFS_NAME) return false
-        return key == BasePreferences.KEY_REMINDERS_DATA ||
-            key == BasePreferences.KEY_REMINDER_ID_COUNTER
+        val section = ExportItem.forPreference(prefName, key)
+        return if (selectedItems == null) {
+            section?.restoreLegacyPreferences != false
+        } else {
+            section in selectedItems
+        }
     }
 
     private fun serializePreferenceValue(value: Any?): JSONObject? =
@@ -581,9 +569,6 @@ object SettingsBackupManager {
     ) {
         val userPreferences = UserAppPreferences(context)
 
-        root.optString(FIELD_GEMINI_API_KEY, "").takeIf { it.isNotBlank() }?.let {
-            GeminiPreferences(context).setGeminiApiKey(it)
-        }
         root.optJSONObject(FIELD_LLM_API_KEYS)?.let { keys ->
             AiSearchLlmProviderId.entries.forEach { providerId ->
                 keys.optString(providerId.storageValue, "").takeIf { it.isNotBlank() }?.let {

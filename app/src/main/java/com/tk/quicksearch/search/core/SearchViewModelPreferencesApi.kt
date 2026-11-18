@@ -6,17 +6,6 @@ import com.tk.quicksearch.settings.settingsDetailScreen.AiBackedToolConfigId
 internal interface SearchViewModelPreferencesApi {
     val preferencesApiDelegate: SearchViewModelPreferencesApiDelegate
 
-    fun setCalculatorEnabled(enabled: Boolean) = preferencesApiDelegate.setCalculatorEnabled(enabled)
-
-    fun setUnitConverterEnabled(enabled: Boolean) =
-        preferencesApiDelegate.setUnitConverterEnabled(enabled)
-
-    fun setDateCalculatorEnabled(enabled: Boolean) =
-        preferencesApiDelegate.setDateCalculatorEnabled(enabled)
-
-    fun setColorVisualizerEnabled(enabled: Boolean) =
-        preferencesApiDelegate.setColorVisualizerEnabled(enabled)
-
     fun setCurrencyConverterEnabled(enabled: Boolean) =
         preferencesApiDelegate.setCurrencyConverterEnabled(enabled)
 
@@ -180,14 +169,13 @@ internal interface SearchViewModelPreferencesApi {
     fun setLauncherAppIcon(selection: LauncherAppIcon) =
         preferencesApiDelegate.setLauncherAppIcon(selection)
 
-    fun onSystemDarkModeChanged(isDarkMode: Boolean) =
-        preferencesApiDelegate.onSystemDarkModeChanged(isDarkMode)
 
     fun setThemedIconsEnabled(enabled: Boolean) = preferencesApiDelegate.setThemedIconsEnabled(enabled)
 
     fun setDeviceThemeEnabled(enabled: Boolean) = preferencesApiDelegate.setDeviceThemeEnabled(enabled)
 
     fun setAmoledThemeEnabled(enabled: Boolean) = preferencesApiDelegate.setAmoledThemeEnabled(enabled)
+    fun setSearchChromeBlurEnabled(enabled: Boolean) = preferencesApiDelegate.setSearchChromeBlurEnabled(enabled)
 
     fun setSearchEngineAliasSuffixEnabled(enabled: Boolean) =
         preferencesApiDelegate.setSearchEngineAliasSuffixEnabled(enabled)
@@ -199,8 +187,6 @@ internal interface SearchViewModelPreferencesApi {
         preferencesApiDelegate.setFileTypeEnabled(fileType, enabled)
 
     fun setShowFolders(show: Boolean) = preferencesApiDelegate.setShowFolders(show)
-
-    fun setFilePreviewsEnabled(enabled: Boolean) = preferencesApiDelegate.setFilePreviewsEnabled(enabled)
 
     fun setShowSystemFiles(show: Boolean) = preferencesApiDelegate.setShowSystemFiles(show)
 
@@ -248,7 +234,8 @@ internal interface SearchViewModelPreferencesApi {
     fun setAutoCloseOverlayEnabled(enabled: Boolean) =
         preferencesApiDelegate.setAutoCloseOverlayEnabled(enabled)
 
-    fun setOverlayModeEnabled(enabled: Boolean) = preferencesApiDelegate.setOverlayModeEnabled(enabled)
+    fun setOverlayModeEnabled(enabled: Boolean, onModeChanged: (() -> Unit)? = null) =
+        preferencesApiDelegate.setOverlayModeEnabled(enabled, onModeChanged)
 
     fun setAmazonDomain(domain: String?) = preferencesApiDelegate.setAmazonDomain(domain)
 
@@ -325,14 +312,6 @@ class SearchViewModelPreferencesApiDelegate internal constructor(
     private val iconPackHandler: com.tk.quicksearch.search.apps.IconPackService,
     private val configStateProvider: () -> SearchUiConfigState,
 ) {
-    fun setCalculatorEnabled(enabled: Boolean) = preferencesDelegate.setCalculatorEnabled(enabled)
-
-    fun setUnitConverterEnabled(enabled: Boolean) = preferencesDelegate.setUnitConverterEnabled(enabled)
-
-    fun setDateCalculatorEnabled(enabled: Boolean) = preferencesDelegate.setDateCalculatorEnabled(enabled)
-
-    fun setColorVisualizerEnabled(enabled: Boolean) = preferencesDelegate.setColorVisualizerEnabled(enabled)
-
     fun setCurrencyConverterEnabled(enabled: Boolean) =
         preferencesDelegate.setCurrencyConverterEnabled(enabled)
 
@@ -473,15 +452,13 @@ class SearchViewModelPreferencesApiDelegate internal constructor(
     fun setLauncherAppIcon(selection: LauncherAppIcon) =
         preferencesDelegate.setLauncherAppIcon(selection)
 
-    fun onSystemDarkModeChanged(isDarkMode: Boolean) {
-        preferencesDelegate.onSystemDarkModeChanged(isDarkMode, configStateProvider().appThemeMode)
-    }
 
     fun setThemedIconsEnabled(enabled: Boolean) = preferencesDelegate.setThemedIconsEnabled(enabled)
 
     fun setDeviceThemeEnabled(enabled: Boolean) = preferencesDelegate.setDeviceThemeEnabled(enabled)
 
     fun setAmoledThemeEnabled(enabled: Boolean) = preferencesDelegate.setAmoledThemeEnabled(enabled)
+    fun setSearchChromeBlurEnabled(enabled: Boolean) = preferencesDelegate.setSearchChromeBlurEnabled(enabled)
 
     fun setSearchEngineAliasSuffixEnabled(enabled: Boolean) =
         preferencesDelegate.setSearchEngineAliasSuffixEnabled(enabled)
@@ -493,8 +470,6 @@ class SearchViewModelPreferencesApiDelegate internal constructor(
         preferencesDelegate.setFileTypeEnabled(fileType, enabled)
 
     fun setShowFolders(show: Boolean) = preferencesDelegate.setShowFolders(show)
-
-    fun setFilePreviewsEnabled(enabled: Boolean) = preferencesDelegate.setFilePreviewsEnabled(enabled)
 
     fun setShowSystemFiles(show: Boolean) = preferencesDelegate.setShowSystemFiles(show)
 
@@ -561,7 +536,8 @@ class SearchViewModelPreferencesApiDelegate internal constructor(
     fun setAutoCloseOverlayEnabled(enabled: Boolean) =
         preferencesDelegate.setAutoCloseOverlayEnabled(enabled)
 
-    fun setOverlayModeEnabled(enabled: Boolean) = preferencesDelegate.setOverlayModeEnabled(enabled)
+    fun setOverlayModeEnabled(enabled: Boolean, onModeChanged: (() -> Unit)? = null) =
+        preferencesDelegate.setOverlayModeEnabled(enabled, onModeChanged)
 
     fun setAmazonDomain(domain: String?) = preferencesDelegate.setAmazonDomain(domain)
 

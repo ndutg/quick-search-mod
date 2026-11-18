@@ -230,8 +230,11 @@ object PinnedNotifications {
             return RemoteViews(context.packageName, R.layout.notification_pinned_items)
         }
         return RemoteViews(context.packageName, R.layout.notification_pinned_items).apply {
+            // The collapsed notification can have only 48 dp of content height.
+            if (!showLabels) setViewPadding(R.id.pinned_notification_rows, 0, 0, 0, 0)
             actions.chunked(ItemsPerRow).forEachIndexed { rowIndex, rowActions ->
                 val row = RemoteViews(context.packageName, R.layout.notification_pinned_row)
+                if (!showLabels) row.setViewPadding(R.id.pinned_notification_row, 0, 0, 0, 0)
                 rowActions.forEachIndexed { columnIndex, action ->
                     row.addView(
                         R.id.pinned_notification_row,
@@ -266,7 +269,9 @@ object PinnedNotifications {
                 setImageViewBitmap(R.id.pinned_notification_icon, it)
             }
                 ?: icon.drawableResId?.let { setImageViewResource(R.id.pinned_notification_icon, it) }
-            setTextViewText(R.id.pinned_notification_label, action.displayLabel())
+            val label = action.displayLabel()
+            setTextViewText(R.id.pinned_notification_label, label)
+            setContentDescription(R.id.pinned_notification_action, action.contentDescription())
             setViewVisibility(
                 R.id.pinned_notification_label,
                 if (showLabels) android.view.View.VISIBLE else android.view.View.GONE,
@@ -280,8 +285,7 @@ object PinnedNotifications {
                 launchIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
             )
-            setOnClickPendingIntent(R.id.pinned_notification_icon, pendingIntent)
-            setOnClickPendingIntent(R.id.pinned_notification_label, pendingIntent)
+            setOnClickPendingIntent(R.id.pinned_notification_action, pendingIntent)
         }
     }
 
@@ -308,13 +312,25 @@ object PinnedNotifications {
     private fun separateActions(context: Context): List<CustomWidgetButtonAction> =
         readActions(context, SeparateActionsKey)
 
-    private fun readActions(context: Context, key: String): List<CustomWidgetButtonAction> =
-        context.getSharedPreferences(PreferencesName, Context.MODE_PRIVATE)
-            .getString(key, null)
-            ?.let { raw -> runCatching { JSONArray(raw) }.getOrNull() }
-            ?.let { array -> List(array.length()) { index -> CustomWidgetButtonAction.fromJson(array.optString(index)) } }
-            ?.filterNotNull()
-            .orEmpty()
+    private fun readActions(context: Context, key: String): List<CustomWidgetButtonAction> {
+        val raw =
+            context.getSharedPreferences(PreferencesName, Context.MODE_PRIVATE).getString(key, null)
+                ?: return emptyList()
+        // Note rows ask on every recomposition, and these arrays embed whole note bodies. Preferences
+        // return the same string until the next write, so reuse the last parse of it.
+        parsedActions[key]?.let { (cachedRaw, actions) ->
+            if (cachedRaw === raw || cachedRaw == raw) return actions
+        }
+        val actions =
+            runCatching { JSONArray(raw) }.getOrNull()
+                ?.let { array -> List(array.length()) { index -> CustomWidgetButtonAction.fromJson(array.optString(index)) } }
+                ?.filterNotNull()
+                .orEmpty()
+        parsedActions[key] = raw to actions
+        return actions
+    }
+
+    private val parsedActions = java.util.concurrent.ConcurrentHashMap<String, Pair<String, List<CustomWidgetButtonAction>>>()
 
     private fun saveActions(context: Context, actions: List<CustomWidgetButtonAction>) {
         save(context, ActionsKey, actions)
@@ -370,7 +386,7 @@ object PinnedNotifications {
             is CustomWidgetButtonAction.Setting -> "setting:$id"
             is CustomWidgetButtonAction.AppShortcut -> "shortcut:$packageName:$id"
             is CustomWidgetButtonAction.Note -> "note:$noteId"
-            is CustomWidgetButtonAction.Media -> "media:${command.value}"
+            is CustomWidgetButtonAction.Command -> "${type.value}:$commandId"
         }
 
     private fun String.normalizedNotificationText(): String =

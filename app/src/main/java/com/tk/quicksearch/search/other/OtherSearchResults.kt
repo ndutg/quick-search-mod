@@ -1,5 +1,6 @@
 package com.tk.quicksearch.search.other
 
+import com.tk.quicksearch.shared.ui.theme.AppColors
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -10,8 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -26,7 +25,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
@@ -36,6 +34,8 @@ import com.tk.quicksearch.search.core.ScreenTimeState
 import com.tk.quicksearch.search.searchScreen.shared.SearchResultCard
 import com.tk.quicksearch.search.searchScreen.components.rememberQueryHighlightedText
 import com.tk.quicksearch.shared.ui.components.AppDropdownMenu
+import com.tk.quicksearch.shared.ui.components.AppDropdownMenuDivider
+import com.tk.quicksearch.shared.ui.components.AppDropdownMenuItem
 import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 
@@ -117,7 +117,7 @@ internal fun ScreenTimeResultCard(
                                 stringResource(R.string.other_screen_time_today_title),
                             ),
                         style = MaterialTheme.typography.labelLarge,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppColors.ContentHighAlpha),
                         maxLines = 2,
                     )
                     when (state) {
@@ -125,7 +125,6 @@ internal fun ScreenTimeResultCard(
                             Text(
                                 text = formatScreenTime(state.durationMillis),
                                 style = MaterialTheme.typography.headlineSmall,
-                                fontWeight = FontWeight.Medium,
                                 color = MaterialTheme.colorScheme.onSurface,
                                 maxLines = 1,
                             )
@@ -138,7 +137,7 @@ internal fun ScreenTimeResultCard(
                 if (state is ScreenTimeState.Available && state.topApps.isNotEmpty()) {
                     VerticalDivider(
                         modifier = Modifier.height(100.dp),
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppColors.TintLightAlpha),
                     )
                     Column(
                         modifier = Modifier.weight(1.15f),
@@ -159,15 +158,8 @@ internal fun ScreenTimeResultCard(
             expanded = showPinMenu,
             onDismissRequest = { showPinMenu = false },
         ) {
-            DropdownMenuItem(
-                text = {
-                    Text(
-                        text =
-                            stringResource(
-                                if (isPinned) R.string.action_unpin_app else R.string.action_pin_app,
-                            ),
-                    )
-                },
+            AppDropdownMenuItem(
+                text = stringResource(if (isPinned) R.string.action_unpin_app else R.string.action_pin_app),
                 leadingIcon = {
                     Icon(
                         painter =
@@ -182,15 +174,10 @@ internal fun ScreenTimeResultCard(
                     onTogglePin()
                 },
             )
-            HorizontalDivider()
-            DropdownMenuItem(
-                text = { Text(text = stringResource(R.string.action_exclude_generic)) },
-                leadingIcon = {
-                    Icon(
-                        imageVector = MaterialSymbols.VisibilityOff,
-                        contentDescription = null,
-                    )
-                },
+            AppDropdownMenuDivider()
+            AppDropdownMenuItem(
+                text = stringResource(R.string.action_exclude_generic),
+                icon = MaterialSymbols.VisibilityOff,
                 onClick = {
                     showPinMenu = false
                     onHide()
@@ -241,8 +228,7 @@ private fun ScreenTimeAppUsageRow(
         ) {
             Text(
                 text = app.appName,
-                style = MaterialTheme.typography.bodySmall,
-                fontWeight = FontWeight.Medium,
+                style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
@@ -250,7 +236,7 @@ private fun ScreenTimeAppUsageRow(
             Text(
                 text = formatScreenTime(app.durationMillis, minimumOneMinute = true),
                 style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.62f),
+                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = AppColors.ContentSecondaryAlpha),
                 maxLines = 1,
             )
         }

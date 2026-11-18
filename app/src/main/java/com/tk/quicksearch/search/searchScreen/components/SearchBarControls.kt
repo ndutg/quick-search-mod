@@ -1,9 +1,13 @@
 package com.tk.quicksearch.search.searchScreen.components
 
+import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.semantics.Role
+import com.tk.quicksearch.shared.ui.components.AppIconButton
+import com.tk.quicksearch.shared.ui.components.AppPlainTooltip
+import com.tk.quicksearch.shared.ui.theme.AppMotion
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.runtime.staticCompositionLocalOf
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.EnterExitState
 import androidx.compose.animation.SizeTransform
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.fadeIn
@@ -11,10 +15,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.animation.togetherWith
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -22,86 +22,52 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.PressInteraction
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.geometry.CornerRadius
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.input.key.Key
-import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.isShiftPressed
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
-import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextRange
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.TextFieldValue
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.apps.rememberAppIcon
-import com.tk.quicksearch.search.core.SearchEngine
 import com.tk.quicksearch.search.core.SearchSection
 import com.tk.quicksearch.search.core.SearchSectionUiMetadataRegistry
-import com.tk.quicksearch.search.core.SearchToolType
+import com.tk.quicksearch.tools.inlineSearch.SearchToolType
 import com.tk.quicksearch.search.core.SearchTarget
 import com.tk.quicksearch.searchEngines.shared.IconRenderStyle
 import com.tk.quicksearch.searchEngines.shared.SearchTargetIcon
 import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
-import com.tk.quicksearch.app.startup.StartupTrace
-import com.tk.quicksearch.shared.ui.theme.LocalAppIsDarkTheme
 import com.tk.quicksearch.shared.util.hapticStrong
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.Locale
+import com.tk.quicksearch.shared.ui.theme.AppShapes
 
 @Composable
 internal fun SearchBarLeadingIcon(
@@ -306,6 +272,13 @@ internal fun isSearchBarAliasActive(
 /** True while search is rebuilt after returning from Settings or Widgets; skips launch auto-focus. */
 internal val LocalSearchReturningFromInAppPage = staticCompositionLocalOf { false }
 
+/** Outlives the Search page so the Open Keyboard pill returns from Settings/Widgets without re-animating. */
+internal class OpenKeyboardPillMemory {
+    var visibleWhenLeft = false
+}
+
+internal val LocalOpenKeyboardPillMemory = staticCompositionLocalOf { OpenKeyboardPillMemory() }
+
 private enum class SearchBarTrailingAction { Clear, Mic, Settings, None }
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -327,75 +300,72 @@ internal fun SearchBarTrailingIcon(
             showSettings -> SearchBarTrailingAction.Settings
             else -> SearchBarTrailingAction.None
         }
-    // A subtle cross-fade with a slight scale and turn, so clear and mic/settings swap smoothly.
+    // The old icon shrinks away, then the new one grows in from the same spot.
     AnimatedContent(
         targetState = action,
         transitionSpec = {
             (
-                fadeIn(tween(TrailingIconSwapDurationMs, delayMillis = TrailingIconSwapDurationMs / 3)) +
+                fadeIn(tween(TrailingIconGrowMs, delayMillis = TrailingIconShrinkMs, easing = AppMotion.EmphasizedDecelerateEasing)) +
                     scaleIn(
-                        tween(TrailingIconSwapDurationMs, easing = FastOutSlowInEasing),
-                        initialScale = TrailingIconSwapScale,
+                        tween(TrailingIconGrowMs, delayMillis = TrailingIconShrinkMs, easing = AppMotion.EmphasizedEasing),
+                        initialScale = 0f,
                     )
             ).togetherWith(
-                fadeOut(tween(TrailingIconSwapDurationMs / 2)) +
-                    scaleOut(tween(TrailingIconSwapDurationMs / 2), targetScale = TrailingIconSwapScale),
+                fadeOut(tween(TrailingIconShrinkMs, easing = AppMotion.EmphasizedAccelerateEasing)) +
+                    scaleOut(tween(TrailingIconShrinkMs, easing = AppMotion.EmphasizedEasing), targetScale = 0f),
             ).using(SizeTransform(clip = false))
         },
         contentAlignment = Alignment.Center,
         modifier = Modifier.padding(end = DesignTokens.SpacingXSmall),
         label = "SearchBarTrailingIcon",
     ) { target ->
-        val rotation by transition.animateFloat(
-            transitionSpec = { tween(TrailingIconSwapDurationMs, easing = FastOutSlowInEasing) },
-            label = "SearchBarTrailingIconRotation",
-        ) { state -> if (state == EnterExitState.Visible) 0f else TrailingIconSwapRotation }
-        val iconModifier = Modifier.graphicsLayer { rotationZ = rotation }
         when (target) {
             SearchBarTrailingAction.Clear ->
-                IconButton(onClick = onClear) {
+                AppIconButton(onClick = onClear, tooltip = stringResource(R.string.desc_clear_search)) {
                     Icon(
                         imageVector = MaterialSymbols.Close,
                         contentDescription = stringResource(R.string.desc_clear_search),
                         tint = accentColor,
-                        modifier = iconModifier,
                     )
                 }
 
             SearchBarTrailingAction.Mic ->
-                IconButton(onClick = onMic) {
+                AppIconButton(onClick = onMic, tooltip = stringResource(R.string.desc_voice_search_icon)) {
                     Icon(
                         imageVector = MaterialSymbols.Mic,
                         contentDescription = stringResource(R.string.desc_voice_search_icon),
                         tint = iconColor,
-                        modifier = iconModifier,
                     )
                 }
 
             SearchBarTrailingAction.Settings -> {
                 val context = LocalContext.current
                 val view = LocalView.current
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier =
-                        Modifier
-                            .size(DesignTokens.Spacing48)
-                            .clip(CircleShape)
-                            .combinedClickable(
-                                hapticFeedbackEnabled = false,
-                                onLongClick = {
-                                    hapticStrong(view)()
-                                    openDeviceSettings(context)
-                                },
-                                onClick = onSettings,
-                            ),
-                ) {
-                    Icon(
-                        imageVector = MaterialSymbols.Settings,
-                        contentDescription = stringResource(R.string.desc_open_settings),
-                        tint = iconColor,
-                        modifier = iconModifier,
-                    )
+                val settingsLabel = stringResource(R.string.desc_open_settings)
+                AppPlainTooltip(text = settingsLabel, preserveLongPress = true) {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier =
+                            Modifier
+                                .size(DesignTokens.Spacing48)
+                                .clip(AppShapes.full)
+                                .combinedClickable(
+                                    hapticFeedbackEnabled = false,
+                                    role = Role.Button,
+                                    onLongClickLabel = stringResource(R.string.desc_open_device_settings),
+                                    onLongClick = {
+                                        hapticStrong(view)()
+                                        openDeviceSettings(context)
+                                    },
+                                    onClick = onSettings,
+                                ),
+                    ) {
+                        Icon(
+                            imageVector = MaterialSymbols.Settings,
+                            contentDescription = settingsLabel,
+                            tint = iconColor,
+                        )
+                    }
                 }
             }
 
@@ -404,9 +374,8 @@ internal fun SearchBarTrailingIcon(
     }
 }
 
-private const val TrailingIconSwapDurationMs = 220
-private const val TrailingIconSwapScale = 0.6f
-private const val TrailingIconSwapRotation = -45f
+private const val TrailingIconShrinkMs = AppMotion.DurationExit
+private const val TrailingIconGrowMs = AppMotion.DurationShort
 
 @Composable
 internal fun androidx.compose.foundation.layout.BoxScope.SearchBarAliasMorphText(
@@ -418,6 +387,8 @@ internal fun androidx.compose.foundation.layout.BoxScope.SearchBarAliasMorphText
         if (text != null) {
             val progress = progress.coerceIn(0f, 1f)
             val scale = 1f - ((1f - AliasIconMorphEndScale) * progress)
+            // graphicsLayer translation is absolute, so travel toward the leading icon in either direction.
+            val travelSign = if (LocalLayoutDirection.current == LayoutDirection.Rtl) -1f else 1f
             Text(
                 text = text,
                 style = MaterialTheme.typography.titleMedium,
@@ -427,7 +398,7 @@ internal fun androidx.compose.foundation.layout.BoxScope.SearchBarAliasMorphText
                         .align(Alignment.CenterStart)
                         .padding(start = AliasMorphTextStartPadding)
                         .graphicsLayer {
-                            translationX = -horizontalTravelPx * progress
+                            translationX = -horizontalTravelPx * progress * travelSign
                             translationY = -verticalTravelPx * progress
                             scaleX = scale
                             scaleY = scale

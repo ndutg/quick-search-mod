@@ -1,22 +1,21 @@
 package com.tk.quicksearch.app.navigation
 
+import com.tk.quicksearch.shared.ui.components.AppMessages
+import com.tk.quicksearch.shared.ui.theme.AppMotion
 import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.os.Environment
-import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.animation.togetherWith
+import androidx.compose.animation.core.rememberTransition
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -25,35 +24,45 @@ import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.derivedStateOf
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import java.io.File
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import com.tk.quicksearch.onboarding.FinalSetupScreen
+import com.tk.quicksearch.onboarding.LocalWelcomeMorph
+import com.tk.quicksearch.onboarding.welcomeBackdropZoom
+import com.tk.quicksearch.onboarding.WelcomeMorphOverlay
+import com.tk.quicksearch.onboarding.WelcomeMorphState
+import com.tk.quicksearch.onboarding.LocalWelcomeExit
 import com.tk.quicksearch.onboarding.ImportSettingsScreen
 import com.tk.quicksearch.onboarding.SearchEngineSetupScreen
 import com.tk.quicksearch.onboarding.permissionScreen.PermissionsScreen
 import com.tk.quicksearch.search.core.AppTheme
 import com.tk.quicksearch.search.core.SearchSection
 import com.tk.quicksearch.search.core.SearchViewModel
+import com.tk.quicksearch.search.searchScreen.components.LocalOpenKeyboardPillMemory
 import com.tk.quicksearch.search.searchScreen.components.LocalSearchReturningFromInAppPage
+import com.tk.quicksearch.search.searchScreen.components.OpenKeyboardPillMemory
 import com.tk.quicksearch.shared.ui.theme.QuickSearchTheme
 import com.tk.quicksearch.search.data.userAppPreferences.UserAppPreferences
-import com.tk.quicksearch.search.searchScreen.LocalPageBackdropDrawnByHost
+import com.tk.quicksearch.search.searchScreen.LocalSharedPageWallpaper
+import com.tk.quicksearch.search.searchScreen.rememberSharedPageWallpaper
+import com.tk.quicksearch.search.searchScreen.searchScreenLayout.LocalHomeAppearedContentKeys
 import com.tk.quicksearch.search.searchScreen.SharedPageBackdrop
 import com.tk.quicksearch.search.searchScreen.searchRoute.SearchRoute
-import com.tk.quicksearch.settings.settingsDetailScreen.level
-import com.tk.quicksearch.settings.settingsDetailScreen.resolveBackDestination
 import com.tk.quicksearch.settings.settingsDetailScreen.SettingsDetailRoute
+import com.tk.quicksearch.settings.settingsDetailScreen.LocalSettingsPageData
+import com.tk.quicksearch.settings.settingsDetailScreen.SettingsPageData
 import com.tk.quicksearch.R
 import com.tk.quicksearch.settings.settingsDetailScreen.SettingsDetailType
 import com.tk.quicksearch.settings.settingsDetailScreen.CustomToolNavigationMemory
@@ -61,6 +70,10 @@ import com.tk.quicksearch.settings.shared.settingsRoute.SettingsRoute
 import com.tk.quicksearch.shared.permissions.PermissionHelper
 import com.tk.quicksearch.shared.util.FeedbackUtils
 import com.tk.quicksearch.widgetsPanel.WidgetsPanelScreen
+import com.tk.quicksearch.widgetsPanel.rememberWidgetsPanelHost
+import com.tk.quicksearch.shared.ui.components.AppMessageSnackbarHost
+import com.tk.quicksearch.shared.ui.components.LocalSegmentedItemModifier
+import com.tk.quicksearch.onboarding.welcomeExitItem
 
 enum class RootDestination {
     WidgetsPanel,
@@ -68,7 +81,7 @@ enum class RootDestination {
     Settings,
 }
 
-internal const val NAVIGATION_ANIMATION_DURATION_MS = 180
+internal const val NAVIGATION_ANIMATION_DURATION_MS = AppMotion.DurationShort
 
 data class NavigationRequest(
     val destination: RootDestination,
@@ -112,6 +125,10 @@ fun MainContent(
         )
     }
     val coroutineScope = rememberCoroutineScope()
+    val welcomeMorph = remember { WelcomeMorphState() }
+    val searchInitializing = remember(searchViewModel) {
+        searchViewModel.configState.map { it.isInitializing }.distinctUntilChanged()
+    }
     var foundQuicksearchFiles by remember { mutableStateOf<List<File>>(emptyList()) }
     val initialDestination = navigationRequest?.destination ?: RootDestination.Search
     val initialSettingsDetailType = navigationRequest?.settingsDetailType
@@ -159,53 +176,60 @@ fun MainContent(
                     ),
                 ),
     ) {
+    CompositionLocalProvider(LocalWelcomeMorph provides welcomeMorph) {
+    // Built from the import step on, hidden under the setup pages, so finishing setup only reveals it.
+    SearchSurfaceLayer(
+        composed = currentScreen != AppScreen.Permissions,
+        visible = currentScreen == AppScreen.Main,
+        warmupStep = currentScreen,
+        searchInitializing = searchInitializing,
+        welcomeMorph = welcomeMorph,
+    ) {
+        NavigationContent(
+            destination = destination,
+            onDestinationChange = {
+                if (destination == RootDestination.Search && it != RootDestination.Search) {
+                    searchViewModel.setSearchLeftForInAppPage(true)
+                }
+                destination = it
+            },
+            settingsDetailType = settingsDetailType,
+            previousSettingsDetailType = previousSettingsDetailType,
+            onSettingsDetailTypeChange = {
+                val currentDetailType = settingsDetailType
+                val isReturningToPreviousPage =
+                    currentDetailType != null &&
+                        it == currentDetailType.resolveBackDestination(previousSettingsDetailType)
+                previousSettingsDetailType =
+                    when {
+                        it == null -> null
+                        isReturningToPreviousPage -> previousSettingsDetailType
+                        else -> currentDetailType
+                    }
+                settingsDetailType = it
+            },
+            onSettingsDetailTypeChangeFromSearch = {
+                previousSettingsDetailType = null
+                settingsDetailType = it
+            },
+            pendingSettingsImportUri = pendingSettingsImportUri,
+            onPendingSettingsImportUriConsumed = { pendingSettingsImportUri = null },
+            viewModel = searchViewModel,
+            onSearchBackPressed = onSearchBackPressed,
+            returnToOverlay = returnToOverlay,
+            onFinishActivity = onFinishActivity,
+        )
+    }
     AnimatedContent(
         targetState = currentScreen,
-        transitionSpec = {
-            val screenOrder =
-                listOf(
-                    AppScreen.Permissions,
-                    AppScreen.ImportSettings,
-                    AppScreen.SearchEngineSetup,
-                    AppScreen.FinalSetup,
-                    AppScreen.Main,
-                )
-            val fromIndex = screenOrder.indexOf(initialState)
-            val toIndex = screenOrder.indexOf(targetState)
-            val isForward = toIndex > fromIndex
-
-            if (isForward) {
-                // Forward: slide in from right, slide out to left
-                slideInHorizontally(
-                    animationSpec =
-                        androidx.compose.animation.core
-                            .tween(NAVIGATION_ANIMATION_DURATION_MS),
-                    initialOffsetX = { it },
-                ) togetherWith
-                    slideOutHorizontally(
-                        animationSpec =
-                            androidx.compose.animation.core
-                                .tween(NAVIGATION_ANIMATION_DURATION_MS),
-                        targetOffsetX = { -it },
-                    )
-            } else {
-                // Backward: slide in from left, slide out to right
-                slideInHorizontally(
-                    animationSpec =
-                        androidx.compose.animation.core
-                            .tween(NAVIGATION_ANIMATION_DURATION_MS),
-                    initialOffsetX = { -it },
-                ) togetherWith
-                    slideOutHorizontally(
-                        animationSpec =
-                            androidx.compose.animation.core
-                                .tween(NAVIGATION_ANIMATION_DURATION_MS),
-                        targetOffsetX = { it },
-                    )
-            }
-        },
+        modifier = Modifier.fillMaxSize(),
+        transitionSpec = { appScreenTransform(welcomeMorph) },
         label = "ScreenTransition",
     ) { targetScreen ->
+        CompositionLocalProvider(
+            LocalWelcomeExit provides welcomeMorph.takeIf { targetScreen != AppScreen.Main },
+            LocalSegmentedItemModifier provides { it.welcomeExitItem() },
+        ) {
         when (targetScreen) {
             AppScreen.Permissions -> {
                 QuickSearchTheme(
@@ -259,7 +283,7 @@ fun MainContent(
                         ) == android.content.pm.PackageManager.PERMISSION_GRANTED
                     }
                 val hasAnyThirdPartyMessagingAppForImport =
-                    uiState.isWhatsAppInstalled || uiState.isTelegramInstalled || uiState.isSignalInstalled
+                    uiState.installedContactProviders.any { it.showsMessagingSetup }
                 val willShowFinalSetup =
                     hasFilesPermission || (hasContactsPermission && hasAnyThirdPartyMessagingAppForImport)
                 val importTotalSteps = if (willShowFinalSetup) 4 else 3
@@ -273,7 +297,6 @@ fun MainContent(
                         totalSteps = importTotalSteps,
                         onImportSuccess = {
                             searchViewModel.requestSearchBarWelcomeAnimationFromOnboarding()
-                            searchViewModel.setShowStartSearchingOnOnboarding(true)
                             userPreferences.setFirstLaunchCompleted()
                             if (userPreferences.isOverlayModeEnabled()) {
                                 onFinishActivity()
@@ -310,7 +333,7 @@ fun MainContent(
                         ) == android.content.pm.PackageManager.PERMISSION_GRANTED
                     }
                 val hasAnyThirdPartyMessagingApp =
-                    uiState.isWhatsAppInstalled || uiState.isTelegramInstalled || uiState.isSignalInstalled
+                    uiState.installedContactProviders.any { it.showsMessagingSetup }
                 val shouldShowFinalSetup =
                     hasFilesPermission || (hasContactsPermission && hasAnyThirdPartyMessagingApp)
                 val skipFinalSetup = !shouldShowFinalSetup
@@ -327,7 +350,6 @@ fun MainContent(
                     onContinue = {
                         if (skipFinalSetup) {
                             searchViewModel.requestSearchBarWelcomeAnimationFromOnboarding()
-                            searchViewModel.setShowStartSearchingOnOnboarding(true)
                             userPreferences.setFirstLaunchCompleted()
                             if (userPreferences.isOverlayModeEnabled()) {
                                 onFinishActivity()
@@ -360,7 +382,7 @@ fun MainContent(
                     }
 
                 val showToast: (String) -> Unit = { message ->
-                    Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                    AppMessages.show(context, message)
                 }
 
                 QuickSearchTheme(
@@ -389,44 +411,16 @@ fun MainContent(
                 }
             }
 
-            AppScreen.Main -> {
-                NavigationContent(
-                    destination = destination,
-                    onDestinationChange = {
-                        if (destination == RootDestination.Search && it != RootDestination.Search) {
-                            searchViewModel.setSearchLeftForInAppPage(true)
-                        }
-                        destination = it
-                    },
-                    settingsDetailType = settingsDetailType,
-                    previousSettingsDetailType = previousSettingsDetailType,
-                    onSettingsDetailTypeChange = {
-                        val currentDetailType = settingsDetailType
-                        val isReturningToPreviousPage =
-                            currentDetailType != null &&
-                                it == currentDetailType.resolveBackDestination(previousSettingsDetailType)
-                        previousSettingsDetailType =
-                            when {
-                                it == null -> null
-                                isReturningToPreviousPage -> previousSettingsDetailType
-                                else -> currentDetailType
-                            }
-                        settingsDetailType = it
-                    },
-                    onSettingsDetailTypeChangeFromSearch = {
-                        previousSettingsDetailType = null
-                        settingsDetailType = it
-                    },
-                    pendingSettingsImportUri = pendingSettingsImportUri,
-                    onPendingSettingsImportUriConsumed = { pendingSettingsImportUri = null },
-                    viewModel = searchViewModel,
-                    onSearchBackPressed = onSearchBackPressed,
-                    returnToOverlay = returnToOverlay,
-                    onFinishActivity = onFinishActivity,
-                )
-            }
+            AppScreen.Main -> Box(Modifier.fillMaxSize()) // The search screen lives in SearchSurfaceLayer.
+        }
         }
     }
+    }
+    WelcomeMorphOverlay(
+        state = welcomeMorph,
+        onSearchScreen = currentScreen == AppScreen.Main,
+        onFinished = searchViewModel::onSearchBarWelcomeAnimationCompleted,
+    )
     }
 }
 
@@ -471,7 +465,7 @@ private fun NavigationContent(
     // content slides. Settings covers it with an opaque background. Everything is driven by the
     // page controller's progress in the draw phase, so the backdrop and pages never drift apart.
     val pageSwipeController =
-        rememberPageSwipeController(destination, settingsDetailType, onSettingsDetailTypeChange, viewModel)
+        rememberPageSwipeController(destination, settingsDetailType, onSettingsDetailTypeChange)
     LaunchedEffect(destination) {
         pageSwipeController.navigateTo(
             destination,
@@ -484,31 +478,34 @@ private fun NavigationContent(
         )
         rootAnimationDirectionOverride = null
     }
+    // Outlives the Search page, which is disposed while Widgets or Settings is shown.
+    val homeAppearedContentKeys = remember { mutableSetOf<String>() }
+    val openKeyboardPillMemory = remember { OpenKeyboardPillMemory() }
+    val settingsPageData = remember { SettingsPageData() }
+    val widgetsPanelHost = rememberWidgetsPanelHost()
     Box(modifier = Modifier.fillMaxSize()) {
-        // Opaque cover under Settings; a transparent (system wallpaper) window would smear trails.
-        val backgroundColor = MaterialTheme.colorScheme.background
-        Box(
-            modifier =
-                Modifier
-                    .fillMaxSize()
-                    .drawBehind {
-                        val alpha = pageSwipeController.visibilityOf(RootDestination.Settings)
-                        if (alpha > 0f) drawRect(backgroundColor, alpha = alpha)
-                    },
+        // Keep the backdrop warm across Settings unless the system requests memory.
+        val wallpaper = rememberSharedPageWallpaper(
+            state = uiState,
+            viewModel = viewModel,
+            coveredBySettings = pageSwipeController.settled == RootDestination.Settings && pageSwipeController.target == null,
         )
-        // Kept composed across Settings so returning never rebuilds (and re-fades) the wallpaper.
         SharedPageBackdrop(
             state = uiState,
+            wallpaperState = wallpaper,
             modifier =
-                Modifier.graphicsLayer {
-                    alpha = 1f - pageSwipeController.visibilityOf(RootDestination.Settings)
-                },
+                Modifier
+                    .graphicsLayer {
+                        alpha = if (pageSwipeController.visibilityOf(RootDestination.Settings) >= 1f) 0f else 1f
+                    }.welcomeBackdropZoom(),
         )
         CompositionLocalProvider(
-            LocalPageBackdropDrawnByHost provides true,
+            LocalSharedPageWallpaper provides wallpaper,
+            LocalSettingsPageData provides settingsPageData,
+            LocalHomeAppearedContentKeys provides homeAppearedContentKeys,
             LocalPageSwipeController provides if (returnToOverlay) null else pageSwipeController,
         ) {
-            PageSwipeHost(controller = pageSwipeController) { targetDestination ->
+            PageSwipeHost(controller = pageSwipeController, destination = destination) { targetDestination ->
                 when (targetDestination) {
                     RootDestination.WidgetsPanel -> {
                         val navigateToSearch: () -> Unit = {
@@ -519,10 +516,10 @@ private fun NavigationContent(
                                 onDestinationChange(RootDestination.Search)
                             }
                         }
-                        BackHandler(onBack = navigateToSearch)
                         WidgetsPanelScreen(
                             onNavigateToSearch = navigateToSearch,
                             uiState = uiState,
+                            appWidgetHost = widgetsPanelHost,
                         )
                     }
 
@@ -546,7 +543,8 @@ private fun NavigationContent(
                     }
 
                     RootDestination.Search -> {
-                        BackHandler { onSearchBackPressed() }
+                        val pageSettled = LocalRootPageSettled.current
+                        BackHandler(enabled = pageSettled) { onSearchBackPressed() }
                         val keyboardController =
                             androidx.compose.ui.platform.LocalSoftwareKeyboardController.current
                         val lastOpenedSettingsDetail = SettingsNavigationMemory.getLastOpenedSettingsDetail()
@@ -575,10 +573,13 @@ private fun NavigationContent(
                         // Read once on entry: returning from Settings/Widgets skips launch auto-focus, so
                         // the keyboard only comes back if it was open when search was left.
                         val returningFromInAppPage = remember { viewModel.searchLeftForInAppPage }
-                        LaunchedEffect(destination) {
-                            if (destination == RootDestination.Search) viewModel.setSearchLeftForInAppPage(false)
+                        LaunchedEffect(pageSettled) {
+                            if (pageSettled) viewModel.setSearchLeftForInAppPage(false)
                         }
-                        CompositionLocalProvider(LocalSearchReturningFromInAppPage provides returningFromInAppPage) {
+                        CompositionLocalProvider(
+                            LocalSearchReturningFromInAppPage provides returningFromInAppPage,
+                            LocalOpenKeyboardPillMemory provides openKeyboardPillMemory,
+                        ) {
                             SearchRoute(
                                 viewModel = viewModel,
                                 onCloseAppRequest = onFinishActivity,
@@ -666,13 +667,14 @@ private fun NavigationContent(
                                 onWelcomeAnimationCompleted = {
                                     viewModel.onSearchBarWelcomeAnimationCompleted()
                                 },
-                                onWallpaperLoaded = { viewModel.setWallpaperAvailable(true) },
                             )
                         }
                     }
                 }
             }
         }
+        // In-app messages on Settings and the widgets panel; Search registers its own host.
+        AppMessageSnackbarHost(modifier = Modifier.align(Alignment.BottomCenter).fillMaxWidth())
     }
 
 }
@@ -700,8 +702,10 @@ private fun SettingsNavigationContent(
         onSettingsDetailAnimationDirectionConsumed()
     }
 
-    AnimatedContent(
-        targetState = settingsDetailType,
+    val backSeek =
+        rememberSettingsBackSeek(settingsDetailType, previousSettingsDetailType, settingsDetailAnimationDirectionOverride)
+    CompositionLocalProvider(LocalSettingsBackSeek provides backSeek) {
+    rememberTransition(backSeek.transitionState, label = "SettingsDetailTransition").AnimatedContent(
         transitionSpec = {
             val isForward =
                 when {
@@ -725,7 +729,7 @@ private fun SettingsNavigationContent(
                     else -> false
                 }
             val animationDirection =
-                settingsDetailAnimationDirectionOverride
+                backSeek.directionOverride.takeUnless { backSeek.isSeeking }
                     ?: if (isForward) {
                         SwipeAnimationDirection.LEFT
                     } else {
@@ -733,7 +737,6 @@ private fun SettingsNavigationContent(
                     }
             directionalNavigationTransition(animationDirection)
         },
-        label = "SettingsDetailTransition",
     ) { currentDetailType ->
         if (currentDetailType != null) {
             val detailScrollState =
@@ -752,6 +755,10 @@ private fun SettingsNavigationContent(
                 onBack = { onSettingsDetailTypeChange(null) },
                 viewModel = viewModel,
                 detailType = currentDetailType,
+                pageSettled = LocalRootPageSettled.current &&
+                    !backSeek.isSeeking &&
+                    backSeek.transitionState.currentState == currentDetailType &&
+                    settingsDetailType == currentDetailType,
                 sourceDetailType = previousSettingsDetailType,
                 onNavigateToDetail = onSettingsDetailTypeChange,
                 onNavigateToSearch = {
@@ -787,5 +794,6 @@ private fun SettingsNavigationContent(
                 scrollState = settingsScrollState,
             )
         }
+    }
     }
 }

@@ -1,5 +1,7 @@
 package com.tk.quicksearch.search.searchScreen.searchScreenLayout
 
+import androidx.compose.ui.semantics.Role
+import com.tk.quicksearch.shared.ui.theme.AppMotion
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.expandVertically
@@ -15,6 +17,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ripple
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,6 +27,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
@@ -34,7 +38,6 @@ import com.tk.quicksearch.search.contacts.models.ContactButtonAction
 import com.tk.quicksearch.search.core.*
 import com.tk.quicksearch.search.data.userAppPreferences.UserAppPreferences
 import com.tk.quicksearch.search.searchHistory.RecentSearchEntry
-import com.tk.quicksearch.search.searchHistory.RecentSearchItem
 import com.tk.quicksearch.search.searchHistory.SearchHistorySection
 import com.tk.quicksearch.search.searchHistory.SearchHistoryTab
 import com.tk.quicksearch.search.files.FileTypeFilterChips
@@ -50,6 +53,17 @@ import com.tk.quicksearch.search.searchScreen.RemindersSectionParams
 import com.tk.quicksearch.search.searchScreen.shared.LocalSearchCardLayoutEnabled
 import com.tk.quicksearch.search.searchScreen.shared.SearchResultCard
 import com.tk.quicksearch.R
+
+/**
+ * Keys of Home sections that already played their first-appearance animation. The navigation host
+ * provides one set for the whole activity, so leaving Home for another page and coming back does
+ * not replay the fade. Hosts without a provider (overlay) fall back to a per-composition set.
+ */
+val LocalHomeAppearedContentKeys = staticCompositionLocalOf<MutableSet<String>?> { null }
+
+@Composable
+internal fun rememberHomeAppearedContentKeys(): MutableSet<String> =
+    LocalHomeAppearedContentKeys.current ?: remember { mutableSetOf() }
 
 /**
  * Fades home sections in when their asynchronously loaded data first arrives. By default the
@@ -82,9 +96,9 @@ internal fun HomeLoadingAnimatedContent(
             visibleState = visibility,
             enter =
                 expandVertically(
-                    animationSpec = tween(durationMillis = HomeSectionExpandDurationMillis),
+                    animationSpec = tween(durationMillis = HomeSectionExpandDurationMillis, easing = AppMotion.EmphasizedDecelerateEasing),
                     expandFrom = Alignment.Top,
-                ) + fadeIn(animationSpec = tween(durationMillis = HomeSectionExpandDurationMillis)),
+                ) + fadeIn(animationSpec = tween(durationMillis = HomeSectionExpandDurationMillis, easing = AppMotion.EmphasizedDecelerateEasing)),
         ) {
             Column(
                 modifier = Modifier.fillMaxWidth(),
@@ -102,7 +116,7 @@ internal fun HomeLoadingAnimatedContent(
     }
     val contentAlpha by animateFloatAsState(
         targetValue = if (visible) 1f else 0f,
-        animationSpec = tween(durationMillis = HomeSectionFadeDurationMillis),
+        animationSpec = tween(durationMillis = HomeSectionFadeDurationMillis, easing = AppMotion.EmphasizedEasing),
         label = "homeSectionFade",
     )
     Column(
@@ -115,11 +129,11 @@ internal fun HomeLoadingAnimatedContent(
     }
 }
 
-private const val HomeSectionFadeDurationMillis = 180
-private const val HomeSectionExpandDurationMillis = 280
+private const val HomeSectionFadeDurationMillis = AppMotion.DurationShort
+private const val HomeSectionExpandDurationMillis = AppMotion.DurationMedium
 internal const val HOME_TODAY_CALENDAR_ANIMATION_KEY = "home-today-calendar"
 /** Gap between home content items; flat dividers sit half the stack spacing into it. */
-internal val HomeSectionContentSpacing = 14.dp
+internal val HomeSectionContentSpacing = DesignTokens.SpacingMedium
 
 internal fun hasMoreResults(
     renderingState: SectionRenderingState,
@@ -173,8 +187,9 @@ internal fun UnifiedPinnedItemsBlock(
             isExpanded = isExpanded,
             showWallpaperBackground = showWallpaperBackground,
             modifier = modifier.clickable(
+                role = Role.Button,
                 interactionSource = interactionSource,
-                indication = null,
+                indication = ripple(),
                 onClick = toggleExpanded,
             ),
         )
@@ -187,13 +202,13 @@ internal fun UnifiedPinnedItemsBlock(
             SearchResultCard(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .heightIn(min = 60.dp),
+                    .heightIn(min = DesignTokens.ListItemMinHeight),
                 showWallpaperBackground = showWallpaperBackground,
             ) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .heightIn(min = 60.dp),
+                        .heightIn(min = DesignTokens.ListItemMinHeight),
                     contentAlignment = Alignment.Center,
                 ) {
                     headerContent(

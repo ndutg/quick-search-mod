@@ -1,11 +1,20 @@
 package com.tk.quicksearch.search.appSettings
 
+import androidx.compose.foundation.selection.toggleable
+import androidx.compose.foundation.clickable
+import com.tk.quicksearch.shared.ui.components.ChoiceOption
+import com.tk.quicksearch.shared.ui.components.ConnectedChoiceGroup
+import com.tk.quicksearch.shared.ui.components.AppSwitch
+import com.tk.quicksearch.search.searchScreen.components.ExpandButtonSegment
+import com.tk.quicksearch.search.searchScreen.shared.segmentedRowsActive
+import com.tk.quicksearch.search.searchScreen.shared.resultRowsContainerPadding
+import com.tk.quicksearch.search.searchScreen.shared.ResultSegment
+import com.tk.quicksearch.search.searchScreen.shared.ResultRowDivider
 import com.tk.quicksearch.search.searchScreen.shared.LocalSearchCardLayoutEnabled
 import com.tk.quicksearch.settings.appearanceSettings.homeTextColorTitleRes
 import com.tk.quicksearch.search.searchScreen.shared.compactEdgeToEdge
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,17 +26,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
@@ -40,7 +47,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.apps.rememberAppIcon
-import com.tk.quicksearch.search.contacts.components.ContactUiConstants
 import com.tk.quicksearch.search.searchScreen.LocalOverlayDividerColor
 import com.tk.quicksearch.search.searchScreen.LocalOverlayResultCardColor
 import com.tk.quicksearch.search.searchScreen.PredictedSubmitTarget
@@ -48,7 +54,6 @@ import com.tk.quicksearch.search.searchScreen.SearchScreenConstants
 import com.tk.quicksearch.search.searchScreen.components.ExpandableResultsCard
 import com.tk.quicksearch.search.searchScreen.components.ExpandButtonDivider
 import com.tk.quicksearch.search.searchScreen.components.topPredictedRowContainer
-import com.tk.quicksearch.search.searchScreen.components.topPredictedRowContentPadding
 import com.tk.quicksearch.search.searchScreen.components.resultRowVerticalPadding
 import com.tk.quicksearch.search.searchScreen.components.rememberQueryHighlightedText
 import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
@@ -64,7 +69,6 @@ private const val QUICK_SEARCH_PACKAGE_NAME = "com.tk.quicksearch"
 private const val ROW_MIN_HEIGHT = 52
 private const val ICON_SIZE = 24
 private const val EXPAND_BUTTON_HORIZONTAL_PADDING = 12
-private const val TOGGLE_SCALE = 0.85f
 
 @Composable
 fun AppSettingsResultsSection(
@@ -112,6 +116,7 @@ fun AppSettingsResultsSection(
         fillExpandedHeight = fillExpandedHeight,
         showWallpaperBackground = showWallpaperBackground,
         overlayCardColor = overlayCardColor,
+        segmented = true,
     ) { contentModifier, cardState ->
         val displayRows =
             if (cardState.displayAsExpanded) {
@@ -130,13 +135,15 @@ fun AppSettingsResultsSection(
                     },
                 ),
         ) {
+            val segmentCount = displayRows.size + if (cardState.shouldShowExpandButton) 1 else 0
+            val segmented = segmentedRowsActive()
             Column(
                 modifier =
                     Modifier.padding(
-                        start = DesignTokens.SpacingLarge,
-                        top = 4.dp,
-                        end = DesignTokens.SpacingMedium,
-                        bottom = 4.dp,
+                        start = resultRowsContainerPadding(DesignTokens.SpacingLarge),
+                        top = resultRowsContainerPadding(4.dp),
+                        end = resultRowsContainerPadding(DesignTokens.SpacingMedium),
+                        bottom = resultRowsContainerPadding(4.dp),
                     )
                     .padding(
                         bottom =
@@ -148,9 +155,11 @@ fun AppSettingsResultsSection(
                     ),
             ) {
                 displayRows.forEachIndexed { index, setting ->
+                    key(setting.id) {
                     val showPredictedOnRow =
                         predictedAppSettingId == setting.id && !useCardLevelPrediction
 
+                    ResultSegment(index = index, count = segmentCount) {
                     AppSettingResultRow(
                         setting = setting,
                         checked = isAppSettingToggleChecked(setting),
@@ -164,23 +173,23 @@ fun AppSettingsResultsSection(
                         onAppSettingAppResultRowCountChange = onAppSettingAppResultRowCountChange,
                         isPredicted = showPredictedOnRow,
                     )
+                    }
 
                     if (index != displayRows.lastIndex && !showPredictedOnRow) {
-                        HorizontalDivider(
-                            modifier = Modifier.compactEdgeToEdge().fillMaxWidth(),
-                            color = overlayDividerColor
-                                ?: if (showWallpaperBackground) AppColors.WallpaperDivider else MaterialTheme.colorScheme.outlineVariant,
-                        )
+                        ResultRowDivider(showWallpaperBackground, color = overlayDividerColor)
+                    }
                     }
                 }
 
-                if (cardState.shouldShowExpandButton) {
+                if (cardState.shouldShowExpandButton && segmented) {
+                    ExpandButtonSegment(index = segmentCount - 1, count = segmentCount, onClick = onExpandClick)
+                } else if (cardState.shouldShowExpandButton) {
                     ExpandButtonDivider(showWallpaperBackground)
                     ExpandButton(
                         onClick = onExpandClick,
                         modifier =
                             Modifier.align(Alignment.CenterHorizontally)
-                                .padding(top = if (LocalSearchCardLayoutEnabled.current) 4.dp else 0.dp),
+                                .padding(top = if (LocalSearchCardLayoutEnabled.current) DesignTokens.SpacingXSmall else 0.dp),
                     )
                 }
             }
@@ -223,7 +232,7 @@ internal fun AppSettingResultRow(
     val effectiveDescription =
         if (isBlockedByLauncher) {
             stringResource(R.string.settings_overlay_mode_desc_launcher_blocked)
-        } else if (setting.destination == AppSettingsDestination.APP_LANGUAGE) {
+        } else if (setting.destination == AppSettingsRouteAction.APP_LANGUAGE) {
             val selectedLanguageLabel =
                 remember(context) { AppLanguageManager.getSelectedLanguageLabel(context) }
             stringResource(R.string.settings_app_language_desc, selectedLanguageLabel)
@@ -236,36 +245,35 @@ internal fun AppSettingResultRow(
             setting.description
         }
 
+    val rowActionModifier =
+        when {
+            setting.isNavigateAction || setting.isNavigationToggle ->
+                Modifier.clickable(enabled = !isBlockedByLauncher, role = Role.Button) {
+                    hapticConfirm(view)()
+                    onClick(setting)
+                }
+            !isAppsPerRowSetting && !isAppResultRowsSetting && !setting.hasInlineControl ->
+                Modifier.toggleable(value = checked, enabled = !isBlockedByLauncher, role = Role.Switch) { enabled ->
+                    hapticToggle(view)()
+                    onToggle(setting, enabled)
+                }
+            else -> Modifier
+        }
     val rowModifier =
         Modifier.fillMaxWidth()
             .heightIn(min = ROW_MIN_HEIGHT.dp)
             .topPredictedRowContainer(isTopPredicted = isPredicted)
-            .topPredictedRowContentPadding()
             .padding(vertical = resultRowVerticalPadding(DesignTokens.SpacingLarge))
-            .combinedClickable(
-                interactionSource = null,
-                indication = null,
-                enabled = !isBlockedByLauncher,
-                onClick = {
-                    if (setting.isNavigateAction || setting.isNavigationToggle) {
-                        hapticConfirm(view)()
-                        onClick(setting)
-                    } else if (!isAppsPerRowSetting && !isAppResultRowsSetting && !setting.hasInlineControl) {
-                        hapticToggle(view)()
-                        onToggle(setting, !checked)
-                    }
-                },
-                role = if (setting.isToggleAction && !setting.isNavigationToggle && !isAppsPerRowSetting && !isAppResultRowsSetting && !setting.hasInlineControl) Role.Switch else null,
-            )
+            .then(rowActionModifier)
 
     Row(
         modifier = rowModifier,
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Box(
             modifier = Modifier.size(ICON_SIZE.dp).padding(start = DesignTokens.SpacingXSmall)
-                .then(if (isBlockedByLauncher) Modifier.alpha(0.5f) else Modifier),
+                .then(if (isBlockedByLauncher) Modifier.alpha(AppColors.ContentMutedAlpha) else Modifier),
         ) {
             appIconResult.bitmap?.let { iconBitmap ->
                 Image(
@@ -278,7 +286,7 @@ internal fun AppSettingResultRow(
 
         Column(
             modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(2.dp),
+            verticalArrangement = Arrangement.spacedBy(DesignTokens.TextColumnSpacing),
         ) {
             Text(
                 text =
@@ -289,9 +297,9 @@ internal fun AppSettingResultRow(
                             setting.title
                         },
                     ),
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.bodyLarge,
                 color = if (isBlockedByLauncher) {
-                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                    MaterialTheme.colorScheme.onSurface.copy(alpha = AppColors.ContentMutedAlpha)
                 } else {
                     MaterialTheme.colorScheme.onSurface
                 },
@@ -301,9 +309,9 @@ internal fun AppSettingResultRow(
             effectiveDescription?.takeIf { it.isNotBlank() }?.let { description ->
                 Text(
                     text = rememberQueryHighlightedText(description),
-                    style = MaterialTheme.typography.bodySmall,
+                    style = MaterialTheme.typography.bodyMedium,
                     color = if (isBlockedByLauncher) {
-                        MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                        MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = AppColors.ContentSecondaryAlpha)
                     } else {
                         MaterialTheme.colorScheme.onSurfaceVariant
                     },
@@ -324,46 +332,36 @@ internal fun AppSettingResultRow(
                     steps = 3,
                     label = webSuggestionsCount.toString(),
                 )
+            } else if (checked && setting.toggleKey == AppSettingsToggleKey.RECENT_QUERIES) {
+                SearchHistoryCountSlider()
             }
         }
 
         if (isAppsPerRowSetting) {
-            val fourSelected = appSettingPhoneAppGridColumns == 4
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
-                modifier = Modifier.padding(end = 6.dp),
-            ) {
-                AppSettingChoiceChip(
-                    label = stringResource(R.string.settings_app_columns_4),
-                    selected = fourSelected,
-                    onClick = { onAppSettingPhoneAppGridColumnsChange(4) },
-                    showCheck = false,
-                )
-                AppSettingChoiceChip(
-                    label = stringResource(R.string.settings_app_columns_5),
-                    selected = !fourSelected,
-                    onClick = { onAppSettingPhoneAppGridColumnsChange(5) },
-                    showCheck = false,
-                )
-            }
+            ConnectedChoiceGroup(
+                options =
+                    listOf(
+                        ChoiceOption(4, stringResource(R.string.settings_app_columns_4)),
+                        ChoiceOption(5, stringResource(R.string.settings_app_columns_5)),
+                    ),
+                selected = if (appSettingPhoneAppGridColumns == 4) 4 else 5,
+                onSelect = { columns ->
+                    if (columns != appSettingPhoneAppGridColumns) onAppSettingPhoneAppGridColumnsChange(columns)
+                },
+                fillWidth = false,
+                modifier = Modifier.padding(start = DesignTokens.SpacingSmall),
+            )
         } else if (isAppResultRowsSetting) {
             AppResultRowsChips(
                 selectedRowCount = appSettingAppResultRowCount,
                 onSelectRowCount = onAppSettingAppResultRowCountChange,
             )
-        } else if (setting.destination == AppSettingsDestination.AI_MODEL) {
+        } else if (setting.destination == AppSettingsRouteAction.AI_MODEL) {
             Icon(
                 imageVector = MaterialSymbols.UnfoldMore,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(end = 6.dp),
-            )
-        } else if (setting.id == THEME_MODE_SETTING_ID) {
-            Icon(
-                imageVector = MaterialSymbols.ChevronRight,
-                contentDescription = stringResource(R.string.desc_navigate_forward),
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(end = 6.dp),
+                modifier = Modifier.padding(end = DesignTokens.SpacingSmall),
             )
         } else if (setting.hasInlineControl) {
             // The inline control is rendered above.
@@ -376,39 +374,38 @@ internal fun AppSettingResultRow(
                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                     VerticalDivider(
-                        modifier = Modifier.height(24.dp).padding(start = 8.dp),
+                        modifier = Modifier.height(24.dp).padding(start = DesignTokens.SpacingSmall),
                         color = MaterialTheme.colorScheme.outlineVariant,
                     )
                 }
             }
-            Switch(
+            AppSwitch(
                 checked = checked,
                 onCheckedChange = { enabled ->
                     hapticToggle(view)()
                     onToggle(setting, enabled)
                 },
                 enabled = !isBlockedByLauncher,
-                modifier = Modifier.scale(TOGGLE_SCALE),
                 // Material's disabled colors are composited over the theme surface, which turns the
                 // thumb into an opaque blob on result cards; keep them translucent instead.
                 colors = SwitchDefaults.colors(
                     uncheckedTrackColor = Color.Transparent,
                     disabledUncheckedTrackColor = Color.Transparent,
-                    disabledUncheckedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.24f),
-                    disabledUncheckedThumbColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.24f),
-                    disabledCheckedTrackColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
-                    disabledCheckedThumbColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f),
+                    disabledUncheckedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = AppColors.TintStrongAlpha),
+                    disabledUncheckedThumbColor = MaterialTheme.colorScheme.onSurface.copy(alpha = AppColors.TintStrongAlpha),
+                    disabledCheckedTrackColor = MaterialTheme.colorScheme.onSurface.copy(alpha = AppColors.TintLightAlpha),
+                    disabledCheckedThumbColor = MaterialTheme.colorScheme.onSurface.copy(alpha = AppColors.DisabledContentAlpha),
                 ),
             )
         } else {
-            val isReloadDestination = setting.destination == AppSettingsDestination.RELOAD_APPS ||
-                setting.destination == AppSettingsDestination.RELOAD_CONTACTS ||
-                setting.destination == AppSettingsDestination.RELOAD_FILES
+            val isReloadDestination = setting.destination == AppSettingsAction.RELOAD_APPS ||
+                setting.destination == AppSettingsAction.RELOAD_CONTACTS ||
+                setting.destination == AppSettingsAction.RELOAD_FILES
             Icon(
                 imageVector = if (isReloadDestination) MaterialSymbols.Refresh else MaterialSymbols.ChevronRight,
                 contentDescription = stringResource(R.string.desc_navigate_forward),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(end = 6.dp),
+                modifier = Modifier.padding(end = DesignTokens.SpacingSmall),
             )
         }
     }
@@ -419,19 +416,13 @@ private fun AppResultRowsChips(
     selectedRowCount: Int,
     onSelectRowCount: (Int) -> Unit,
 ) {
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
-        modifier = Modifier.padding(end = 6.dp),
-    ) {
-        listOf(1, 2).forEach { rowCount ->
-            AppSettingChoiceChip(
-                label = rowCount.toString(),
-                selected = selectedRowCount == rowCount,
-                onClick = { onSelectRowCount(rowCount) },
-                showCheck = false,
-            )
-        }
-    }
+    ConnectedChoiceGroup(
+        options = listOf(1, 2).map { rowCount -> ChoiceOption(rowCount, rowCount.toString()) },
+        selected = if (selectedRowCount == 2) 2 else 1,
+        onSelect = { rowCount -> if (rowCount != selectedRowCount) onSelectRowCount(rowCount) },
+        fillWidth = false,
+        modifier = Modifier.padding(start = DesignTokens.SpacingSmall),
+    )
 }
 
 @Composable

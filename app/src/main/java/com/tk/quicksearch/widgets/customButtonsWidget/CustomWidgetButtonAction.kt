@@ -3,14 +3,13 @@ package com.tk.quicksearch.widgets.customButtonsWidget
 import android.content.Intent
 import android.net.Uri
 import android.os.Parcelable
-import com.tk.quicksearch.media.MediaCommand
+import com.tk.quicksearch.R
 import com.tk.quicksearch.search.contacts.models.ContactCardAction
 import com.tk.quicksearch.search.data.appShortcutRepository.StaticShortcut
 import com.tk.quicksearch.search.deviceSettings.DeviceSetting
 import com.tk.quicksearch.search.models.AppInfo
 import com.tk.quicksearch.search.models.ContactInfo
 import com.tk.quicksearch.search.models.DeviceFile
-import com.tk.quicksearch.search.models.NoteInfo
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.json.JSONArray
@@ -18,14 +17,16 @@ import org.json.JSONObject
 
 enum class CustomWidgetButtonType(
     val value: String,
+    val categoryRes: Int,
+    internal val command: WidgetCommandDefinition? = null,
 ) {
-    APP("app"),
-    CONTACT("contact"),
-    FILE("file"),
-    SETTING("setting"),
-    APP_SHORTCUT("app_shortcut"),
-    NOTE("note"),
-    MEDIA("media"),
+    APP("app", R.string.notification_pinned_item_type_app),
+    CONTACT("contact", R.string.notification_pinned_item_type_contact),
+    FILE("file", R.string.notification_pinned_item_type_file),
+    SETTING("setting", R.string.settings_gesture_settings),
+    APP_SHORTCUT("app_shortcut", R.string.notification_pinned_item_type_app_shortcut),
+    NOTE("note", R.string.notification_pinned_item_type_note),
+    MEDIA("media", R.string.section_media, mediaWidgetCommands),
 }
 
 enum class SettingExtraType(
@@ -292,15 +293,6 @@ sealed class CustomWidgetButtonAction : Parcelable {
 
         override fun displayLabel(): String = title.ifBlank { noteId.toString() }
 
-        fun toNoteInfo(): NoteInfo =
-            NoteInfo(
-                noteId = noteId,
-                title = title,
-                markdownContent = markdownContent,
-                createdAtMillis = 0L,
-                updatedAtMillis = 0L,
-            )
-
         override fun toJson(): String =
             JSONObject()
                 .put(KEY_TYPE, type.value)
@@ -312,24 +304,27 @@ sealed class CustomWidgetButtonAction : Parcelable {
     }
 
     @Parcelize
-    data class Media(
-        val command: MediaCommand,
-        /** Localized label captured when the button was picked, like other actions' titles. */
+    data class Command(
+        override val type: CustomWidgetButtonType,
+        val commandId: String,
         val title: String,
         override val customIconBase64: String? = null,
     ) : CustomWidgetButtonAction() {
-        @IgnoredOnParcel
-        override val type: CustomWidgetButtonType = CustomWidgetButtonType.MEDIA
+        internal fun choice(): WidgetCommandChoice? = type.command?.choices?.firstOrNull { it.id == commandId }
 
-        override fun displayLabel(): String = title.ifBlank { command.value }
+        override fun displayLabel(): String = title.ifBlank { commandId }
 
         override fun toJson(): String =
             JSONObject()
                 .put(KEY_TYPE, type.value)
-                .put(KEY_MEDIA_COMMAND, command.value)
+                .put(checkNotNull(type.command).parameterKey, commandId)
                 .put(KEY_TITLE, title)
                 .put(KEY_CUSTOM_ICON_BASE64, customIconBase64)
                 .toString()
+
+        internal fun dispatch(context: android.content.Context) {
+            choice()?.execute?.invoke(context)
+        }
     }
 
     companion object {
@@ -337,7 +332,19 @@ sealed class CustomWidgetButtonAction : Parcelable {
             if (raw.isNullOrBlank()) return null
             return runCatching {
                 val json = JSONObject(raw)
-                val action: CustomWidgetButtonAction? = when (json.optString(KEY_TYPE)) {
+                val typeValue = json.optString(KEY_TYPE)
+                val type = CustomWidgetButtonType.entries.firstOrNull { it.value == typeValue }
+                type?.command?.let { definition ->
+                    val id = json.optString(definition.parameterKey)
+                    if (definition.choices.none { it.id == id }) return@runCatching null
+                    return@runCatching Command(
+                        type = type,
+                        commandId = id,
+                        title = json.optString(KEY_TITLE).nullIfBlankOrLiteralNull().orEmpty(),
+                        customIconBase64 = json.optString(KEY_CUSTOM_ICON_BASE64).nullIfBlankOrLiteralNull(),
+                    )
+                }
+                val action: CustomWidgetButtonAction? = when (typeValue) {
                     CustomWidgetButtonType.APP.value -> {
                         val packageName = json.optString(KEY_PACKAGE_NAME)
                         if (packageName.isBlank()) return@runCatching null
@@ -457,16 +464,6 @@ sealed class CustomWidgetButtonAction : Parcelable {
                         )
                     }
 
-                    CustomWidgetButtonType.MEDIA.value -> {
-                        val command =
-                            MediaCommand.fromValue(json.optString(KEY_MEDIA_COMMAND))
-                                ?: return@runCatching null
-                        Media(
-                            command = command,
-                            title = json.optString(KEY_TITLE).nullIfBlankOrLiteralNull().orEmpty(),
-                        )
-                    }
-
                     else -> {
                         null
                     }
@@ -481,7 +478,6 @@ sealed class CustomWidgetButtonAction : Parcelable {
 private const val KEY_TYPE = "type"
 private const val KEY_CUSTOM_ICON_BASE64 = "customIconBase64"
 private const val KEY_FOLDER_ICON_COLOR_ARGB = "folderIconColorArgb"
-private const val LEGACY_FOLDER_ICON_COLOR_ARGB = 0xFF4F8F74.toInt()
 private const val KEY_PACKAGE_NAME = "packageName"
 private const val KEY_APP_NAME = "appName"
 private const val KEY_USER_HANDLE_ID = "userHandleId"
@@ -516,7 +512,6 @@ private const val KEY_ENABLED = "enabled"
 private const val KEY_INTENTS = "intents"
 private const val KEY_NOTE_ID = "noteId"
 private const val KEY_MARKDOWN_CONTENT = "markdownContent"
-private const val KEY_MEDIA_COMMAND = "mediaCommand"
 
 private const val KEY_INTENT_ACTION = "action"
 private const val KEY_INTENT_TARGET_PACKAGE = "targetPackage"
@@ -715,7 +710,7 @@ internal fun CustomWidgetButtonAction.withCustomIcon(iconBase64: String?): Custo
         is CustomWidgetButtonAction.Setting -> copy(customIconBase64 = iconBase64)
         is CustomWidgetButtonAction.AppShortcut -> copy(customIconBase64 = iconBase64)
         is CustomWidgetButtonAction.Note -> copy(customIconBase64 = iconBase64)
-        is CustomWidgetButtonAction.Media -> copy(customIconBase64 = iconBase64)
+        is CustomWidgetButtonAction.Command -> copy(customIconBase64 = iconBase64)
     }
 
 /** Returns a copy of a folder action with its built-in folder icon tint set to [colorArgb]. */
@@ -723,11 +718,6 @@ internal fun CustomWidgetButtonAction.File.withFolderIconColor(
     colorArgb: Int,
 ): CustomWidgetButtonAction.File = copy(folderIconColorArgb = colorArgb)
 
-/**
- * Returns a displayable folder tint, preserving a visible fallback for the initial release's
- * zero-alpha colour values.
- */
+/** Returns a visible custom tint when the folder has one. */
 internal fun CustomWidgetButtonAction.File.resolvedFolderIconColorArgb(): Int? =
-    folderIconColorArgb?.let { colorArgb ->
-        if ((colorArgb ushr 24) == 0) LEGACY_FOLDER_ICON_COLOR_ARGB else colorArgb
-    }
+    folderIconColorArgb?.takeIf { (it ushr 24) != 0 }

@@ -1,5 +1,8 @@
 package com.tk.quicksearch.search.apps
 
+import androidx.compose.ui.semantics.Role
+import com.tk.quicksearch.shared.ui.theme.AppColors
+import com.tk.quicksearch.shared.ui.theme.AppShapes
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -25,8 +28,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
+import androidx.compose.material3.ripple
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.Alignment
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
@@ -52,6 +61,7 @@ import com.tk.quicksearch.shared.ui.theme.LocalWallpaperDynamicAccentActive
 import com.tk.quicksearch.search.folders.AppFolderMember
 import com.tk.quicksearch.search.folders.FolderPreviewIcon
 import com.tk.quicksearch.shared.util.hapticConfirm
+import com.tk.quicksearch.shared.ui.theme.AppMotion
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -77,7 +87,15 @@ internal fun AppIconSurface(
         showPinnedIndicator: Boolean = false,
         showNotificationDot: Boolean = false,
         folderPreviewMember: AppFolderMember? = null,
+        isHeld: Boolean = false,
 ) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+    val pressScale by animateFloatAsState(
+        targetValue = if (isPressed || isHeld) AppGridPressedScale else 1f,
+        animationSpec = AppMotion.fastSpatial(),
+        label = "appIconPressScale",
+    )
     val view = LocalView.current
     val context = LocalContext.current
     val isDarkTheme = LocalAppIsDarkTheme.current
@@ -125,20 +143,23 @@ internal fun AppIconSurface(
             } else {
                 colorScheme.primary
             }
-    val themedIconContainerShape = CircleShape
+    val themedIconContainerShape = AppShapes.full
     val pinnedIndicatorInset = (appIconSurfaceSize - appIconSize) / 2
 
     Surface(
             modifier = Modifier.requiredSize(appIconSurfaceSize).then(gestureModifier),
             color = Color.Transparent,
             tonalElevation = 0.dp,
-            shape = DesignTokens.ShapeLarge,
+            shape = AppShapes.large,
     ) {
         val clickModifier =
                 if (!clickGesturesEnabled) {
                     Modifier
                 } else if (onLongClick != null) {
                     Modifier.combinedClickable(
+                            role = Role.Button,
+                            interactionSource = interactionSource,
+                            indication = ripple(color = homeTextColor()),
                             onClick = {
                                 hapticConfirm(view)()
                                 onClick()
@@ -146,7 +167,11 @@ internal fun AppIconSurface(
                             onLongClick = onLongClick,
                     )
                 } else {
-                    Modifier.clickable {
+                    Modifier.clickable(
+                        role = Role.Button,
+                        interactionSource = interactionSource,
+                        indication = ripple(color = homeTextColor()),
+                    ) {
                         hapticConfirm(view)()
                         onClick()
                     }
@@ -155,7 +180,11 @@ internal fun AppIconSurface(
                 modifier =
                         Modifier.fillMaxSize()
                                 .then(if (isSuspended) Modifier.greyscale() else Modifier)
-                                .then(clickModifier),
+                                .then(clickModifier)
+                                .graphicsLayer {
+                                    scaleX = pressScale
+                                    scaleY = pressScale
+                                },
                 contentAlignment = Alignment.Center,
         ) {
             if (folderPreviewMember != null) {
@@ -244,15 +273,15 @@ internal fun AppIconSurface(
                                 // again would cut off the badge in the corner.
                                 iconHasProfileBadge -> Modifier
                                 appIconShape == AppIconShape.CIRCLE ->
-                                        Modifier.clip(CircleShape)
-                                iconIsLegacy -> Modifier.clip(DesignTokens.ShapeLarge)
+                                        Modifier.clip(AppShapes.full)
+                                iconIsLegacy -> Modifier.clip(AppShapes.large)
                                 else -> Modifier
                             }
                     val bitmapShadowShape =
                             when {
-                                appIconShape == AppIconShape.CIRCLE -> CircleShape
-                                iconIsLegacy -> DesignTokens.ShapeLarge
-                                else -> DesignTokens.ShapeLarge
+                                appIconShape == AppIconShape.CIRCLE -> AppShapes.full
+                                iconIsLegacy -> AppShapes.large
+                                else -> AppShapes.large
                             }
                     Image(
                             bitmap = iconBitmap,
@@ -289,9 +318,9 @@ internal fun AppIconSurface(
             } else {
                 val placeholderShape =
                         if (appIconShape == AppIconShape.CIRCLE) {
-                            CircleShape
+                            AppShapes.full
                         } else {
-                            DesignTokens.ShapeLarge
+                            AppShapes.large
                         }
                 Box(
                         modifier =
@@ -299,9 +328,9 @@ internal fun AppIconSurface(
                                         .clip(placeholderShape)
                                         .background(
                                                 if (showWallpaperBackground) {
-                                                    colorScheme.surface.copy(alpha = 0.28f)
+                                                    colorScheme.surface.copy(alpha = AppColors.TintStrongAlpha)
                                                 } else {
-                                                    colorScheme.surfaceVariant.copy(alpha = 0.7f)
+                                                    colorScheme.surfaceVariant.copy(alpha = AppColors.ContentHighAlpha)
                                                 },
                                         ),
                 )
@@ -315,14 +344,14 @@ internal fun AppIconSurface(
                                         .align(Alignment.TopEnd)
                                         .padding(top = pinnedIndicatorInset, end = pinnedIndicatorInset)
                                         .size(12.dp),
-                        tint = colorScheme.onSurfaceVariant.copy(alpha = 0.65f),
+                        tint = colorScheme.onSurfaceVariant.copy(alpha = AppColors.ContentSecondaryAlpha),
                 )
             }
             AppNotificationDot(
                     visible = showNotificationDot,
                     modifier =
                             if (showPinnedIndicator) {
-                                Modifier.padding(top = pinnedIndicatorInset + 12.dp, end = pinnedIndicatorInset)
+                                Modifier.padding(top = pinnedIndicatorInset + DesignTokens.SpacingMedium, end = pinnedIndicatorInset)
                             } else {
                                 Modifier.padding(top = pinnedIndicatorInset, end = pinnedIndicatorInset)
                             },
@@ -337,20 +366,12 @@ internal fun AppLabelText(
         isOverlayPresentation: Boolean,
 ) {
     val labelColor = homeTextColor()
-    Spacer(
-            modifier =
-                    Modifier.height(
-                            if (isOverlayPresentation) {
-                                4.dp
-                            } else {
-                                DesignTokens.SpacingXSmall
-                            },
-                    ),
-    )
+    Spacer(modifier = Modifier.height(DesignTokens.SpacingXSmall))
     Text(
             text = rememberQueryHighlightedText(appName),
-            style = MaterialTheme.typography.labelSmall,
+            style = if (isOverlayPresentation) MaterialTheme.typography.labelSmall else MaterialTheme.typography.labelMedium,
             color = labelColor,
+            minLines = 1,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             textAlign = TextAlign.Center,

@@ -6,14 +6,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -29,13 +24,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import com.tk.quicksearch.shared.ui.components.AppOutlinedTextField
+import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.data.preferences.ResultTrigger
 import com.tk.quicksearch.search.utils.SearchTextNormalizer
 import com.tk.quicksearch.shared.ui.components.AppAlertDialog
-import com.tk.quicksearch.shared.ui.components.dialogTextFieldColors
-import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import kotlinx.coroutines.delay
+import com.tk.quicksearch.shared.ui.components.AppTextButton
 
 @Composable
 fun TriggerDialog(
@@ -111,12 +107,12 @@ fun TriggerDialog(
                 Text(
                     text = stringResource(R.string.dialog_trigger_message, itemName),
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurface,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(DesignTokens.SpacingLarge))
 
-                OutlinedTextField(
+                AppOutlinedTextField(
                     value = triggerText,
                     onValueChange = { value ->
                         val word = value.text.trimStart().substringBefore(' ')
@@ -126,25 +122,13 @@ fun TriggerDialog(
                                 selection = TextRange(word.length),
                             )
                     },
-                    label = { Text(stringResource(R.string.dialog_trigger_hint)) },
+                    label = stringResource(R.string.dialog_trigger_hint),
                     modifier = Modifier.fillMaxWidth().focusRequester(focusRequester),
-                    singleLine = true,
-                    trailingIcon = {
-                        if (triggerText.text.isNotEmpty()) {
-                            IconButton(onClick = { triggerText = TextFieldValue("") }) {
-                                Icon(
-                                    imageVector = MaterialSymbols.Close,
-                                    contentDescription = stringResource(R.string.desc_clear_search),
-                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                )
-                            }
-                        }
-                    },
-                    colors = dialogTextFieldColors(),
+                    onClear = { triggerText = TextFieldValue("") },
                     isError = hasConflict,
                 )
                 if (hasConflict) {
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(DesignTokens.SpacingSmall))
                     Text(
                         text =
                             if (hasAliasConflict) {
@@ -158,7 +142,7 @@ fun TriggerDialog(
                 }
 
                 Row(
-                    modifier = Modifier.padding(top = 12.dp),
+                    modifier = Modifier.padding(top = DesignTokens.SpacingMedium),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Checkbox(
@@ -170,7 +154,7 @@ fun TriggerDialog(
             }
         },
         confirmButton = {
-            Button(
+            AppTextButton(
                 onClick = {
                     val word = triggerText.text.trim().substringBefore(' ')
                     onSave(
@@ -185,7 +169,7 @@ fun TriggerDialog(
             ) { Text(text = stringResource(R.string.dialog_save)) }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) {
+            AppTextButton(onClick = onDismiss) {
                 Text(text = stringResource(R.string.dialog_cancel))
             }
         },

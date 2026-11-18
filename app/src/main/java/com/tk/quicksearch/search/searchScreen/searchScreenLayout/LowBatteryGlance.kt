@@ -12,17 +12,11 @@ import android.provider.Settings
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -30,7 +24,6 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.CornerRadius
@@ -39,7 +32,6 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
@@ -176,15 +168,33 @@ internal fun rememberBatteryGlances(enabled: Boolean): BatteryGlances {
     }
 
     // Battery broadcasts arrive every few seconds while charging, so listen only while home is visible.
-    LifecycleStartEffect(appContext, enabled, refreshKey) {
+    // Not keyed on [enabled]: typing a query hides the rows without re-registering the receiver.
+    LifecycleStartEffect(appContext, refreshKey) {
         showLowBattery = preferences.isShowLowBatteryEnabled()
         showCharging = preferences.isShowChargingEnabled()
-        if (!enabled || (!showLowBattery && !showCharging)) {
+        if (!showLowBattery && !showCharging) {
             battery = null
             return@LifecycleStartEffect onStopOrDispose {}
         }
+        // Broadcasts also fire for temperature and voltage; skip those, and the estimate's binder call.
+        // The time-to-full estimate can change at a steady level, so re-read it at most once a minute.
+        var lastInputs: List<Int>? = null
+        var lastReadMillis = 0L
         fun updateBattery(intent: Intent?) {
+            val inputs =
+                intent?.let {
+                    listOf(
+                        it.getIntExtra(BatteryManager.EXTRA_LEVEL, -1),
+                        it.getIntExtra(BatteryManager.EXTRA_SCALE, -1),
+                        it.getIntExtra(BatteryManager.EXTRA_STATUS, -1),
+                        it.getIntExtra(BatteryManager.EXTRA_PLUGGED, 0),
+                    )
+                }
+            val now = SystemClock.elapsedRealtime()
+            if (inputs != null && inputs == lastInputs && now - lastReadMillis < 60_000L) return
             val status = BatteryStatus.from(intent, batteryManager) ?: return
+            lastInputs = inputs
+            lastReadMillis = now
             battery = status
             // A dismissed charging row stays hidden until the phone is unplugged. A lower level
             // than at dismissal means it was unplugged while home was not showing.
@@ -223,7 +233,7 @@ internal fun rememberBatteryGlances(enabled: Boolean): BatteryGlances {
         onStopOrDispose { runCatching { appContext.unregisterReceiver(receiver) } }
     }
 
-    val current = battery
+    val current = battery.takeIf { enabled }
     return BatteryGlances(
         lowBattery =
             current?.takeIf { showLowBattery && it.isLow }?.let {
@@ -285,53 +295,25 @@ internal fun LowBatteryRow(glance: LowBatteryGlance) {
             },
         )
 
-    Row(
-        modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp).padding(
-            start = 7.dp,
-            end = 7.dp,
-            top = DesignTokens.SpacingMedium,
-            bottom = DesignTokens.SpacingMedium,
-        ),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Row(
-            modifier = Modifier.weight(1f).clickable(onClick = glance.open),
-            horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            BatteryLevelIcon(percent = glance.percent, isCritical = glance.isCritical, modifier = Modifier.size(24.dp))
-            Column(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(2.dp),
-            ) {
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = if (glance.isCritical) FontWeight.SemiBold else null,
-                    color = if (glance.isCritical) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
-                )
-                Text(
-                    text = subtitle,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
-            Box(
-                modifier =
-                    Modifier
-                        .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.error)
-                        .padding(horizontal = 10.dp, vertical = 4.dp),
-            ) {
-                Text(
-                    text = percentLabel,
-                    style = MaterialTheme.typography.labelMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onError,
-                )
-            }
-        }
-    }
+    GlanceStatusRow(
+        icon = {
+            BatteryLevelIcon(
+                percent = glance.percent,
+                isCritical = glance.isCritical,
+                modifier = Modifier.size(DesignTokens.IconSize),
+            )
+        },
+        title = title,
+        titleColor = if (glance.isCritical) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
+        onClick = glance.open,
+        subtitle = subtitle,
+        pillText = percentLabel,
+        pillColors =
+            GlancePillColors(
+                container = MaterialTheme.colorScheme.error,
+                content = MaterialTheme.colorScheme.onError,
+            ),
+    )
 }
 
 /** A sideways battery outline whose red fill tracks [percent]; [isCritical] turns the outline red too. */

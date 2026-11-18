@@ -1,5 +1,6 @@
 package com.tk.quicksearch.shared.ui.components
 
+import com.tk.quicksearch.shared.ui.theme.AppShapes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import com.tk.quicksearch.shared.ui.theme.DesignTokens
 
 /**
  * @param swipeToDismissEnabled When false, the sheet can't be dragged at all and the drag handle
@@ -39,6 +41,8 @@ import kotlinx.coroutines.launch
  * @param onFullyExpanded Called once the open animation has settled.
  * @param onDismissStarted Called as soon as the sheet starts closing (back gesture, `dismiss`,
  *   scrim tap or swipe), before the close animation finishes and [onDismissRequest] is called.
+ * @param scrimColor Dims the screen behind the sheet; pass [Color.Transparent] to keep the screen
+ *   behind fully visible (as when previewing a change live).
  * @param background Drawn behind the whole sheet, drag handle included, in place of the dialog
  *   color.
  * @param content Receives `dismiss`, which animates the sheet closed and then calls
@@ -52,6 +56,7 @@ fun AppBottomSheet(
     dismissOnClickOutside: Boolean = true,
     onFullyExpanded: (() -> Unit)? = null,
     onDismissStarted: (() -> Unit)? = null,
+    scrimColor: Color = BottomSheetDefaults.ScrimColor,
     background: (@Composable () -> Unit)? = null,
     content: @Composable ColumnScope.(dismiss: () -> Unit) -> Unit,
 ) {
@@ -81,11 +86,13 @@ fun AppBottomSheet(
         onDismissRequest = onDismissRequest,
         sheetState = sheetState,
         sheetGesturesEnabled = swipeToDismissEnabled,
+        scrimColor = scrimColor,
         properties =
             ModalBottomSheetProperties(
                 shouldDismissOnBackPress = true,
                 shouldDismissOnClickOutside = dismissOnClickOutside,
             ),
+        shape = AppShapes.drawerSheet,
         containerColor = if (background == null) AppColors.DialogBackground else Color.Transparent,
         tonalElevation = 0.dp,
         contentColor = MaterialTheme.colorScheme.onSurface,
@@ -129,9 +136,9 @@ fun AppBottomSheet(
 private fun DragHandle() {
     Box(
         modifier = Modifier
-            .padding(vertical = 12.dp)
+            .padding(vertical = DesignTokens.SpacingMedium)
             .size(width = 32.dp, height = 4.dp)
-            .clip(RoundedCornerShape(2.dp))
-            .background(MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f))
+            .clip(AppShapes.full)
+            .background(MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = AppColors.ContentFaintAlpha))
     )
 }

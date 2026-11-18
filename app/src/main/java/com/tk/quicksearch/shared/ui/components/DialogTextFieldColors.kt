@@ -1,5 +1,6 @@
 package com.tk.quicksearch.shared.ui.components
 
+import com.tk.quicksearch.shared.ui.theme.AppMotion
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
@@ -33,32 +34,32 @@ fun dialogTextFieldColors(
     unfocusedIndicatorColor: Color = MaterialTheme.colorScheme.outline,
 ): TextFieldColors =
     TextFieldDefaults.colors(
-        focusedContainerColor = AppColors.Accent.copy(alpha = 0.14f),
-        unfocusedContainerColor = AppColors.Accent.copy(alpha = 0.08f),
-        disabledContainerColor = AppColors.Accent.copy(alpha = 0.05f),
-        errorContainerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.22f),
+        focusedContainerColor = AppColors.AccentTintTonal,
+        unfocusedContainerColor = AppColors.AccentTintSubtle,
+        disabledContainerColor = AppColors.AccentTintFaint,
+        errorContainerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = AppColors.TintStrongAlpha),
         focusedIndicatorColor = AppColors.Accent,
         unfocusedIndicatorColor = unfocusedIndicatorColor,
         focusedLabelColor = AppColors.Accent,
         cursorColor = AppColors.Accent,
     )
 
-/** Borderless, transparent fields for text inputs stacked as rows of a settings card. */
+/** Transparent fields with a Material focus indicator for text inputs stacked as rows of a settings card. */
 @Composable
 fun cardTextFieldColors(): TextFieldColors =
     TextFieldDefaults.colors(
         focusedContainerColor = Color.Transparent,
         unfocusedContainerColor = Color.Transparent,
         disabledContainerColor = Color.Transparent,
-        focusedIndicatorColor = Color.Transparent,
+        focusedIndicatorColor = MaterialTheme.colorScheme.primary,
         unfocusedIndicatorColor = Color.Transparent,
         disabledIndicatorColor = Color.Transparent,
-        focusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
-        unfocusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+        focusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        unfocusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
     )
 
 /**
- * A borderless [TextField] for a row of a settings card. With a [placeholder], the label stays
+ * A transparent [TextField] for a row of a settings card. With a [placeholder], the label stays
  * floated so the hint is visible before the field is focused. The label keeps a fixed gap above
  * the input so focusing never changes the field's height.
  */
@@ -97,7 +98,7 @@ fun CardTextField(
             } else {
                 0.dp
             },
-        animationSpec = tween(durationMillis = CARD_TEXT_FIELD_LABEL_ANIMATION_MS),
+        animationSpec = tween(durationMillis = CARD_TEXT_FIELD_LABEL_ANIMATION_MS, easing = AppMotion.EmphasizedEasing),
         label = "cardTextFieldRestingLabelOffset",
     )
     TextField(
@@ -128,4 +129,4 @@ fun CardTextField(
 private val CardTextFieldLabelGap = 6.dp
 
 // Matches the Material 3 label float duration.
-private const val CARD_TEXT_FIELD_LABEL_ANIMATION_MS = 150
+private const val CARD_TEXT_FIELD_LABEL_ANIMATION_MS = AppMotion.DurationExit

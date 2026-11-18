@@ -1,5 +1,6 @@
 package com.tk.quicksearch.settings.shared
 
+import com.tk.quicksearch.shared.ui.components.SliderWithValue
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -15,14 +16,11 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
-import androidx.compose.material3.Switch
-import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
@@ -38,9 +36,12 @@ import com.tk.quicksearch.shared.ui.components.TipBanner
 import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
-import com.tk.quicksearch.shared.util.hapticToggle
-
-private const val TipBannerLinkTag = "tip_banner_link"
+import com.tk.quicksearch.shared.util.hapticToggleState
+import com.tk.quicksearch.shared.ui.components.SegmentedTileContentPadding
+import com.tk.quicksearch.shared.ui.components.SegmentedTileToggleHorizontalPadding
+import com.tk.quicksearch.shared.ui.components.LocalInSegmentedTile
+import com.tk.quicksearch.shared.ui.components.AppSwitch
+import com.tk.quicksearch.shared.ui.components.TonalIconBadge
 
 data class SettingsToggleSliderDetails(
     val value: Float,
@@ -69,7 +70,7 @@ fun SettingsToggleRow(
     enabled: Boolean = true,
     modifier: Modifier = Modifier,
     subtitle: String? = null,
-    subtitleTextStyle: TextStyle = MaterialTheme.typography.bodySmall,
+    subtitleTextStyle: TextStyle = MaterialTheme.typography.bodyMedium,
     titleContent: (@Composable () -> Unit)? = null,
     subtitleContent: (@Composable () -> Unit)? = null,
     sliderDetails: SettingsToggleSliderDetails? = null,
@@ -77,7 +78,7 @@ fun SettingsToggleRow(
     showNavigationChevron: Boolean = false,
     trailingAction: (@Composable () -> Unit)? = null,
     leadingIcon: ImageVector? = null,
-    titleTextStyle: TextStyle = MaterialTheme.typography.titleMedium,
+    titleTextStyle: TextStyle = MaterialTheme.typography.bodyLarge,
     horizontalPadding: Dp = DesignTokens.SpacingXXLarge,
     leadingIconSize: Dp = DesignTokens.IconSizeSmall,
     isFirstItem: Boolean = false,
@@ -91,11 +92,18 @@ fun SettingsToggleRow(
     onTipBannerDismiss: (() -> Unit)? = null,
 ) {
     val view = LocalView.current
-    val topPadding = DesignTokens.cardItemTopPadding(isFirstItem) + extraVerticalPadding
-    val bottomPadding = DesignTokens.cardItemBottomPadding(isLastItem) + extraVerticalPadding
+    val segmented = LocalInSegmentedTile.current
+    // A tile has its own inset; the card defaults (24dp sides, first/last padding) apply only on a card.
+    val horizontalPadding =
+        if (segmented && horizontalPadding == DesignTokens.SpacingXXLarge) SegmentedTileToggleHorizontalPadding else horizontalPadding
+    // Tiles share one height rhythm, so per-card spacing tweaks (extraVerticalPadding) don't apply.
+    val topPadding =
+        if (segmented) SegmentedTileContentPadding else DesignTokens.cardItemTopPadding(isFirstItem) + extraVerticalPadding
+    val bottomPadding =
+        if (segmented) SegmentedTileContentPadding else DesignTokens.cardItemBottomPadding(isLastItem) + extraVerticalPadding
     val onToggle: (Boolean) -> Unit = { newValue ->
         if (enabled) {
-            hapticToggle(view)()
+            hapticToggleState(view, newValue)
             onCheckedChange(newValue)
         }
     }
@@ -108,6 +116,7 @@ fun SettingsToggleRow(
                     .then(
                         if (onRowClick != null) {
                             Modifier.clickable(
+                                role = Role.Button,
                                 enabled = enabled || onDisabledClick != null,
                                 onClick = {
                                     if (enabled) {
@@ -127,7 +136,7 @@ fun SettingsToggleRow(
                                     onValueChange = onToggle,
                                 )
                             } else if (onDisabledClick != null) {
-                                Modifier.clickable(onClick = onDisabledClick)
+                                Modifier.clickable(role = Role.Button, onClick = onDisabledClick)
                             } else {
                                 Modifier
                             }
@@ -143,12 +152,16 @@ fun SettingsToggleRow(
             horizontalArrangement = Arrangement.spacedBy(DesignTokens.ItemRowSpacing),
         ) {
             leadingIcon?.let {
-                Icon(
-                    imageVector = it,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.size(leadingIconSize),
-                )
+                if (segmented) {
+                    TonalIconBadge(icon = it)
+                } else {
+                    Icon(
+                        imageVector = it,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.size(leadingIconSize),
+                    )
+                }
             }
 
             Column(
@@ -165,7 +178,7 @@ fun SettingsToggleRow(
                             if (enabled) {
                                 MaterialTheme.colorScheme.onSurface
                             } else {
-                                MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                                MaterialTheme.colorScheme.onSurface.copy(alpha = AppColors.DisabledContentAlpha)
                             },
                     )
                 }
@@ -179,28 +192,29 @@ fun SettingsToggleRow(
                                 if (enabled) {
                                     MaterialTheme.colorScheme.onSurfaceVariant
                                 } else {
-                                    MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                                    MaterialTheme.colorScheme.onSurface.copy(alpha = AppColors.DisabledContentAlpha)
                                 },
                         )
                     }
-                    Row(
+                    SliderWithValue(
                         modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingLarge),
-                    ) {
+                        valueSpacing = DesignTokens.SpacingLarge,
+                        valueLabel = {
+                            Text(
+                                text = sliderDetails.valueLabel,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.width(sliderDetails.valueLabelWidth),
+                            )
+                        },
+                    ) { sliderModifier ->
                         Slider(
                             value = sliderDetails.value,
                             onValueChange = sliderDetails.onValueChange,
                             valueRange = sliderDetails.valueRange,
                             steps = sliderDetails.steps,
                             enabled = enabled,
-                            modifier = Modifier.weight(1f),
-                        )
-                        Text(
-                            text = sliderDetails.valueLabel,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.width(sliderDetails.valueLabelWidth),
+                            modifier = sliderModifier,
                         )
                     }
                 } else {
@@ -212,7 +226,7 @@ fun SettingsToggleRow(
                                 if (enabled) {
                                     MaterialTheme.colorScheme.onSurfaceVariant
                                 } else {
-                                    MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                                    MaterialTheme.colorScheme.onSurface.copy(alpha = AppColors.DisabledContentAlpha)
                                 },
                         )
                     }
@@ -223,7 +237,7 @@ fun SettingsToggleRow(
 
             if (showNavigationChevron && onRowClick != null && enabled) {
                 Row(
-                    modifier = Modifier.offset(x = 8.dp),
+                    modifier = Modifier.offset(x = DesignTokens.SpacingSmall),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Icon(
@@ -232,24 +246,13 @@ fun SettingsToggleRow(
                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                     VerticalDivider(
-                        modifier = Modifier.height(24.dp).padding(horizontal = 8.dp),
+                        modifier = Modifier.height(24.dp).padding(horizontal = DesignTokens.SpacingSmall),
                         color = AppColors.SettingsDivider,
                     )
                 }
             }
             if (showSwitch) {
-                Switch(
-                    checked = checked,
-                    onCheckedChange = onToggle,
-                    enabled = enabled,
-                    modifier = Modifier.scale(0.85f),
-                    colors =
-                        SwitchDefaults.colors(
-                            uncheckedTrackColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
-                            uncheckedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f),
-                            uncheckedThumbColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f),
-                        ),
-                )
+                AppSwitch(checked = checked, onCheckedChange = onToggle, enabled = enabled)
             }
             trailingAction?.invoke()
         }
@@ -272,12 +275,6 @@ fun SettingsToggleRow(
                                 start = start,
                                 end = end,
                             )
-                            addStringAnnotation(
-                                tag = TipBannerLinkTag,
-                                annotation = linkText,
-                                start = start,
-                                end = end,
-                            )
                         }
                     }
                 }
@@ -286,11 +283,6 @@ fun SettingsToggleRow(
                 showDismissButton = onTipBannerDismiss != null,
                 onDismiss = onTipBannerDismiss,
                 onContentClick = onTipBannerLinkClick,
-                onTextClick = { clickOffset ->
-                    if (annotatedTipText.getStringAnnotations(TipBannerLinkTag, clickOffset, clickOffset).isNotEmpty()) {
-                        onTipBannerLinkClick?.invoke()
-                    }
-                },
                 modifier =
                     Modifier.padding(
                         start = horizontalPadding,
@@ -300,7 +292,7 @@ fun SettingsToggleRow(
             )
         }
 
-        if (showDivider && !isLastItem) {
+        if (showDivider && !isLastItem && !segmented) {
             HorizontalDivider(
                 color = AppColors.SettingsDivider,
             )

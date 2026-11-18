@@ -1,5 +1,6 @@
 package com.tk.quicksearch.settings.settingsDetailScreen
 
+import androidx.compose.ui.semantics.Role
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -24,6 +25,7 @@ import com.tk.quicksearch.search.calendar.calendarRelativeDateLabel
 import com.tk.quicksearch.search.calendar.formatCalendarEventDate
 import com.tk.quicksearch.search.models.CalendarEventInfo
 import com.tk.quicksearch.shared.ui.components.AppBottomSheet
+import com.tk.quicksearch.shared.ui.components.AppDrawerHeader
 import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
@@ -36,33 +38,26 @@ fun CalendarEventInstancesDrawer(
     onDismissRequest: () -> Unit,
     onInstanceClick: (CalendarEventInfo) -> Unit,
 ) {
-    AppBottomSheet(onDismissRequest = onDismissRequest) {
+    AppBottomSheet(onDismissRequest = onDismissRequest) { dismiss ->
         Column(
             modifier =
                 Modifier
                     .fillMaxWidth()
                     .padding(bottom = DesignTokens.SpacingLarge),
         ) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurface,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier =
-                    Modifier.padding(
-                        start = DesignTokens.ContentHorizontalPadding,
-                        end = DesignTokens.ContentHorizontalPadding,
-                        bottom = DesignTokens.SpacingSmall,
-                    ),
-            )
+            AppDrawerHeader(
+                onClose = dismiss,
+                modifier = Modifier.padding(horizontal = DesignTokens.ContentHorizontalPadding),
+            ) {
+                Text(text = title, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            }
             calendarRecurrenceLabel(
                 recurrenceRule = nearestInstance.recurrenceRule,
                 instanceCount = instances.size,
             )?.let { recurrenceText ->
                 Text(
                     text = recurrenceText,
-                    style = MaterialTheme.typography.bodySmall,
+                    style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier =
                         Modifier.padding(
@@ -107,7 +102,7 @@ private fun CalendarEventInstanceDrawerRow(
         modifier =
             Modifier
                 .fillMaxWidth()
-                .clickable(onClick = onClick)
+                .clickable(role = Role.Button, onClick = onClick)
                 .padding(
                     horizontal = DesignTokens.CardHorizontalPadding,
                     vertical = DesignTokens.CardVerticalPadding,

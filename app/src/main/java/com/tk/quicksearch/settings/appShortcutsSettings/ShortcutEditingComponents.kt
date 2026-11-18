@@ -1,5 +1,8 @@
 package com.tk.quicksearch.settings.appShortcutsSettings
 
+import com.tk.quicksearch.shared.ui.components.AppIconButton
+import com.tk.quicksearch.shared.ui.theme.AppShapes
+import com.tk.quicksearch.shared.ui.components.AppSwitch
 import android.graphics.BitmapFactory
 import android.util.Base64
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -16,21 +19,17 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import com.tk.quicksearch.shared.ui.components.AppAlertDialog
-import com.tk.quicksearch.shared.ui.components.dialogTextFieldColors
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.HorizontalDivider
+import com.tk.quicksearch.shared.ui.components.AppOutlinedTextField
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.ui.draw.rotate
+import androidx.compose.foundation.selection.toggleable
+import androidx.compose.ui.semantics.Role
+import androidx.compose.material3.ripple
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,15 +42,11 @@ import kotlinx.coroutines.withContext
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
@@ -72,6 +67,8 @@ import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.util.hapticToggle
 import com.tk.quicksearch.shared.util.withoutWhitespaces
 import java.util.Locale
+import com.tk.quicksearch.shared.ui.theme.AppMotion
+import com.tk.quicksearch.shared.ui.components.AppTextButton
 
 @Composable
 fun EditCustomShortcutDialog(
@@ -81,6 +78,7 @@ fun EditCustomShortcutDialog(
     onSave: (String, String?, String?) -> Unit,
     onDelete: () -> Unit,
 ) {
+    var showDeleteConfirm by remember(shortcut) { mutableStateOf(false) }
     val context = LocalContext.current
     var shortcutName by remember(shortcut) {
         mutableStateOf(
@@ -134,9 +132,9 @@ fun EditCustomShortcutDialog(
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 Text(text = stringResource(R.string.settings_app_shortcuts_edit_dialog_title))
-                IconButton(onClick = onDelete) {
+                AppIconButton(onClick = { showDeleteConfirm = true }, tooltip = stringResource(R.string.settings_app_shortcuts_delete_action)) {
                     Icon(
-                        imageVector = MaterialSymbols.Delete,
+                        imageVector = MaterialSymbols.DeleteOutline,
                         contentDescription = stringResource(R.string.settings_app_shortcuts_delete_action),
                         tint = MaterialTheme.colorScheme.error,
                     )
@@ -144,84 +142,34 @@ fun EditCustomShortcutDialog(
             }
         },
         text = {
-            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            Column(verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium)) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium),
                 ) {
-                    Box(
-                        modifier =
-                            Modifier
-                                .size(50.dp)
-                                .clip(MaterialTheme.shapes.medium)
-                                .clickable { pickIconLauncher.launch(arrayOf("image/*")) },
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        when {
-                            iconBitmap != null -> {
-                                Image(
-                                    bitmap = iconBitmap,
-                                    contentDescription = trimmedName,
-                                    modifier =
-                                        Modifier
-                                            .size(34.dp)
-                                            .offset(y = 2.dp),
-                                    contentScale = ContentScale.Fit,
-                                )
-                            }
-                            appIconResult.bitmap != null -> {
-                                Image(
-                                    bitmap = appIconResult.bitmap,
-                                    contentDescription = trimmedName,
-                                    modifier =
-                                        Modifier
-                                            .size(34.dp)
-                                            .offset(y = 2.dp),
-                                    contentScale = ContentScale.Fit,
-                                )
-                            }
-                            else -> {
-                                Icon(
-                                    imageVector = MaterialSymbols.Public,
-                                    contentDescription = trimmedName,
-                                    modifier =
-                                        Modifier
-                                            .size(28.dp)
-                                            .offset(y = 2.dp),
-                                )
-                            }
-                        }
-                        Box(
-                            modifier =
-                                Modifier
-                                    .align(Alignment.BottomEnd)
-                                    .offset(x = (-4).dp, y = (-6).dp)
-                                    .size(16.dp)
-                                    .clip(CircleShape)
-                                    .background(MaterialTheme.colorScheme.surface),
-                            contentAlignment = Alignment.Center,
-                        ) {
-                            Icon(
-                                imageVector = MaterialSymbols.Edit,
-                                contentDescription = stringResource(R.string.settings_edit_label),
-                                modifier = Modifier.size(10.dp),
-                                tint = MaterialTheme.colorScheme.primary,
-                            )
-                        }
-                    }
-                    OutlinedTextField(
+                    ShortcutIconPicker(
+                        iconBitmap = iconBitmap ?: appIconResult.bitmap,
+                        contentDescription = trimmedName,
+                        onClick = { pickIconLauncher.launch(arrayOf("image/*")) },
+                    )
+                    AppOutlinedTextField(
                         value = shortcutName,
                         onValueChange = { shortcutName = it },
                         modifier = Modifier.weight(1f),
-                        singleLine = true,
-                        maxLines = 1,
                         isError = !canSave,
-                        label = { Text(stringResource(R.string.settings_app_shortcuts_shortcut_name_label)) },
-                        colors = dialogTextFieldColors(),
+                        label = stringResource(R.string.settings_app_shortcuts_shortcut_name_label),
+                        shape = AppShapes.extraSmall,
                     )
                 }
                 editableConfiguredValue?.let { editableValue ->
-                    OutlinedTextField(
+                    val labelResId =
+                        when (editableValue.kind) {
+                            EditableShortcutValueKind.QUERY -> R.string.settings_app_shortcuts_query_label
+                            EditableShortcutValueKind.URL -> R.string.settings_app_shortcuts_url_label
+                            EditableShortcutValueKind.DEEP_LINK ->
+                                R.string.settings_app_shortcuts_deep_link_label
+                        }
+                    AppOutlinedTextField(
                         value = shortcutValue,
                         onValueChange = {
                             shortcutValue =
@@ -236,23 +184,14 @@ fun EditCustomShortcutDialog(
                         singleLine = editableValue.kind != EditableShortcutValueKind.QUERY,
                         maxLines = if (editableValue.kind == EditableShortcutValueKind.QUERY) 3 else 1,
                         isError = trimmedValue.isBlank(),
-                        label = {
-                            val labelResId =
-                                when (editableValue.kind) {
-                                    EditableShortcutValueKind.QUERY -> R.string.settings_app_shortcuts_query_label
-                                    EditableShortcutValueKind.URL -> R.string.settings_app_shortcuts_url_label
-                                    EditableShortcutValueKind.DEEP_LINK ->
-                                        R.string.settings_app_shortcuts_deep_link_label
-                                }
-                            Text(stringResource(labelResId))
-                        },
-                        colors = dialogTextFieldColors(),
+                        label = stringResource(labelResId),
+                        shape = AppShapes.extraSmall,
                     )
                 }
             }
         },
         confirmButton = {
-            TextButton(
+            AppTextButton(
                 onClick = { onSave(trimmedName, editableConfiguredValue?.let { trimmedValue }, iconBase64) },
                 enabled = canSave,
             ) {
@@ -260,11 +199,25 @@ fun EditCustomShortcutDialog(
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) {
+            AppTextButton(onClick = onDismiss) {
                 Text(text = stringResource(R.string.dialog_cancel))
             }
         },
     )
+
+    if (showDeleteConfirm) {
+        AppAlertDialog(
+            onDismissRequest = { showDeleteConfirm = false },
+            title = { Text(stringResource(R.string.dialog_delete_item_title, shortcutDisplayName(shortcut))) },
+            confirmLabel = stringResource(R.string.dialog_delete),
+            onConfirm = {
+                showDeleteConfirm = false
+                onDelete()
+            },
+            dismissLabel = stringResource(R.string.dialog_cancel),
+            destructive = true,
+        )
+    }
 }
 
 private enum class EditableShortcutValueKind {
@@ -326,34 +279,39 @@ fun AppShortcutCardHeader(
 ) {
     val iconResult = rememberAppIcon(packageName = packageName, iconPackPackage = iconPackPackage)
 
+    val chevronRotation by animateFloatAsState(
+        targetValue = if (isExpanded) 180f else 0f,
+        animationSpec = AppMotion.defaultSpatial(),
+        label = "shortcutGroupChevron",
+    )
     Row(
         modifier =
             Modifier
                 .fillMaxWidth()
-                .clickable(onClick = onToggleExpanded)
+                .clickable(role = Role.Button, onClick = onToggleExpanded)
                 .padding(
-                    horizontal = DesignTokens.CardHorizontalPadding,
-                    vertical = DesignTokens.CardVerticalPadding,
+                    horizontal = DesignTokens.SpacingLarge,
+                    vertical = DesignTokens.SpacingLarge,
                 ),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(DesignTokens.ItemRowSpacing),
+        horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingLarge),
     ) {
         if (searchTarget != null) {
             SearchTargetIcon(
                 target = searchTarget,
-                iconSize = DesignTokens.IconSize,
+                iconSize = DesignTokens.Spacing40,
                 style = IconRenderStyle.ADVANCED,
             )
         } else if (iconResult.bitmap != null) {
             Image(
                 bitmap = iconResult.bitmap,
                 contentDescription = appLabel,
-                modifier = Modifier.size(DesignTokens.IconSize),
+                modifier = Modifier.size(DesignTokens.Spacing40),
                 contentScale = ContentScale.Fit,
             )
         } else {
             Box(
-                modifier = Modifier.size(DesignTokens.IconSize),
+                modifier = Modifier.size(DesignTokens.Spacing40),
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
@@ -383,16 +341,16 @@ fun AppShortcutCardHeader(
                             shortcutCount,
                         )
                     },
-                style = MaterialTheme.typography.bodySmall,
+                style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
 
         Icon(
-            imageVector = if (isExpanded) MaterialSymbols.ExpandLess else MaterialSymbols.ExpandMore,
+            imageVector = MaterialSymbols.ExpandMore,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.size(DesignTokens.IconSize),
+            modifier = Modifier.size(DesignTokens.IconSize).rotate(chevronRotation),
         )
     }
 }
@@ -426,11 +384,11 @@ fun ShortcutToggleRow(
             Modifier
                 .fillMaxWidth()
                 .padding(
-                    horizontal = DesignTokens.CardHorizontalPadding,
-                    vertical = DesignTokens.CardVerticalPadding,
+                    horizontal = DesignTokens.SpacingLarge,
+                    vertical = DesignTokens.SpacingLarge,
                 ),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(DesignTokens.ItemRowSpacing),
+        horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingLarge),
     ) {
         if (displayIcon != null) {
             Image(
@@ -462,14 +420,15 @@ fun ShortcutToggleRow(
                 Modifier
                     .weight(1f)
                     .clickable(
+                        role = Role.Button,
                         interactionSource = interactionSource,
-                        indication = null,
+                        indication = ripple(),
                         onClick = onShortcutNameClick,
                     ),
         )
 
         if (onEditClick != null) {
-            IconButton(onClick = onEditClick) {
+            AppIconButton(onClick = onEditClick, tooltip = stringResource(R.string.settings_edit_label)) {
                 Icon(
                     imageVector = MaterialSymbols.Edit,
                     contentDescription = stringResource(R.string.settings_edit_label),
@@ -479,20 +438,19 @@ fun ShortcutToggleRow(
         }
 
         if (showToggle) {
-            Switch(
+            AppSwitch(
                 checked = checked,
                 onCheckedChange = {
                     hapticToggle(view)()
                     onCheckedChange(it)
                 },
                 enabled = toggleEnabled,
-                modifier = Modifier.scale(0.85f),
             )
         }
     }
 }
 
-/** App-wide checkbox that also covers shortcuts the app adds later. */
+/** App-wide switch that also covers shortcuts the app adds later. */
 @Composable
 fun DisableAllAppShortcutsRow(
     checked: Boolean,
@@ -503,15 +461,19 @@ fun DisableAllAppShortcutsRow(
         modifier =
             Modifier
                 .fillMaxWidth()
-                .clickable {
-                    hapticToggle(view)()
-                    onCheckedChange(!checked)
-                }.padding(
-                    horizontal = DesignTokens.CardHorizontalPadding,
-                    vertical = DesignTokens.CardVerticalPadding,
+                .toggleable(
+                    value = checked,
+                    role = Role.Switch,
+                    onValueChange = {
+                        hapticToggle(view)()
+                        onCheckedChange(it)
+                    },
+                ).padding(
+                    horizontal = DesignTokens.SpacingLarge,
+                    vertical = DesignTokens.SpacingLarge,
                 ),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(DesignTokens.ItemRowSpacing),
+        horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingLarge),
     ) {
         Text(
             text = stringResource(R.string.settings_app_shortcuts_disable_all),
@@ -519,12 +481,9 @@ fun DisableAllAppShortcutsRow(
             color = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.weight(1f),
         )
-        Checkbox(
+        AppSwitch(
             checked = checked,
-            onCheckedChange = {
-                hapticToggle(view)()
-                onCheckedChange(it)
-            },
+            onCheckedChange = null,
         )
     }
 }

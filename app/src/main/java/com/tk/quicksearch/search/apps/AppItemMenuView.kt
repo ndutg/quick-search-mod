@@ -1,7 +1,9 @@
 package com.tk.quicksearch.search.apps
 
+import com.tk.quicksearch.settings.settingsDetailScreen.SettingsDetailType
+import com.tk.quicksearch.search.appSettings.AppSettingsTarget
+import com.tk.quicksearch.shared.ui.theme.AppShapes
 import androidx.compose.foundation.background
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.ui.text.style.TextAlign
 import android.content.ActivityNotFoundException
 import android.content.Context
@@ -17,9 +19,6 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -43,16 +42,15 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.pluralStringResource
 import com.tk.quicksearch.shared.ui.components.AppDropdownMenu
+import com.tk.quicksearch.shared.ui.components.AppDropdownMenuItem
 import com.tk.quicksearch.shared.ui.components.AppDropdownMenuDefaults
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.core.AppIconShape
 import com.tk.quicksearch.search.core.LocalItemCustomizationRemover
-import com.tk.quicksearch.search.appSettings.AppSettingsDestination
 import com.tk.quicksearch.search.appSettings.LocalOpenAppSettingDestination
 import com.tk.quicksearch.search.data.appShortcutRepository.StaticShortcut
 import com.tk.quicksearch.search.data.AppsRepository
@@ -207,11 +205,14 @@ fun AppItemDropdownMenu(
                 longPressOption = removeNicknameOption,
             ))
         }
-        add(ItemMenuTile(
-            label = stringResource(R.string.action_exclude_generic),
-            icon = { Icon(imageVector = MaterialSymbols.VisibilityOff, contentDescription = null) },
-            onClick = { onDismiss(); onHideApp() },
-        ))
+        // Quick Search's own menu has no other tiles, so Hide pairs with Split Screen instead.
+        if (!isCurrentApp) {
+            add(ItemMenuTile(
+                label = stringResource(R.string.action_exclude_generic),
+                icon = { Icon(imageVector = MaterialSymbols.VisibilityOff, contentDescription = null) },
+                onClick = { onDismiss(); onHideApp() },
+            ))
+        }
     }
 
     val speedBumpAction =
@@ -278,6 +279,7 @@ fun AppItemDropdownMenu(
                         null
                     },
                 longHoldDurationMillis = AppUnlockCredentialHoldMillis,
+                longHoldLabel = stringResource(R.string.app_lock_unlock_device_credential),
             )
         } else {
             null
@@ -311,6 +313,13 @@ fun AppItemDropdownMenu(
         }
 
     val splitAndIconButtons = buildList {
+        if (isCurrentApp) {
+            add(ItemMenuRow(
+                label = stringResource(R.string.action_exclude_generic),
+                icon = { Icon(imageVector = MaterialSymbols.VisibilityOff, contentDescription = null) },
+                onClick = { onDismiss(); onHideApp() },
+            ))
+        }
         if (isLaunchableApp && appInfo.userHandleId == null) {
             add(ItemMenuRow(
                 label = stringResource(R.string.action_open_in_split_screen),
@@ -388,7 +397,7 @@ fun AppItemDropdownMenu(
         if (showUninstall) {
             add(ItemMenuRow(
                 label = stringResource(R.string.action_uninstall_app),
-                icon = { Icon(imageVector = MaterialSymbols.Delete, contentDescription = null) },
+                icon = { Icon(imageVector = MaterialSymbols.DeleteOutline, contentDescription = null) },
                 onClick = { onDismiss(); onUninstallClick() },
                 destructive = true,
             ))
@@ -397,7 +406,7 @@ fun AppItemDropdownMenu(
             add(ItemMenuRow(
                 label = stringResource(R.string.action_manage_all_apps),
                 icon = { Icon(imageVector = MaterialSymbols.Settings, contentDescription = null) },
-                onClick = { onDismiss(); openDestination(AppSettingsDestination.APP_MANAGEMENT) },
+                onClick = { onDismiss(); openDestination(AppSettingsTarget.Page(SettingsDetailType.APP_MANAGEMENT)) },
                 iconOnly = true,
             ))
         }
@@ -454,7 +463,7 @@ fun AppItemDropdownMenu(
                         contentDescription = appInfo.appName,
                         modifier = Modifier
                             .size(40.dp)
-                            .clip(RoundedCornerShape(10.dp)),
+                            .clip(AppShapes.iconTile),
                         contentScale = ContentScale.Fit,
                     )
                 }
@@ -463,9 +472,6 @@ fun AppItemDropdownMenu(
                 Column {
                     Text(
                         text = appInfo.appName,
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.onSurface,
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis,
                     )
@@ -519,7 +525,7 @@ fun AppItemDropdownMenu(
 @Composable
 private fun AppPackageCaption(packageName: String, versionName: String?) {
     val style = MaterialTheme.typography.labelSmall
-    val color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+    val color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = AppColors.ContentHighAlpha)
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -533,8 +539,8 @@ private fun AppPackageCaption(packageName: String, versionName: String?) {
                 color = color,
                 maxLines = 1,
                 modifier = Modifier
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.06f))
+                    .clip(AppShapes.full)
+                    .background(MaterialTheme.colorScheme.onSurface.copy(alpha = AppColors.TintFaintAlpha))
                     .padding(horizontal = DesignTokens.SpacingSmall, vertical = 2.dp),
             )
         }
@@ -563,8 +569,8 @@ private fun AppSwipeActionDropdown(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 12.dp, vertical = 8.dp),
-                verticalArrangement = Arrangement.spacedBy(6.dp),
+                    .padding(horizontal = DesignTokens.SpacingMedium, vertical = DesignTokens.SpacingSmall),
+                verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
             ) {
                 Text(
                     text = stringResource(R.string.app_swipe_current_action),
@@ -573,7 +579,7 @@ private fun AppSwipeActionDropdown(
                 )
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium),
                 ) {
                     CustomWidgetButtonIcon(
                         action = action,
@@ -591,12 +597,12 @@ private fun AppSwipeActionDropdown(
                 }
             }
             HorizontalDivider(
-                modifier = Modifier.padding(vertical = 8.dp),
-                color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f),
+                modifier = Modifier.padding(vertical = DesignTokens.SpacingSmall),
+                color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = AppColors.ContentFaintAlpha),
             )
-            DropdownMenuItem(
-                text = { Text(text = stringResource(R.string.action_remove)) },
-                leadingIcon = { Icon(imageVector = MaterialSymbols.Close, contentDescription = null) },
+            AppDropdownMenuItem(
+                text = stringResource(R.string.action_remove),
+                icon = MaterialSymbols.Close,
                 onClick = onClear,
             )
         }

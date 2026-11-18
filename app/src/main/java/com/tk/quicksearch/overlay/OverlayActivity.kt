@@ -1,14 +1,17 @@
 package com.tk.quicksearch.overlay
 
+import com.tk.quicksearch.search.searchScreen.setContentWithFrostedCards
 import com.tk.quicksearch.search.apps.appLock.AppLockGate
 import android.content.ComponentCallbacks2
 import android.content.Context
 import android.os.Bundle
 import android.os.Trace
 import android.view.KeyEvent
+import com.tk.quicksearch.app.quickSearchKeyboardShortcuts
+import android.view.KeyboardShortcutGroup
+import android.view.Menu
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.SystemBarStyle
-import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.background
@@ -77,6 +80,7 @@ class OverlayActivity : FragmentActivity() {
         enableEdgeToEdge(statusBarStyle, navigationBarStyle)
 
         super.onCreate(savedInstanceState)
+        OverlayModeController.onOverlayCreated(this)
         lockPortraitOrientationOnPhones()
         UiSurfaceMemoryManager.onSurfaceCreated()
         isActivityInstanceTracked = true
@@ -95,10 +99,6 @@ class OverlayActivity : FragmentActivity() {
                 mode = StartupMode.OVERLAY,
             )
 
-        if (intent?.getBooleanExtra(OverlayModeController.EXTRA_CLOSE_OVERLAY, false) == true) {
-            finish()
-            return
-        }
         animationToken = intent?.getLongExtra(OverlayModeController.EXTRA_ANIMATION_TOKEN, 0L) ?: 0L
         applyPinnedGlanceMode(intent)
         initializeVoiceSearchHandler()
@@ -114,10 +114,6 @@ class OverlayActivity : FragmentActivity() {
 
     override fun onNewIntent(intent: android.content.Intent) {
         super.onNewIntent(intent)
-        if (intent.getBooleanExtra(OverlayModeController.EXTRA_CLOSE_OVERLAY, false)) {
-            finish()
-            return
-        }
         animationToken = intent.getLongExtra(OverlayModeController.EXTRA_ANIMATION_TOKEN, animationToken)
         applyPinnedGlanceMode(intent)
         renderOverlayContent()
@@ -133,14 +129,22 @@ class OverlayActivity : FragmentActivity() {
     override fun onPause() {
         super.onPause()
         LockScreenAccessibilityService.onAppSurfacePaused()
+        com.tk.quicksearch.shared.util.expireDefaultHomeAppStatusReuse()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        UiSurfaceMemoryManager.onSurfaceStarted()
     }
 
     override fun onStop() {
         super.onStop()
+        UiSurfaceMemoryManager.onSurfaceStopped()
         searchViewModel.handleOnStop()
     }
 
     override fun onDestroy() {
+        OverlayModeController.onOverlayDestroyed(this)
         super.onDestroy()
         if (!isActivityInstanceTracked) return
         isActivityInstanceTracked = false
@@ -171,6 +175,15 @@ class OverlayActivity : FragmentActivity() {
         return super.dispatchKeyEvent(event)
     }
 
+    override fun onProvideKeyboardShortcuts(
+        data: MutableList<KeyboardShortcutGroup>,
+        menu: Menu?,
+        deviceId: Int,
+    ) {
+        super.onProvideKeyboardShortcuts(data, menu, deviceId)
+        data.add(quickSearchKeyboardShortcuts(this, includeOpenSettings = false))
+    }
+
     override fun finish() {
         super.finish()
         @Suppress("DEPRECATION")
@@ -182,7 +195,7 @@ class OverlayActivity : FragmentActivity() {
     }
 
     private fun renderOverlayContent() {
-        setContent {
+        setContentWithFrostedCards {
             val uiState by searchViewModel.uiState.collectAsStateWithLifecycle()
             val context = LocalContext.current
             val isSystemDarkTheme = isSystemInDarkTheme()

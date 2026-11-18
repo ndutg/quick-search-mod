@@ -18,6 +18,7 @@ import com.tk.quicksearch.search.searchHistory.RecentSearchItem
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.launch
 import com.tk.quicksearch.app.startup.StartupTrace
 
@@ -39,6 +40,9 @@ internal class SearchHistoryDelegate(
     private val updateUiState: ((SearchUiState) -> SearchUiState) -> Unit,
 ) {
     private var recentItemsRefreshJob: Job? = null
+
+    // Only the newest alias refresh may publish; quick filter toggles cancel the older scans.
+    private var aliasRecentItemsJob: Job? = null
     // Selected file type chip in the blank-query Files alias view; null means All.
     private var aliasFileTypeFilter: FileType? = null
     private val aliasFillLoader by lazy {
@@ -99,8 +103,8 @@ internal class SearchHistoryDelegate(
             val shortcutsByKey = appShortcutSearchHandler.getShortcutsByKeys(shortcutKeys)
             val appSettingsById = appSettingsSearchHandler.getSettingsByIds(appSettingIds)
             val notesById =
-                noteIds
-                    .mapNotNull { notesRepository.getNoteById(it) }
+                notesRepository
+                    .getNotesByIds(noteIds)
                     .filterNot { notesRepository.isQuickNote(it.noteId) }
                     .associateBy { it.noteId }
 
@@ -158,6 +162,9 @@ internal class SearchHistoryDelegate(
                         }
                     }
                 }
+            // The lookups above block without suspending, so a replaced refresh still reaches
+            // here; drop it rather than overwrite the newer one's result.
+            ensureActive()
             updateResultsState { it.copy(recentItems = items) }
             StartupTrace.mark("QS.Home.SearchHistoryAvailable")
         }
@@ -176,7 +183,8 @@ internal class SearchHistoryDelegate(
     fun refreshAliasRecentItems(section: SearchSection?) {
         if (section != SearchSection.FILES) aliasFileTypeFilter = null
         val fileTypeFilter = aliasFileTypeFilter
-        scope.launch(Dispatchers.IO) {
+        aliasRecentItemsJob?.cancel()
+        aliasRecentItemsJob = scope.launch(Dispatchers.IO) {
             if (section == SearchSection.CALENDAR) {
                 val excludedEventIds = userPreferences.getExcludedCalendarEventIds()
                 // Recently opened events first, then upcoming ones.
@@ -233,8 +241,8 @@ internal class SearchHistoryDelegate(
             val shortcutsByKey = appShortcutSearchHandler.getShortcutsByKeys(shortcutKeys)
             val appSettingsById = appSettingsSearchHandler.getSettingsByIds(appSettingIds)
             val notesById =
-                noteIds
-                    .mapNotNull { notesRepository.getNoteById(it) }
+                notesRepository
+                    .getNotesByIds(noteIds)
                     .filterNot { notesRepository.isQuickNote(it.noteId) }
                     .associateBy { it.noteId }
 
@@ -281,6 +289,7 @@ internal class SearchHistoryDelegate(
                     limit = MAX_ALIAS_ITEMS - recentItems.size,
                     fileTypeFilter = fileTypeFilter,
                 )
+            ensureActive()
             updateResultsState {
                 it.copy(
                     aliasRecentItems = recentItems + fillItems,

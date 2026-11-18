@@ -4,19 +4,18 @@ import com.tk.quicksearch.search.data.userAppPreferences.StartupPreferencesFacad
 import com.tk.quicksearch.search.data.preferences.UiPreferences
 import com.tk.quicksearch.search.models.AppInfo
 import com.tk.quicksearch.search.models.FileType
+import com.tk.quicksearch.tools.inlineSearch.SearchToolType
 import java.util.concurrent.atomic.AtomicBoolean
 
 internal data class SearchRuntimeState(
     var cachedAllSearchableApps: List<AppInfo> = emptyList(),
     @Volatile var startupConfig: StartupPreferencesFacade.StartupConfig? = null,
-    val isAppShortcutsLoadInFlight: AtomicBoolean = AtomicBoolean(false),
     val hasStartedStartupPhases: AtomicBoolean = AtomicBoolean(false),
     @Volatile var resumeNeedsStaticDataRefresh: Boolean = false,
     @Volatile var lastBrowserTargetRefreshMs: Long = 0L,
     var prefCache: SearchPreferenceCache,
     var enabledFileTypes: Set<FileType> = emptySet(),
     var showFolders: Boolean = false,
-    var filePreviewsEnabled: Boolean = true,
     var showSystemFiles: Boolean = false,
     var folderWhitelistPatterns: Set<String> = emptySet(),
     var folderBlacklistPatterns: Set<String> = emptySet(),
@@ -45,6 +44,7 @@ internal data class SearchRuntimeState(
     var themedIconsEnabled: Boolean = false,
     var deviceThemeEnabled: Boolean = false,
     var amoledThemeEnabled: Boolean = false,
+    var searchChromeBlurEnabled: Boolean = false,
     var wallpaperBackgroundAlpha: Float,
     var wallpaperBlurRadius: Float,
     var appTheme: AppTheme = AppTheme.MONOCHROME,

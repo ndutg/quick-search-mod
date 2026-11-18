@@ -1,26 +1,24 @@
 package com.tk.quicksearch.widgetsPanel
 
-import android.app.Activity
+import androidx.compose.material3.minimumInteractiveComponentSize
+import com.tk.quicksearch.shared.ui.theme.AppColors
+import com.tk.quicksearch.shared.ui.theme.AppShapes
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProviderInfo
-import android.content.Context
-import android.content.ContextWrapper
-import android.content.Intent
-import android.content.pm.PackageManager
-import android.content.res.Configuration
-import android.os.Build
 import android.os.Bundle
-import android.view.WindowManager
 import android.view.ViewGroup
-import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterExitState
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.snap
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectDragGestures
@@ -29,11 +27,10 @@ import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.foundation.layout.BoxScope
-import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -45,21 +42,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableFloatStateOf
@@ -75,6 +62,7 @@ import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
@@ -84,31 +72,22 @@ import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.platform.LocalGraphicsContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.zIndex
-import android.widget.Toast
 import androidx.core.os.bundleOf
 import com.tk.quicksearch.R
-import com.tk.quicksearch.search.core.AppTheme
-import com.tk.quicksearch.search.core.BackgroundSource
-import com.tk.quicksearch.search.core.SearchUiState
-import com.tk.quicksearch.search.data.preferences.NotesPreferences
-import com.tk.quicksearch.search.searchScreen.searchRoute.SearchScreenWallpaperLogic
-import com.tk.quicksearch.settings.shared.SettingsScreenBackground
 import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
-import com.tk.quicksearch.shared.ui.theme.LocalHomeTextColorOverride
-import com.tk.quicksearch.shared.ui.theme.LocalImageBackgroundIsDark
 import com.tk.quicksearch.shared.ui.theme.homeTextColor
-import com.tk.quicksearch.shared.util.ImageAppearanceUtils
-import android.util.SizeF
 import kotlin.math.roundToInt
+import com.tk.quicksearch.shared.ui.theme.AppMotion
 
 @Composable
 internal fun BoxScope.QuickNotePanelGridItem(
@@ -119,10 +98,11 @@ internal fun BoxScope.QuickNotePanelGridItem(
     gap: Dp,
     gridUnitHeightPx: Float,
     minRowSpan: Int,
-    onDragStart: () -> Unit,
+    onDragStart: (() -> Unit)?,
     onDrag: (totalDragX: Float, totalDragY: Float) -> Unit,
     onDragEnd: () -> Unit,
     onFocusChanged: (Boolean) -> Unit,
+    onMoveBy: (columnDelta: Int, rowDelta: Int) -> Boolean,
     onResizePreview: (WidgetGridResize) -> Unit,
     onInteractionEnd: () -> Unit,
     onRemove: () -> Unit,
@@ -146,6 +126,11 @@ internal fun BoxScope.QuickNotePanelGridItem(
         )
     var totalDragX by remember { mutableFloatStateOf(0f) }
     var totalDragY by remember { mutableFloatStateOf(0f) }
+    val editScale by animateFloatAsState(
+        targetValue = if (isEditing) WIDGET_EDIT_LIFT_SCALE else 1f,
+        animationSpec = AppMotion.defaultSpatial(),
+        label = "quickNoteEditScale",
+    )
 
     Box(
         modifier =
@@ -157,15 +142,25 @@ internal fun BoxScope.QuickNotePanelGridItem(
                         y = with(density) { animatedY.roundToPx() },
                     )
                 }
-                .zIndex(if (isEditing) 1f else 0f),
+                .zIndex(if (isEditing) 1f else 0f)
+                .graphicsLayer {
+                    scaleX = editScale
+                    scaleY = editScale
+                },
     ) {
         CompactQuickNoteWidget(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxSize().widgetEditAction(
+                onDragStart?.takeUnless { isEditing }?.let { start ->
+                    { start(); onDragEnd() }
+                },
+            ),
             onFocusChanged = onFocusChanged,
-            onDragStart = {
-                totalDragX = 0f
-                totalDragY = 0f
-                onDragStart()
+            onDragStart = onDragStart?.let { start ->
+                {
+                    totalDragX = 0f
+                    totalDragY = 0f
+                    start()
+                }
             },
             onDrag = { dragX, dragY ->
                 totalDragX += dragX
@@ -174,7 +169,8 @@ internal fun BoxScope.QuickNotePanelGridItem(
             },
             onDragEnd = onDragEnd,
         )
-        if (isEditing) {
+        AnimatedWidgetEditOverlay(visible = isEditing) {
+            if (onDragStart == null) return@AnimatedWidgetEditOverlay
             QuickNoteEditOverlay(
                 column = column,
                 row = row,
@@ -182,6 +178,7 @@ internal fun BoxScope.QuickNotePanelGridItem(
                 rowSpan = rowSpan,
                 gridUnitHeightPx = gridUnitHeightPx,
                 minRowSpan = minRowSpan,
+                onMoveBy = onMoveBy,
                 onResizePreview = onResizePreview,
                 onInteractionEnd = onInteractionEnd,
                 onRemove = onRemove,
@@ -189,6 +186,68 @@ internal fun BoxScope.QuickNotePanelGridItem(
         }
     }
 }
+
+/**
+ * Shows a widget's edit overlay (border, handles, action buttons) with a quick fade and a springy
+ * scale-in when the widget enters edit mode, instead of popping in.
+ *
+ * The fade uses [CompositingStrategy.ModulateAlpha]: AnimatedVisibility's own fade draws through an
+ * offscreen buffer the size of the widget, which cuts off the badges and handles that overhang its
+ * edges until the fade finishes.
+ */
+@Composable
+internal fun BoxScope.AnimatedWidgetEditOverlay(
+    visible: Boolean,
+    content: @Composable BoxScope.() -> Unit,
+) {
+    AnimatedVisibility(
+        visible = visible,
+        modifier = Modifier.matchParentSize(),
+        enter = EnterTransition.None,
+        exit = ExitTransition.None,
+    ) {
+        val alpha by
+            transition.animateFloat(
+                transitionSpec = {
+                    if (targetState == EnterExitState.Visible) {
+                        tween(WIDGET_EDIT_OVERLAY_FADE_IN_MS, easing = AppMotion.EmphasizedEasing)
+                    } else {
+                        tween(WIDGET_EDIT_OVERLAY_FADE_OUT_MS, easing = AppMotion.EmphasizedEasing)
+                    }
+                },
+                label = "widgetEditOverlayAlpha",
+            ) { state -> if (state == EnterExitState.Visible) 1f else 0f }
+        val scale by
+            transition.animateFloat(
+                transitionSpec = {
+                    if (targetState == EnterExitState.Visible) {
+                        AppMotion.fastSpatial()
+                    } else {
+                        snap()
+                    }
+                },
+                label = "widgetEditOverlayScale",
+            ) { state -> if (state == EnterExitState.PreEnter) WIDGET_EDIT_OVERLAY_INITIAL_SCALE else 1f }
+        Box(
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .graphicsLayer {
+                        this.alpha = alpha
+                        scaleX = scale
+                        scaleY = scale
+                        compositingStrategy = CompositingStrategy.ModulateAlpha
+                    },
+            content = content,
+        )
+    }
+}
+
+/** Slight lift applied to the widget being edited. */
+internal const val WIDGET_EDIT_LIFT_SCALE = 1.02f
+private const val WIDGET_EDIT_OVERLAY_INITIAL_SCALE = 0.94f
+private const val WIDGET_EDIT_OVERLAY_FADE_IN_MS = AppMotion.DurationExit
+private const val WIDGET_EDIT_OVERLAY_FADE_OUT_MS = AppMotion.DurationQuick
 
 @Composable
 internal fun BoxScope.QuickNoteEditOverlay(
@@ -198,6 +257,7 @@ internal fun BoxScope.QuickNoteEditOverlay(
     rowSpan: Int = WIDGET_PANEL_DEFAULT_ROW_SPAN,
     gridUnitHeightPx: Float = 0f,
     minRowSpan: Int = 1,
+    onMoveBy: ((Int, Int) -> Boolean)? = null,
     onResizePreview: ((WidgetGridResize) -> Unit)? = null,
     onInteractionEnd: () -> Unit = {},
     onRemove: () -> Unit,
@@ -206,6 +266,20 @@ internal fun BoxScope.QuickNoteEditOverlay(
         modifier =
             Modifier
                 .matchParentSize()
+                .widgetLayoutActions(
+                    layout = WidgetGridResize(column, row, columnSpan, rowSpan),
+                    minColumnSpan = WIDGET_PANEL_GRID_COLUMNS,
+                    minRowSpan = minRowSpan,
+                    canMoveUp = row > 0,
+                    canMoveDown = true,
+                    onMove = onMoveBy,
+                    onResize = onResizePreview?.let { resize ->
+                        { resized ->
+                            resize(resized)
+                            onInteractionEnd()
+                        }
+                    },
+                )
                 .pointerInput(Unit) {
                     // Keep taps on the selected Quick Note from being treated as outside taps.
                     detectTapGestures(onTap = {})
@@ -232,6 +306,7 @@ internal fun BoxScope.QuickNoteEditOverlay(
         }
         WidgetActionButton(
             icon = MaterialSymbols.Close,
+            contentDescription = stringResource(R.string.action_remove),
             tint = MaterialTheme.colorScheme.onError,
             background = MaterialTheme.colorScheme.error,
             onClick = onRemove,
@@ -258,6 +333,7 @@ internal fun HostedWidget(
     val density = LocalDensity.current
     val configuration = LocalConfiguration.current
     val context = LocalContext.current
+    val graphicsContext = LocalGraphicsContext.current
     val widthPx = with(density) { width.roundToPx() }
     val heightPx = with(density) { height.roundToPx() }
     val widthDp = width.value.toInt()
@@ -276,26 +352,41 @@ internal fun HostedWidget(
             )
         }
 
-    AndroidView(
-        factory = { ctx ->
-            appWidgetHost.createView(ctx, appWidgetId, providerInfo).apply {
-                setAppWidget(appWidgetId, providerInfo)
-                layoutParams = ViewGroup.LayoutParams(widthPx, heightPx)
-                appWidgetManager.updateAppWidgetOptions(appWidgetId, displayOptions)
-                // displayOptions already carries OPTION_APPWIDGET_SIZES; this overload keeps the host
-                // view's padding handling unchanged.
-                @Suppress("DEPRECATION")
-                updateAppWidgetSize(displayOptions, widthDp, heightDp, widthDp, heightDp)
-            }
-        },
-        update = { hostView ->
-            hostView.layoutParams = ViewGroup.LayoutParams(widthPx, heightPx)
-            appWidgetManager.updateAppWidgetOptions(appWidgetId, displayOptions)
-            @Suppress("DEPRECATION")
-            hostView.updateAppWidgetSize(displayOptions, widthDp, heightDp, widthDp, heightDp)
-        },
-        modifier = modifier,
-    )
+    // Lay the widget out at its target grid size, not the animated frame size: a per-frame size
+    // re-measures the RemoteViews and re-sends options every frame, making providers like
+    // Calendar rebuild mid-resize. The container clips while its frame animates to the target.
+    // AndroidView.update also runs for unrelated recompositions (focus, editing, content updates).
+    // Re-sending options there asks the provider to rebuild its RemoteViews again.
+    val appliedOptions = remember(appWidgetId, appWidgetHost) { arrayOfNulls<Bundle>(1) }
+    Box(modifier = modifier.clipToBounds()) {
+        AndroidView(
+            factory = { ctx ->
+                // createView already binds the id/provider and loads the system's cached RemoteViews;
+                // a view kept from an earlier showing is reused instead.
+                appWidgetHost.obtainView(ctx, appWidgetId, providerInfo, graphicsContext).apply {
+                    layoutParams = ViewGroup.LayoutParams(widthPx, heightPx)
+                }
+            },
+            update = { hostView ->
+                if (hostView.layoutParams.width != widthPx || hostView.layoutParams.height != heightPx) {
+                    hostView.layoutParams = ViewGroup.LayoutParams(widthPx, heightPx)
+                }
+                if (appliedOptions[0] !== displayOptions) {
+                    val currentOptions = appWidgetManager.getAppWidgetOptions(appWidgetId)
+                    if (!widgetOptionsMatch(currentOptions.asWidgetOptionValues(), displayOptions.asWidgetOptionValues())) {
+                        // The bundle already contains exact bounds and responsive sizes. Calling the
+                        // legacy updateAppWidgetSize afterward clears SIZES and triggers another update.
+                        appWidgetManager.updateAppWidgetOptions(appWidgetId, displayOptions)
+                    }
+                    appliedOptions[0] = displayOptions
+                }
+            },
+            modifier =
+                Modifier
+                    .wrapContentSize(align = Alignment.TopStart, unbounded = true)
+                    .size(width = width, height = height),
+        )
+    }
 }
 
 @Composable
@@ -310,6 +401,7 @@ internal fun BoxScope.WidgetEditOverlay(
     minRowSpan: Int,
     hasConfigure: Boolean,
     canPinToHome: Boolean,
+    onMoveBy: (columnDelta: Int, rowDelta: Int) -> Boolean,
     onMovePreview: (column: Int, row: Int) -> Unit,
     onResizePreview: (WidgetGridResize) -> Unit,
     onInteractionEnd: () -> Unit,
@@ -317,6 +409,7 @@ internal fun BoxScope.WidgetEditOverlay(
     onConfigure: () -> Unit,
     onPinToHome: () -> Unit,
 ) {
+    val horizontalSign = if (LocalLayoutDirection.current == LayoutDirection.Rtl) -1 else 1
     val currentColumn by rememberUpdatedState(column)
     val currentRow by rememberUpdatedState(row)
     val currentColumnSpan by rememberUpdatedState(columnSpan)
@@ -326,6 +419,18 @@ internal fun BoxScope.WidgetEditOverlay(
         modifier =
             Modifier
                 .matchParentSize()
+                .widgetLayoutActions(
+                    layout = WidgetGridResize(column, row, columnSpan, rowSpan),
+                    minColumnSpan = minColumnSpan,
+                    minRowSpan = minRowSpan,
+                    canMoveUp = row > 0,
+                    canMoveDown = true,
+                    onMove = onMoveBy,
+                    onResize = { resize ->
+                        onResizePreview(resize)
+                        onInteractionEnd()
+                    },
+                )
                 .pointerInput(Unit) {
                     // Absorb taps anywhere on the widget so the screen-level dismiss doesn't fire.
                     detectTapGestures(onTap = {})
@@ -338,7 +443,7 @@ internal fun BoxScope.WidgetEditOverlay(
             modifier =
                 Modifier
                     .fillMaxSize()
-                    .pointerInput(Unit) {
+                    .pointerInput(horizontalSign) {
                         var totalDragX = 0f
                         var totalDragY = 0f
                         var startColumn = currentColumn
@@ -354,7 +459,7 @@ internal fun BoxScope.WidgetEditOverlay(
                             },
                             onDrag = { change, dragAmount ->
                                 change.consume()
-                                totalDragX += dragAmount.x
+                                totalDragX += dragAmount.x * horizontalSign
                                 totalDragY += dragAmount.y
                                 val nextColumn =
                                     (startColumn + (totalDragX / gridUnitWidthPx).roundToInt())
@@ -415,6 +520,7 @@ internal fun BoxScope.WidgetEditActionButtons(
         onPinToHome?.let { onClick ->
             WidgetActionButton(
                 icon = MaterialSymbols.Home,
+                contentDescription = stringResource(R.string.action_add_to_home),
                 tint = MaterialTheme.colorScheme.onPrimary,
                 background = MaterialTheme.colorScheme.primary,
                 onClick = onClick,
@@ -423,6 +529,7 @@ internal fun BoxScope.WidgetEditActionButtons(
         onConfigure?.let { onClick ->
             WidgetActionButton(
                 icon = MaterialSymbols.Settings,
+                contentDescription = stringResource(R.string.settings_gesture_settings),
                 tint = MaterialTheme.colorScheme.onPrimary,
                 background = MaterialTheme.colorScheme.primary,
                 onClick = onClick,
@@ -430,6 +537,7 @@ internal fun BoxScope.WidgetEditActionButtons(
         }
         WidgetActionButton(
             icon = MaterialSymbols.Close,
+            contentDescription = stringResource(R.string.action_remove),
             tint = MaterialTheme.colorScheme.onError,
             background = MaterialTheme.colorScheme.error,
             onClick = onRemove,
@@ -449,36 +557,39 @@ internal fun BoxScope.WidgetEditBorder() {
                 .matchParentSize()
                 .border(
                     width = WidgetEditBorderWidth,
-                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f),
-                    shape = DesignTokens.WidgetPanelCardShape,
+                    color = MaterialTheme.colorScheme.primary.copy(alpha = AppColors.ContentSecondaryAlpha),
+                    shape = AppShapes.widgetPanelCard,
                 ),
     )
 }
 
+/**
+ * A 30dp edit badge. The click lives on the badge itself, before its clip, so Material's minimum
+ * interactive size gives it a 48dp touch target without changing how tightly the badges pack.
+ */
 @Composable
 internal fun WidgetActionButton(
     icon: ImageVector,
+    contentDescription: String,
     tint: Color,
     background: Color,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Surface(
-        modifier = modifier.size(WidgetActionButtonSize),
-        shape = CircleShape,
+        onClick = onClick,
+        modifier = modifier.minimumInteractiveComponentSize().size(WidgetActionButtonSize),
+        shape = AppShapes.full,
         color = background,
+        contentColor = tint,
         // Ring in the panel background color separates the badge from widget content beneath it.
         border = BorderStroke(WidgetEditRingWidth, MaterialTheme.colorScheme.background),
         shadowElevation = DesignTokens.ElevationLevel2,
     ) {
-        IconButton(
-            onClick = onClick,
-            modifier = Modifier.fillMaxSize(),
-            colors = IconButtonDefaults.iconButtonColors(contentColor = tint),
-        ) {
+        Box(contentAlignment = Alignment.Center) {
             Icon(
                 imageVector = icon,
-                contentDescription = null,
+                contentDescription = contentDescription,
                 modifier = Modifier.size(DesignTokens.IconSizeSmall),
             )
         }
@@ -500,6 +611,7 @@ internal fun EdgeResizeHandle(
     onInteractionEnd: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val horizontalSign = if (LocalLayoutDirection.current == LayoutDirection.Rtl) -1 else 1
     val capturedStartColumn by rememberUpdatedState(startColumn)
     val capturedStartRow by rememberUpdatedState(startRow)
     val capturedStartColumnSpan by rememberUpdatedState(startColumnSpan)
@@ -526,7 +638,7 @@ internal fun EdgeResizeHandle(
         modifier =
             modifier
                 .size(width = hitWidth, height = hitHeight)
-                .pointerInput(edge) {
+                .pointerInput(edge, horizontalSign) {
                     var totalX = 0f
                     var totalY = 0f
                     var startCol = capturedStartColumn
@@ -544,7 +656,7 @@ internal fun EdgeResizeHandle(
                         },
                         onDrag = { change, dragAmount ->
                             change.consume()
-                            totalX += dragAmount.x
+                            totalX += dragAmount.x * horizontalSign
                             totalY += dragAmount.y
                             onResizePreview(
                                 calculateGridResize(
@@ -580,13 +692,16 @@ internal fun EdgeResizeHandle(
                     .border(
                         width = WidgetEditRingWidth,
                         color = MaterialTheme.colorScheme.background,
-                        shape = CircleShape,
+                        shape = AppShapes.full,
                     )
                     .padding(WidgetEditRingWidth)
                     .background(
                         color = MaterialTheme.colorScheme.primary,
-                        shape = CircleShape,
+                        shape = AppShapes.full,
                     ),
         )
     }
 }
+
+@Suppress("DEPRECATION")
+private fun Bundle.asWidgetOptionValues(): Map<String, Any?> = keySet().associateWith { get(it) }

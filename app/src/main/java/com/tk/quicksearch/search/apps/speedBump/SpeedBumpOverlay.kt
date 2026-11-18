@@ -1,55 +1,61 @@
 package com.tk.quicksearch.search.apps.speedBump
 
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
+import android.os.SystemClock
+import androidx.compose.ui.semantics.ProgressBarRangeInfo
+import androidx.compose.ui.semantics.progressBarRangeInfo
+import com.tk.quicksearch.shared.ui.theme.AppColors
+import com.tk.quicksearch.shared.ui.theme.AppShapes
+import com.tk.quicksearch.shared.ui.components.AppButtonSize
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableLongStateOf
-import androidx.compose.runtime.produceState
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.withFrameNanos
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.MotionDurationScale
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -71,28 +77,35 @@ import com.tk.quicksearch.search.models.AppInfo
 import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlin.math.sin
 import com.tk.quicksearch.shared.ui.components.PreserveHostKeyboardStateEffect
+import com.tk.quicksearch.shared.ui.components.AppButton
+import com.tk.quicksearch.shared.ui.components.AppButtonTone
+import com.tk.quicksearch.shared.ui.components.AppDropdownMenu
+import com.tk.quicksearch.shared.ui.components.AppDropdownMenuDivider
+import com.tk.quicksearch.shared.ui.components.AppDropdownMenuItem
+import com.tk.quicksearch.shared.ui.components.AppTextButton
 
 private const val BreathCycleMillis = 3_400
-private const val TickMillis = 16L
 private val IconSize = 96.dp
 private val RingSize = 156.dp
+private val PauseDurationsMinutes = listOf(5, 15, 30)
 
 /**
  * Opacity of the words around the usage numbers. Held well below the emphasised values so the
  * "9 min / 9 opens" pair carries the line and the connective text stays in the background.
  */
-private const val UsageSupportingAlpha = 0.55f
 
 /**
  * Corner radius of the usage pill. `RoundedCornerShape` clamps the radius to half the height, so
  * a single line still renders as an exact stadium; long locales that wrap to two lines settle
  * into a rounded card instead of a stadium with oversized semicircular ends.
  */
-private val UsagePillShape = RoundedCornerShape(20.dp)
+private val UsagePillShape = AppShapes.largeIncreased
 
 /** How far the gradient edge is pulled toward the theme's foreground colour. */
 private const val VignetteStrength = 0.10f
@@ -118,10 +131,12 @@ fun SpeedBumpOverlay(
     val lifecycleOwner = LocalLifecycleOwner.current
     // The host drops the pending launch on configuration change, so this only needs to
     // survive recomposition.
-    val startedAtMillis by remember(appInfo.packageName) {
-        mutableLongStateOf(System.currentTimeMillis())
+    var deadline by remember(appInfo.packageName) {
+        mutableStateOf<Long?>(SystemClock.elapsedRealtime() + SpeedBump.DELAY_MILLIS)
     }
-    var progress by remember { mutableFloatStateOf(0f) }
+    var remainingAtMenuOpen by remember(appInfo.packageName) { mutableLongStateOf(0L) }
+    val progress = remember(appInfo.packageName) { mutableFloatStateOf(0f) }
+    val breathAmount = remember(appInfo.packageName) { mutableFloatStateOf(0.5f) }
     val todayUsage by produceState<TodayAppUsage?>(
         initialValue = null,
         key1 = appInfo.packageName,
@@ -142,29 +157,33 @@ fun SpeedBumpOverlay(
         onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
     }
 
-    LaunchedEffect(appInfo.packageName) {
-        while (true) {
-            val elapsed = System.currentTimeMillis() - startedAtMillis
-            progress = (elapsed.toFloat() / SpeedBump.DELAY_MILLIS).coerceIn(0f, 1f)
-            if (progress >= 1f) break
-            delay(TickMillis)
+    val runningDeadline = deadline
+    LaunchedEffect(runningDeadline) {
+        if (runningDeadline == null) return@LaunchedEffect
+        coroutineScope {
+            val motionScale = coroutineContext[MotionDurationScale]
+            val frames = launch {
+                while (true) {
+                    withFrameNanos { }
+                    val remaining = (runningDeadline - SystemClock.elapsedRealtime()).coerceIn(0, SpeedBump.DELAY_MILLIS)
+                    val elapsed = SpeedBump.DELAY_MILLIS - remaining
+                    progress.floatValue = elapsed.toFloat() / SpeedBump.DELAY_MILLIS
+                    val scale = motionScale?.scaleFactor ?: 1f
+                    breathAmount.floatValue =
+                        if (scale > 0f) {
+                            (sin(elapsed / (BreathCycleMillis * scale) * 2f * Math.PI.toFloat()) + 1f) / 2f
+                        } else {
+                            0.5f
+                        }
+                }
+            }
+            // Launch timing stays independent of the frame clock and system animation scale.
+            delay((runningDeadline - SystemClock.elapsedRealtime()).coerceAtLeast(0))
+            frames.cancel()
         }
-        currentOnOpen()
+        // Opening the menu invalidates the timer immediately, before recomposition cancels it.
+        if (deadline == runningDeadline) currentOnOpen()
     }
-
-    val breath = rememberInfiniteTransition(label = "speedBumpBreath")
-    val breathPhase by breath.animateFloat(
-        initialValue = 0f,
-        targetValue = 1f,
-        animationSpec =
-            infiniteRepeatable(
-                animation = tween(durationMillis = BreathCycleMillis, easing = LinearEasing),
-                repeatMode = RepeatMode.Restart,
-            ),
-        label = "speedBumpBreathPhase",
-    )
-    // Sine keeps the inhale and exhale symmetric, with no visible seam when the cycle wraps.
-    val breathAmount = (sin(breathPhase * 2f * Math.PI.toFloat()) + 1f) / 2f
 
     val iconResult =
         rememberAppIcon(
@@ -185,7 +204,7 @@ fun SpeedBumpOverlay(
                 dismissOnClickOutside = false,
             ),
     ) {
-        Box(
+        BoxWithConstraints(
             modifier =
                 Modifier
                     .fillMaxSize()
@@ -210,10 +229,14 @@ fun SpeedBumpOverlay(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier =
                     Modifier
-                        .fillMaxSize()
+                        .fillMaxWidth()
+                        .verticalScroll(rememberScrollState())
+                        .heightIn(min = maxHeight)
                         .padding(
-                            horizontal = DesignTokens.SpacingHuge,
-                            vertical = DesignTokens.Spacing40,
+                            start = DesignTokens.SpacingHuge,
+                            end = DesignTokens.SpacingHuge,
+                            top = DesignTokens.Spacing40,
+                            bottom = DesignTokens.SpacingXXLarge,
                         ),
             ) {
                 // The breathing icon sits a little above the optical centre so the way out can
@@ -222,10 +245,10 @@ fun SpeedBumpOverlay(
 
                 Box(contentAlignment = Alignment.Center) {
                     BreathingRing(
-                        progress = progress,
-                        breathAmount = breathAmount,
+                        progress = { progress.floatValue },
+                        breathAmount = { breathAmount.floatValue },
                         ringColor = MaterialTheme.colorScheme.primary,
-                        trackColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.10f),
+                        trackColor = MaterialTheme.colorScheme.onSurface.copy(alpha = AppColors.TintLightAlpha),
                     )
                     iconResult.bitmap?.let { bitmap ->
                         Image(
@@ -234,8 +257,12 @@ fun SpeedBumpOverlay(
                             modifier =
                                 Modifier
                                     .size(IconSize)
-                                    .scale(0.94f + 0.06f * breathAmount)
-                                    .clip(RoundedCornerShape(20.dp)),
+                                    .graphicsLayer {
+                                        val iconScale = 0.94f + 0.06f * breathAmount.floatValue
+                                        scaleX = iconScale
+                                        scaleY = iconScale
+                                    }
+                                    .clip(AppShapes.largeIncreased),
                             contentScale = ContentScale.Fit,
                         )
                     }
@@ -248,6 +275,7 @@ fun SpeedBumpOverlay(
                 Text(
                     text = stringResource(R.string.speed_bump_overlay_title),
                     style = MaterialTheme.typography.headlineSmall,
+                    modifier = Modifier.semantics { heading() },
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onSurface,
                     textAlign = TextAlign.Center,
@@ -276,7 +304,7 @@ fun SpeedBumpOverlay(
                                     .border(
                                         width = 1.dp,
                                         color =
-                                            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.10f),
+                                            MaterialTheme.colorScheme.onSurface.copy(alpha = AppColors.TintLightAlpha),
                                         shape = UsagePillShape,
                                     )
                                     .padding(
@@ -289,7 +317,7 @@ fun SpeedBumpOverlay(
                                 contentDescription = null,
                                 tint =
                                     MaterialTheme.colorScheme.onSurfaceVariant
-                                        .copy(alpha = UsageSupportingAlpha),
+                                        .copy(alpha = AppColors.ContentSecondaryAlpha),
                                 modifier = Modifier.size(16.dp),
                             )
                             Text(
@@ -304,9 +332,7 @@ fun SpeedBumpOverlay(
                                     emphasisColor = MaterialTheme.colorScheme.onSurface,
                                 ),
                                 style = MaterialTheme.typography.labelLarge,
-                                color =
-                                    MaterialTheme.colorScheme.onSurfaceVariant
-                                        .copy(alpha = UsageSupportingAlpha),
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 textAlign = TextAlign.Center,
                             )
                         }
@@ -316,19 +342,9 @@ fun SpeedBumpOverlay(
 
                 // Small but prominent: a filled pill rather than a bare text button, so the
                 // way out reads as a real action without competing with the breathing icon.
-                Button(
+                AppButton(
                     onClick = onCancel,
-                    shape = DesignTokens.ShapeFull,
-                    colors =
-                        ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.primary,
-                            contentColor = MaterialTheme.colorScheme.onPrimary,
-                        ),
-                    contentPadding =
-                        PaddingValues(
-                            horizontal = DesignTokens.SpacingHuge,
-                            vertical = DesignTokens.SpacingLarge,
-                        ),
+                    size = AppButtonSize.Medium,
                     modifier = Modifier.fillMaxWidth(),
                 ) {
                     Text(
@@ -337,6 +353,69 @@ fun SpeedBumpOverlay(
                         fontWeight = FontWeight.SemiBold,
                     )
                 }
+                SpeedBumpPauseMenu(
+                    appName = appInfo.appName,
+                    expanded = runningDeadline == null,
+                    onExpand = {
+                        deadline?.let {
+                            remainingAtMenuOpen = (it - SystemClock.elapsedRealtime()).coerceAtLeast(0)
+                            deadline = null
+                        }
+                    },
+                    onDismiss = {
+                        deadline = SystemClock.elapsedRealtime() + remainingAtMenuOpen
+                    },
+                    onSelectDuration = { minutes ->
+                        SpeedBump.pause(context, appInfo.packageName, minutes)
+                        onOpen()
+                    },
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun SpeedBumpPauseMenu(
+    appName: String,
+    expanded: Boolean,
+    onExpand: () -> Unit,
+    onDismiss: () -> Unit,
+    onSelectDuration: (Int) -> Unit,
+) {
+    Box(contentAlignment = Alignment.Center) {
+        AppTextButton(
+            onClick = onExpand,
+            tone = AppButtonTone.Neutral,
+            size = AppButtonSize.Small,
+            modifier = Modifier.heightIn(min = DesignTokens.Spacing48),
+        ) {
+            Text(stringResource(R.string.speed_bump_pause_action))
+        }
+        AppDropdownMenu(
+            expanded = expanded,
+            onDismissRequest = onDismiss,
+            focusable = true,
+            modifier = Modifier.widthIn(max = 280.dp),
+        ) {
+            Text(
+                text = stringResource(R.string.speed_bump_pause_menu_title, appName),
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier =
+                    Modifier
+                        .semantics { heading() }
+                        .padding(
+                            horizontal = DesignTokens.SpacingXLarge,
+                            vertical = DesignTokens.SpacingMedium,
+                        ),
+            )
+            PauseDurationsMinutes.forEachIndexed { index, minutes ->
+                if (index > 0) AppDropdownMenuDivider()
+                AppDropdownMenuItem(
+                    text = pluralStringResource(R.plurals.calendar_relative_minutes, minutes, minutes),
+                    onClick = { onSelectDuration(minutes) },
+                )
             }
         }
     }
@@ -395,13 +474,25 @@ private fun formatUsageDuration(durationMillis: Long): String {
 
 @Composable
 private fun BreathingRing(
-    progress: Float,
-    breathAmount: Float,
+    progress: () -> Float,
+    breathAmount: () -> Float,
     ringColor: Color,
     trackColor: Color,
 ) {
     androidx.compose.foundation.Canvas(
-        modifier = Modifier.size(RingSize).scale(0.9f + 0.1f * breathAmount),
+        modifier =
+            Modifier.size(RingSize).semantics {
+                // Expose whole seconds of progress while keeping the drawn ring smooth.
+                val totalSeconds = SpeedBump.DELAY_MILLIS / 1_000f
+                progressBarRangeInfo = ProgressBarRangeInfo(
+                    current = kotlin.math.floor(progress() * totalSeconds),
+                    range = 0f..totalSeconds,
+                )
+            }.graphicsLayer {
+                val ringScale = 0.9f + 0.1f * breathAmount()
+                scaleX = ringScale
+                scaleY = ringScale
+            },
     ) {
         val stroke = Stroke(width = 4.dp.toPx())
         val inset = stroke.width / 2f
@@ -416,9 +507,9 @@ private fun BreathingRing(
             style = stroke,
         )
         drawArc(
-            color = ringColor.copy(alpha = 0.6f + 0.4f * breathAmount),
+            color = ringColor.copy(alpha = AppColors.ContentSecondaryAlpha + (1f - AppColors.ContentSecondaryAlpha) * breathAmount()),
             startAngle = -90f,
-            sweepAngle = 360f * progress,
+            sweepAngle = 360f * progress(),
             useCenter = false,
             topLeft = Offset(inset, inset),
             size = arcSize,

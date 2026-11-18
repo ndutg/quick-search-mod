@@ -1,5 +1,7 @@
 package com.tk.quicksearch.searchEngines.inline
 
+import androidx.compose.ui.semantics.Role
+import com.tk.quicksearch.shared.ui.theme.AppShapes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -9,7 +11,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,7 +24,6 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
@@ -46,9 +46,9 @@ internal const val EVENLY_SPACED_ENGINE_MAX_COUNT = 6
 private const val LABELED_ENGINE_MAX_COUNT = 2
 
 private val LABELED_ICON_SIZE = 18.dp
-private val ICON_ONLY_ICON_SIZE = 22.dp
+private val ICON_ONLY_ICON_SIZE = DesignTokens.IconSize
 private val DIVIDER_HEIGHT = 16.dp
-private val HIGHLIGHT_SHAPE = RoundedCornerShape(18.dp)
+private val HIGHLIGHT_SHAPE = AppShapes.engineHighlight
 private val HIGHLIGHT_HORIZONTAL_INSET = DesignTokens.SpacingXSmall
 private val HIGHLIGHT_EXTRA_HEIGHT = 12.dp
 
@@ -58,7 +58,7 @@ private val HIGHLIGHT_EXTRA_HEIGHT = 12.dp
  */
 @Composable
 internal fun EvenlySpacedEngineRow(
-    query: String,
+    query: () -> String,
     enabledEngines: List<SearchTarget>,
     onSearchEngineClick: (String, SearchTarget) -> Unit,
     onSearchEngineLongPress: () -> Unit,
@@ -132,7 +132,7 @@ internal fun SingleEngineLabel(
 @Composable
 private fun EvenlySpacedEngineItem(
     engine: SearchTarget,
-    query: String,
+    query: () -> String,
     onSearchEngineClick: (String, SearchTarget) -> Unit,
     onSearchEngineLongPress: () -> Unit,
     isPredicted: Boolean,
@@ -176,9 +176,10 @@ private fun EvenlySpacedEngineItem(
                         }
                     },
                 ).combinedClickable(
+                    role = Role.Button,
                     onClick = {
                         hapticConfirm(view)()
-                        onSearchEngineClick(query, engine)
+                        onSearchEngineClick(query(), engine)
                     },
                     onLongClick = onSearchEngineLongPress,
                 ),
@@ -223,7 +224,6 @@ private fun EngineIconAndLabel(
         text = label,
         style = MaterialTheme.typography.labelLarge,
         color = MaterialTheme.colorScheme.onSurface,
-        fontWeight = FontWeight.Medium,
         maxLines = 1,
         overflow = TextOverflow.Ellipsis,
     )
