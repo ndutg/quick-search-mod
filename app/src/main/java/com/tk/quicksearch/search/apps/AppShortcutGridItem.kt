@@ -1,5 +1,7 @@
 package com.tk.quicksearch.search.apps
 
+import com.tk.quicksearch.R
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import com.tk.quicksearch.shared.ui.theme.AppShapes
 import androidx.compose.animation.core.animateFloatAsState
@@ -37,7 +39,7 @@ import androidx.compose.ui.zIndex
 import com.tk.quicksearch.search.appShortcuts.AppShortcutResultMenu
 import com.tk.quicksearch.search.folders.AppFolderMember
 import com.tk.quicksearch.search.folders.FolderPreviewIcon
-import com.tk.quicksearch.search.core.AppIconShape
+import com.tk.quicksearch.search.apps.AppIconShape
 import com.tk.quicksearch.search.data.appShortcutRepository.StaticShortcut
 import com.tk.quicksearch.search.data.appShortcutRepository.rememberShortcutIcon
 import com.tk.quicksearch.search.data.appShortcutRepository.shortcutDisplayName
@@ -179,6 +181,7 @@ internal fun AppShortcutGridItem(
                                 onClick(shortcut)
                             }
                         },
+                        onLongClickLabel = stringResource(R.string.desc_show_options),
                         onLongClick = { showOptions = true },
                 )
             }

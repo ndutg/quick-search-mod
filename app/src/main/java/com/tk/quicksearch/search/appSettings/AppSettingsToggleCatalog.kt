@@ -5,7 +5,7 @@ import android.content.Context
 import android.os.Build
 import com.tk.quicksearch.R
 import com.tk.quicksearch.shared.util.isTablet
-import com.tk.quicksearch.settings.settingsDetailScreen.ToolSettingsRegistry
+import com.tk.quicksearch.settings.toolsSettings.ToolSettingsRegistry
 
 /**
  * Searchable toggle and inline-control rows, plus the pages that sit beside them in search order.
@@ -157,6 +157,13 @@ internal fun AppSettingsCatalogBuilder.addToggleAndInlineSettings(context: Conte
         descriptionRes = R.string.notification_dots_toggle_desc,
         toggleKey = AppSettingsToggleKey.NOTIFICATION_DOTS,
         keywords = listOf("badge", "notification", "dot", "unread"),
+    )
+    addToggle(
+        id = "app_toggle_app_lock_outside_quick_search",
+        titleRes = R.string.app_lock_outside_quick_search_title,
+        descriptionRes = R.string.app_lock_outside_quick_search_desc,
+        toggleKey = AppSettingsToggleKey.APP_LOCK_OUTSIDE_QUICK_SEARCH,
+        keywords = listOf("app lock", "lock", "biometric", "fingerprint", "privacy", "launcher"),
     )
     addToggle(
         id = "app_toggle_speed_bump_outside_quick_search",

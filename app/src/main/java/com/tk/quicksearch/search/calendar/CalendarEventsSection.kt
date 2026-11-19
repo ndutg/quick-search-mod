@@ -43,6 +43,7 @@ import com.tk.quicksearch.search.searchScreen.components.ExpandButtonSegment
 import com.tk.quicksearch.search.searchScreen.shared.ResultSegment
 import com.tk.quicksearch.search.searchScreen.shared.ResultRowDivider
 import com.tk.quicksearch.search.searchScreen.shared.resultRowsContainerPadding
+import com.tk.quicksearch.search.searchScreen.shared.resultRowsContainerVerticalPadding
 import com.tk.quicksearch.search.searchScreen.components.ExpandButtonDivider
 import com.tk.quicksearch.search.searchScreen.components.ExpandableResultsCard
 import com.tk.quicksearch.search.searchScreen.components.topPredictedRowContainer
@@ -198,7 +199,7 @@ fun CalendarEventsSection(
                     Modifier.fillMaxWidth()
                         .padding(
                             horizontal = resultRowsContainerPadding(DesignTokens.SpacingMedium),
-                            vertical = resultRowsContainerPadding(DesignTokens.SpacingXSmall),
+                            vertical = resultRowsContainerVerticalPadding(DesignTokens.SpacingXSmall),
                         )
                         .padding(
                             bottom =
@@ -217,7 +218,11 @@ fun CalendarEventsSection(
                         val isPredicted = predictedEventId != null && event.eventId == predictedEventId
                         val showPredictedOnRow = isPredicted && !useCardLevelPrediction
                         val isPinned = pinnedEventIds.contains(event.eventId)
-                        ResultSegment(index = index + leadingGlanceSegment, count = segmentCount) {
+                        ResultSegment(
+                            index = index + leadingGlanceSegment,
+                            count = segmentCount,
+                            padCompactOuterEdges = isHomeScreenMode,
+                        ) {
                             CalendarEventRow(
                                 event = event,
                                 isPinned = isPinned,
@@ -294,6 +299,7 @@ internal fun CalendarEventRow(
                         hapticConfirm(rowView)()
                         onClick(event)
                     },
+                    onLongClickLabel = stringResource(R.string.desc_show_options),
                     onLongClick = { showMenu = true },
                 )
                 .padding(vertical = resultRowVerticalPadding(DesignTokens.SpacingMedium)),

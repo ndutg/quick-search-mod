@@ -1,5 +1,7 @@
 package com.tk.quicksearch.search.searchScreen
 
+import com.tk.quicksearch.search.searchScreen.components.NumberKeyboardOperatorPills
+import com.tk.quicksearch.search.searchScreen.components.OpenKeyboardAction
 import com.tk.quicksearch.shared.ui.theme.AppMotion
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExitTransition
@@ -382,11 +384,10 @@ internal fun SearchScreenBottomChrome(
                             if (hideOpenKeyboardActionInstantly) {
                                 ExitTransition.None
                             } else {
-                                fadeOut(animationSpec = tween(durationMillis = AppMotion.DurationExit, easing = AppMotion.EmphasizedAccelerateEasing)) +
-                                        shrinkVertically(
-                                                shrinkTowards = Alignment.Bottom,
-                                                animationSpec = tween(durationMillis = AppMotion.DurationShort, easing = AppMotion.EmphasizedAccelerateEasing),
-                                        )
+                                shrinkVertically(
+                                        shrinkTowards = Alignment.Top,
+                                        animationSpec = tween(durationMillis = AppMotion.DurationShort, easing = AppMotion.EmphasizedAccelerateEasing),
+                                )
                             },
             ) {
                 OpenKeyboardAction(

@@ -1,12 +1,9 @@
 package com.tk.quicksearch.search.data.preferences
 
 import android.content.Context
-import com.tk.quicksearch.search.core.AppIconShape
-import com.tk.quicksearch.search.core.AppSuggestionTabType
 import com.tk.quicksearch.search.core.AccentColorMode
 import com.tk.quicksearch.search.core.BackgroundSource
 import com.tk.quicksearch.search.core.CallingApp
-import com.tk.quicksearch.search.core.LauncherAppIcon
 import com.tk.quicksearch.search.core.MessagingApp
 import com.tk.quicksearch.search.core.AppTheme
 import com.tk.quicksearch.search.core.SearchSection
@@ -329,7 +326,7 @@ class UiPreferences(context: Context) : UiPreferencesFeatures(context) {
         const val KEY_BOTTOM_SEARCH_BAR_ENABLED = "bottom_search_bar_enabled"
         const val KEY_UNIFIED_PINNED_ITEMS_ENABLED = "unified_pinned_items_enabled"
         const val KEY_SEARCH_HINTS_ENABLED = "search_hints_enabled"
-        const val KEY_CARD_LAYOUT_ENABLED = "card_layout_enabled"
+        const val KEY_CARD_LAYOUT_ENABLED = "card_layout_enabled_v2"
         const val KEY_COMPACT_PRIOR_APP_GRID_COLUMNS = "compact_prior_app_grid_columns"
         const val KEY_COMPACT_PRIOR_APP_ICON_SIZE_STEP = "compact_prior_app_icon_size_step"
         const val KEY_COMPACT_PRIOR_FONT_SCALE_MULTIPLIER = "compact_prior_font_scale_multiplier"
@@ -447,7 +444,7 @@ class UiPreferences(context: Context) : UiPreferencesFeatures(context) {
             "accessibility_permission_disclaimer_pending"
         // Versioned so existing users see the disclosure again whenever its scope changes.
         const val KEY_HAS_SEEN_ACCESSIBILITY_PERMISSION_DISCLAIMER =
-            "has_seen_accessibility_permission_disclaimer_v3"
+            "has_seen_accessibility_permission_disclaimer_v4"
         const val KEY_AI_SEARCH_SETUP_EXPANDED = "direct_search_setup_expanded"
         const val KEY_DISABLED_SEARCH_ENGINES_EXPANDED = "disabled_search_engines_expanded"
         const val KEY_HOME_PINNED_SECTION_EXPANDED_PREFIX = "home_pinned_section_expanded_"

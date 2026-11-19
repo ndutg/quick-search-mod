@@ -7,6 +7,7 @@ import com.tk.quicksearch.shared.ui.theme.AppShapes
 import com.tk.quicksearch.search.searchScreen.components.ExpandButtonSegment
 import com.tk.quicksearch.search.searchScreen.shared.segmentedRowsActive
 import com.tk.quicksearch.search.searchScreen.shared.resultRowsContainerPadding
+import com.tk.quicksearch.search.searchScreen.shared.resultRowsContainerVerticalPadding
 import com.tk.quicksearch.search.searchScreen.shared.ResultSegment
 import com.tk.quicksearch.search.searchScreen.shared.ResultRowDivider
 import com.tk.quicksearch.search.searchScreen.shared.compactEdgeToEdge
@@ -235,7 +236,7 @@ private fun AppShortcutsCardContent(
                 modifier =
                         Modifier.padding(
                                 horizontal = resultRowsContainerPadding(DesignTokens.SpacingMedium),
-                                vertical = resultRowsContainerPadding(4.dp),
+                                vertical = resultRowsContainerVerticalPadding(4.dp),
                         )
                                 .padding(bottom = bottomContentPadding),
         ) {
@@ -342,6 +343,7 @@ internal fun AppShortcutRow(
                                                 hapticConfirm(view)()
                                                 onShortcutClick(shortcut)
                                         },
+                                        onLongClickLabel = stringResource(R.string.desc_show_options),
                                         onLongClick = onLongPressOverride
                                                         ?: if (enableLongPress) {
                                                                 { showOptions = true }
@@ -374,7 +376,7 @@ internal fun AppShortcutRow(
 
                 Column(
                         modifier = Modifier.weight(1f),
-                        verticalArrangement = Arrangement.spacedBy(2.dp),
+                        verticalArrangement = Arrangement.spacedBy(DesignTokens.TextColumnSpacing),
                 ) {
                         val secondaryText =
                                 if (showAppLabel) {

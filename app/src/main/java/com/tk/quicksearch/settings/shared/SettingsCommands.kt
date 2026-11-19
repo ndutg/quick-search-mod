@@ -3,12 +3,12 @@ package com.tk.quicksearch.settings.shared
 import com.tk.quicksearch.search.appSettings.AppSettingsToggleKey
 import com.tk.quicksearch.search.appSettings.BooleanSetting
 import com.tk.quicksearch.search.core.AccentColorMode
-import com.tk.quicksearch.search.core.AppIconShape
-import com.tk.quicksearch.search.core.AppSuggestionTabType
+import com.tk.quicksearch.search.apps.AppIconShape
+import com.tk.quicksearch.search.apps.AppSuggestionTabType
 import com.tk.quicksearch.search.core.AppTheme
 import com.tk.quicksearch.search.core.AppThemeMode
 import com.tk.quicksearch.search.core.BackgroundSource
-import com.tk.quicksearch.search.core.LauncherAppIcon
+import com.tk.quicksearch.app.LauncherAppIcon
 import com.tk.quicksearch.search.core.HomeTextColor
 import com.tk.quicksearch.search.core.SearchBarStyle
 import com.tk.quicksearch.search.core.SearchSectionRegistry
@@ -169,6 +169,7 @@ internal fun SearchViewModel.applySettingsCommand(command: SettingsCommand) {
                 AppSettingsToggleKey.WEATHER -> setWeatherEnabled(command.enabled)
                 // Need a permission and live outside SearchUiState; see SearchRouteSettingActions.
                 AppSettingsToggleKey.APP_NOTIFICATIONS,
+                AppSettingsToggleKey.APP_LOCK_OUTSIDE_QUICK_SEARCH,
                 AppSettingsToggleKey.SPEED_BUMP_OUTSIDE_QUICK_SEARCH,
                 -> Unit
                 AppSettingsToggleKey.APPS_PER_ROW,
@@ -280,6 +281,7 @@ internal fun SearchUiState.isAppSettingToggleEnabled(toggleKey: AppSettingsToggl
         AppSettingsToggleKey.WEATHER -> weatherEnabled && hasApiKey
         // Read by rememberAppSettingToggleChecked, which follows their own stores.
         AppSettingsToggleKey.APP_NOTIFICATIONS,
+        AppSettingsToggleKey.APP_LOCK_OUTSIDE_QUICK_SEARCH,
         AppSettingsToggleKey.SPEED_BUMP_OUTSIDE_QUICK_SEARCH,
         -> false
         AppSettingsToggleKey.APPS_PER_ROW,

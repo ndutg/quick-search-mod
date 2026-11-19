@@ -4,6 +4,7 @@ import androidx.compose.ui.semantics.Role
 import com.tk.quicksearch.search.searchScreen.components.ExpandButtonSegment
 import com.tk.quicksearch.search.searchScreen.shared.segmentedRowsActive
 import com.tk.quicksearch.search.searchScreen.shared.resultRowsContainerPadding
+import com.tk.quicksearch.search.searchScreen.shared.resultRowsContainerVerticalPadding
 import com.tk.quicksearch.search.searchScreen.shared.ResultSegment
 import com.tk.quicksearch.search.searchScreen.shared.ResultRowDivider
 import com.tk.quicksearch.reminders.ReminderRepeat
@@ -129,7 +130,7 @@ fun RemindersResultsSection(
                     Modifier.fillMaxWidth()
                         .padding(
                         horizontal = resultRowsContainerPadding(DesignTokens.SpacingMedium),
-                        vertical = resultRowsContainerPadding(4.dp),
+                        vertical = resultRowsContainerVerticalPadding(4.dp),
                     )
                         .padding(
                             bottom =
@@ -201,6 +202,7 @@ internal fun ReminderRow(
                         hapticConfirm(rowView)()
                         if (notedItem != null) NotedLauncher.open(context, notedItem) else onClick(reminder)
                     },
+                    onLongClickLabel = stringResource(R.string.desc_show_options),
                     onLongClick = { showMenu = true },
                 )
                 .padding(vertical = resultRowVerticalPadding(DesignTokens.SpacingMedium)),
