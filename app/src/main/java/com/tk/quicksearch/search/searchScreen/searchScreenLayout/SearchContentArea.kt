@@ -51,7 +51,8 @@ import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.core.*
 import com.tk.quicksearch.searchEngines.*
-import com.tk.quicksearch.search.core.isLikelyWebUrl
+import com.tk.quicksearch.searchEngines.SearchEngine
+import com.tk.quicksearch.shared.util.isLikelyWebUrl
 import com.tk.quicksearch.search.bookmarks.LocalBookmarksSectionParams
 import com.tk.quicksearch.search.searchScreen.ExpandedSection
 import com.tk.quicksearch.search.searchScreen.ContactsSectionParams
@@ -63,7 +64,7 @@ import com.tk.quicksearch.search.searchScreen.CalendarSectionParams
 import com.tk.quicksearch.search.searchScreen.NotesSectionParams
 import com.tk.quicksearch.search.searchScreen.RemindersSectionParams
 import com.tk.quicksearch.search.searchScreen.PredictedSubmitTarget
-import com.tk.quicksearch.search.searchScreen.overlayThemeTints
+import com.tk.quicksearch.shared.ui.theme.overlayThemeTints
 import com.tk.quicksearch.search.searchScreen.LocalOverlayResultCardColor
 import com.tk.quicksearch.search.searchScreen.LocalOverlayDividerColor
 import com.tk.quicksearch.search.searchScreen.LocalOverlayActionColor
@@ -434,6 +435,8 @@ internal fun SearchContentArea(
                     Modifier
                 }
 
+            val expandRevealModifier =
+                rememberExpandRevealModifier(renderingState.expandedSection, isSearchHistoryExpanded)
             val roundExpandedViewport = LocalSearchCardLayoutEnabled.current &&
                 (renderingState.expandedSection != ExpandedSection.NONE || isSearchHistoryExpanded)
             Box {
@@ -510,7 +513,7 @@ internal fun SearchContentArea(
                     } else {
                         key(state.backgroundSource, state.showWallpaperBackground) {
                             ContentLayout(
-                                modifier = Modifier.fillMaxWidth(),
+                                modifier = Modifier.fillMaxWidth().then(expandRevealModifier),
                                 state = state,
                                 renderingState = renderingState,
                                 contactsParams = contactsParams,
@@ -636,12 +639,26 @@ internal fun SearchContentArea(
                 }
             }
 
-            if (renderingState.expandedSection != ExpandedSection.NONE && !isSectionAliasMode) {
-                val bookmarksParams = LocalBookmarksSectionParams.current
+            // Keep the last expanded target while the pill fades out, so a late tap still collapses it.
+            val showCollapseButton =
+                !isSectionAliasMode &&
+                    (renderingState.expandedSection != ExpandedSection.NONE || isSearchHistoryExpanded)
+            var collapseTargetSection by remember { mutableStateOf(renderingState.expandedSection) }
+            if (showCollapseButton) collapseTargetSection = renderingState.expandedSection
+            val bookmarksParams = LocalBookmarksSectionParams.current
+            AnimatedCollapseButton(
+                visible = showCollapseButton,
+                modifier =
+                    Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(bottom = footerBottomPadding),
+            ) {
                 CollapseButton(
                     showWallpaperBackground = state.showWallpaperBackground,
                     onClick = {
-                        when (renderingState.expandedSection) {
+                        when (collapseTargetSection) {
+                            ExpandedSection.NONE -> onSearchHistoryCollapseRequested()
+
                             ExpandedSection.FILES -> {
                                 filesParams.onExpandClick()
                             }
@@ -677,10 +694,6 @@ internal fun SearchContentArea(
                             ExpandedSection.BOOKMARKS -> bookmarksParams?.onExpandClick?.invoke()
                         }
                     },
-                    modifier =
-                        Modifier
-                            .align(Alignment.BottomCenter)
-                            .padding(bottom = footerBottomPadding),
                 )
             }
 
@@ -704,20 +717,6 @@ internal fun SearchContentArea(
                 )
             }
 
-            if (
-                renderingState.expandedSection == ExpandedSection.NONE &&
-                    !isSectionAliasMode &&
-                    isSearchHistoryExpanded
-            ) {
-                CollapseButton(
-                    showWallpaperBackground = state.showWallpaperBackground,
-                    onClick = onSearchHistoryCollapseRequested,
-                    modifier =
-                        Modifier
-                            .align(Alignment.BottomCenter)
-                            .padding(bottom = footerBottomPadding),
-                )
-            }
         }
     }
 }

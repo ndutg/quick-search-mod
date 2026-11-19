@@ -141,6 +141,10 @@ Main `AppColors` groups:
   surface luminance).
 - **Settings and dialogs:** `getSettingsCardContainerColor()`, `SettingsDivider`,
   `getDialogContainerColor()`, `DialogBackground`, `DialogText`, `Overlay*`.
+- **Drawers and sheets:** `DrawerTileBackground` (`AccentTintSubtle`) fills tiles and fields on a
+  `DialogBackground` sheet. `AppBottomSheet` provides it through `LocalSegmentedTileContainerColor`,
+  so `SegmentedTile`s inside a drawer pick it up by default; use `segmentedTileContainerColor()` when
+  composing your own tile color. Never use `getSettingsCardContainerColor()` inside a drawer.
 - **Contact actions:** `ActionPhone`, `ActionSms`, `ActionSignal`, `ActionCustom`, `ActionView`.
 - **Widgets:** `Widget*` (RemoteViews, so not theme-aware).
 
@@ -192,6 +196,10 @@ Appearance (`LocalSearchChromeBlurEnabled`) restores frosted chrome. Result card
   footer, contact number copy) have no tap action to give feedback for. In the overlay, tapping the
   scrim dismisses it (the exit animation is the feedback), and the card swallows taps on its empty
   space so they don't reach the scrim.
+- **Background picker bento.** Appearance > Background (`BackgroundSourceTile.kt`) lays out the
+  sources as a bento grid instead of equal tiles: the wallpaper preview is the large tile, Custom
+  sits above a short Theme bar, and Custom takes the large slot when there is no wallpaper source.
+  Each label sits below its tile, and the selection check is centered on the preview.
 - **Contact row actions.** A tap opens the current contact action and a long press opens its
   action chooser. The two icon buttons use `combinedClickable` with a 48dp target and label
   because `AppIconButton` uses long press for its tooltip.
@@ -332,7 +340,7 @@ settings and add a property in sorted order.
 | `AppFloatingActionButton`, `AppExtendedFloatingActionButton`, `AppFabTone` (`AppFloatingActionButton.kt`) | FAB, extended FAB | 56dp page-bottom actions with a 24dp icon, fully round and squaring on press. `AppFabTone.Primary` (`Accent`) for the main action, `Tonal` (`FloatingTonalContainer`) for a secondary one, `Error` for destructive. The extended FAB takes a label and an `enabled` flag (fades to `DisabledContentAlpha`); the caller sets its width. Don't call Material FABs directly |
 | `AppFilterChip`, `AppFilterChipStyle` (`AppFilterChip.kt`) | Filter chip | Filter and multi-select chips. Selected fills with `Accent`; `Outlined` (default) has a `SettingsDivider` outline, `Tonal` uses `AccentTintTonal` for chips on a tonal surface. `showSelectedCheck` adds the multi-select check. Over a wallpaper, pass the wallpaper-aware label and border colors |
 | `PickerFieldButton` | Text field (read-only) | Outlined field that opens a date, time, or repeat picker |
-| `SliderWithValue` | Slider | A value beside or above a slider, with an optional leading label for endpoint scales. The caller owns range, ticks, and saving |
+| `SliderWithValue` | Slider | A value beside or above a slider, with an optional leading label for endpoint scales. The caller owns range, ticks, and saving. Pass `colors = AppColors.sliderColors()` to every `Slider` so the inactive track stays visible in Monochrome |
 | `TipBanner` | Card | Dismissible tips with optional links and an action |
 | `PredictiveBackPreviewHandler`, `PredictiveBackSlideHandler`, `PreserveHostKeyboardStateEffect` | Predictive back | Predictive back animations for nested pages, and keeping the host's keyboard state while a popup is open |
 | `AppVoiceCallIcon` | — | App logo plus phone icon for call actions |
@@ -348,7 +356,7 @@ settings and add a property in sorted order.
 | `InformationCard`, `InformationCardFooter` | Tool and AI answer cards. The footer is the Material card action area: source at the start, outlined 20dp `IconButton`s with tooltips at the end |
 | `QuickActionButton` and pills (`searchScreen/components/Pills.kt`) | Search quick actions: 32dp tonal extra-small buttons that share one line and shrink labels instead of wrapping |
 | `OpenKeyboardAction` | Home's bottom keyboard strip, as a `ConnectedButtonRow` |
-| `HomeSectionHeaderRow`, `GlanceStatusRow`, `GlanceActionChip` (`searchScreenLayout/`) | Home section titles, At a Glance rows, and their pill actions |
+| `HomeSectionHeaderRow`, `GlanceStatusRow`, `GlanceActionChip` (`searchScreenLayout/`, `searchScreenLayout/glance/`) | Home section titles, At a Glance rows, and their pill actions |
 | `WidgetConfigScaffold`, `WidgetSettingTile`, `WidgetColorChoiceGroup`, `WidgetSaveButton` | Widget configuration screens, built on segmented tiles and connected choices |
 
 ## Moving to a new Material version

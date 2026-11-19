@@ -51,7 +51,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
-import com.tk.quicksearch.search.core.AppIconShape
+import com.tk.quicksearch.search.apps.AppIconShape
 import com.tk.quicksearch.search.core.SearchBarStyle
 import com.tk.quicksearch.search.core.SearchTarget
 import com.tk.quicksearch.searchEngines.getId
@@ -302,6 +302,7 @@ private fun SearchEngineContent(
                                 hapticConfirm(view)()
                                 onSearchEngineClick(query, singleEngine)
                             },
+                            onLongClickLabel = stringResource(R.string.customize_search_engines),
                             onLongClick = onSearchEngineLongPress,
                         )
                     } else {
@@ -519,7 +520,7 @@ private fun ScrollableEngineIcons(
                     Modifier
                         .fillMaxWidth()
                         .height(
-                            (DesignTokens.MinTouchTarget * visibleRowCount) +
+                            (SearchEngineSectionConstants.ICON_SIZE * visibleRowCount) +
                                 (if (visibleRowCount == 2) SearchEngineSectionConstants.ROW_SPACING else 0.dp) +
                                 predictionHighlightExtraHeight,
                         ),
@@ -608,8 +609,7 @@ private fun ScrollableEngineIcons(
 private fun calculateItemWidth(maxWidth: androidx.compose.ui.unit.Dp, itemsPerRow: Int): androidx.compose.ui.unit.Dp {
     val totalSpacing = SearchEngineSectionConstants.SPACING * (itemsPerRow - 1)
     val totalHorizontalContentPadding = SearchEngineSectionConstants.PREDICTION_HIGHLIGHT_CONTENT_PADDING * 2
-    return ((maxWidth - totalSpacing - totalHorizontalContentPadding) / itemsPerRow)
-        .coerceAtLeast(DesignTokens.MinTouchTarget)
+    return (maxWidth - totalSpacing - totalHorizontalContentPadding) / itemsPerRow
 }
 
 @Composable

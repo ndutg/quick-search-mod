@@ -48,7 +48,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.view.HapticFeedbackConstantsCompat
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.core.CustomSearchEngine
-import com.tk.quicksearch.search.core.SearchEngine
+import com.tk.quicksearch.searchEngines.SearchEngine
 import com.tk.quicksearch.search.core.SearchTarget
 import com.tk.quicksearch.searchEngines.AliasValidator.hasExactAliasConflict
 import com.tk.quicksearch.searchEngines.AliasValidator.isValidGeneralAliasCode
@@ -458,6 +458,7 @@ private fun SearchEngineRowContent(
                         Modifier.combinedClickable(
                             role = Role.Button,
                             onClick = rowClick,
+                            onLongClickLabel = stringResource(R.string.desc_show_options),
                             onLongClick = if (onCustomEngineClick != null) openMoveMenu else null,
                         )
                     } else {

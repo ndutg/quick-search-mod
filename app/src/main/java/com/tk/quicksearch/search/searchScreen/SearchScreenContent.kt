@@ -1,5 +1,6 @@
 package com.tk.quicksearch.search.searchScreen
 
+import com.tk.quicksearch.onboarding.ReportWelcomeBarPlacement
 import com.tk.quicksearch.onboarding.welcomeMorphHoldsKeyboard
 import com.tk.quicksearch.onboarding.welcomeMorphRunning
 import androidx.compose.foundation.layout.Arrangement
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import com.tk.quicksearch.search.searchScreen.components.SearchBarWithSettingsButton
 import com.tk.quicksearch.shared.ui.components.undoSnackbarAvoidArea
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.imePadding
@@ -296,6 +298,7 @@ internal fun SearchScreenContent(
     val shouldShowNumberKeyboardOperators =
             isImeVisible && (manuallySwitchedToNumberKeyboard || isCalculatorMode)
     val showBottomSearchBar = showSearchField && state.bottomSearchBarEnabled
+    ReportWelcomeBarPlacement(atBottom = showBottomSearchBar)
     val barStyle =
             if (SearchBarStyle.hasFixedShape(state.bottomSearchBarEnabled, state.isSearchEngineCompactMode)) {
                 state.searchBarStyle.withFixedShape()
@@ -515,7 +518,7 @@ internal fun SearchScreenContent(
     val searchFieldModifier = searchBarGeometry.searchFieldModifier
 
     val searchFieldContent: @Composable () -> Unit = {
-        PersistentSearchBar(
+        SearchBarWithSettingsButton(
                 query = state.query,
                 selectRetainedQuery = state.selectRetainedQuery,
                 onSelectRetainedQueryHandled = onSelectRetainedQueryHandled,
@@ -778,12 +781,13 @@ internal fun SearchScreenContent(
             openKeyboardText = openKeyboardText,
             onVoiceClick = onVoiceClick,
             onOpenKeyboardActionClicked = {
-                hideOpenKeyboardActionInstantly = true
-                delayedOpenKeyboardActionVisible = false
-                searchFocusRequester.requestFocus()
-                openKeyboardActionScope.launch {
-                    withFrameNanos { }
-                    keyboardController?.show()
+                if (delayedOpenKeyboardActionVisible) {
+                    delayedOpenKeyboardActionVisible = false
+                    searchFocusRequester.requestFocus()
+                    openKeyboardActionScope.launch {
+                        withFrameNanos { }
+                        keyboardController?.show()
+                    }
                 }
             },
         ) }

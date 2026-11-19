@@ -1,18 +1,19 @@
 package com.tk.quicksearch.search.data.preferences
 
 import android.content.Context
-import com.tk.quicksearch.search.core.AppIconShape
-import com.tk.quicksearch.search.core.AppSuggestionTabType
+import com.tk.quicksearch.search.apps.AppSuggestionTabType
 import com.tk.quicksearch.search.core.AccentColorMode
 import com.tk.quicksearch.search.core.BackgroundSource
 import com.tk.quicksearch.search.contacts.models.ContactButtonAction
-import com.tk.quicksearch.search.core.LauncherAppIcon
 import com.tk.quicksearch.search.core.AppTheme
 import com.tk.quicksearch.search.core.SearchSection
 import com.tk.quicksearch.search.core.SearchSectionRegistry
 import com.tk.quicksearch.tools.aiSearch.AiSearchLlmProviderId
 
 open class UiPreferencesCore(context: Context) : BasePreferences(context) {
+    init {
+        migrateCompactLayoutPreference(prefs, appContext)
+    }
 
     // ============================================================================
     // UI Preferences

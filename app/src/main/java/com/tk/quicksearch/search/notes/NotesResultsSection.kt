@@ -1,10 +1,11 @@
 package com.tk.quicksearch.search.notes
 
-import com.tk.quicksearch.settings.NoteDeleteConfirmationDialog
+import com.tk.quicksearch.settings.notesSettings.NoteDeleteConfirmationDialog
 import androidx.compose.ui.semantics.Role
 import com.tk.quicksearch.search.searchScreen.components.ExpandButtonSegment
 import com.tk.quicksearch.search.searchScreen.shared.segmentedRowsActive
 import com.tk.quicksearch.search.searchScreen.shared.resultRowsContainerPadding
+import com.tk.quicksearch.search.searchScreen.shared.resultRowsContainerVerticalPadding
 import com.tk.quicksearch.search.searchScreen.shared.ResultSegment
 import com.tk.quicksearch.search.searchScreen.shared.ResultRowDivider
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -123,7 +124,7 @@ fun NotesResultsSection(
                 modifier =
                     Modifier.padding(
                         horizontal = resultRowsContainerPadding(DesignTokens.SpacingMedium),
-                        vertical = resultRowsContainerPadding(4.dp),
+                        vertical = resultRowsContainerVerticalPadding(4.dp),
                     )
                         .padding(
                             bottom =
@@ -227,6 +228,7 @@ internal fun NoteRow(
                             hapticConfirm(rowView)()
                             onClick(note)
                         },
+                        onLongClickLabel = stringResource(R.string.desc_show_options),
                         onLongClick = { showMenu = true },
                     )
                     .padding(vertical = resultRowVerticalPadding(DesignTokens.SpacingMedium)),

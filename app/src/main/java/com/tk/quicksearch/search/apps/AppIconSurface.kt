@@ -49,7 +49,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.apps.notificationDots.AppNotificationDot
-import com.tk.quicksearch.search.core.AppIconShape
+import com.tk.quicksearch.search.apps.AppIconShape
 import com.tk.quicksearch.search.searchScreen.components.rememberQueryHighlightedText
 import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
@@ -164,6 +164,7 @@ internal fun AppIconSurface(
                                 hapticConfirm(view)()
                                 onClick()
                             },
+                            onLongClickLabel = stringResource(R.string.desc_show_options),
                             onLongClick = onLongClick,
                     )
                 } else {
