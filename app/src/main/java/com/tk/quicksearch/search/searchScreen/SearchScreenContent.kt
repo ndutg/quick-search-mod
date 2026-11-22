@@ -30,8 +30,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.withFrameNanos
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.foundation.gestures.detectVerticalDragGestures
+import androidx.compose.foundation.layout.Box
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -191,6 +190,7 @@ internal fun SearchScreenContent(
     var isAiFollowUpInputVisible by remember { mutableStateOf(false) }
     var aiFollowUpText by remember { mutableStateOf("") }
     var searchHistoryCollapseRequestKey by remember { mutableStateOf(0) }
+    var clearRevealKey by remember { mutableStateOf(0) }
     val openKeyboardActionScope = rememberCoroutineScope()
 
     LaunchedEffect(isOverlayPresentation) {
@@ -525,7 +525,7 @@ internal fun SearchScreenContent(
                 selectRetainedQuery = state.selectRetainedQuery,
                 onSelectRetainedQueryHandled = onSelectRetainedQueryHandled,
                 onQueryChange = onQueryChanged,
-                onClearQuery = onClearQuery,
+                onClearQuery = { clearRevealKey += 1; onClearQuery() },
                 onSettingsClick = onSettingsClick,
                 showSettingsIcon = state.settingsIconEnabled,
                 onVoiceClick = onVoiceClick,
@@ -648,7 +648,7 @@ internal fun SearchScreenContent(
         com.tk.quicksearch.tools.calculator.LocalCalculatorResultQueryHandler provides onQueryChanged,
     ) {
     Column(modifier = contentModifier, verticalArrangement = Arrangement.Top) {
-        if (showSearchField && !showBottomSearchBar) searchFieldContent()
+        if (showSearchField && !showBottomSearchBar) Box(Modifier.fillMaxWidth().then(bottomBarSwipeModifier)) { searchFieldContent() }
         if (!showSearchField) PinnedGlanceFocusTarget(searchFocusRequester)
 
         if (showSearchField && !showBottomSearchBar && !state.oneHandedMode) {
@@ -701,6 +701,7 @@ internal fun SearchScreenContent(
                 onSearchHistoryExpandedChange = { isSearchHistoryExpanded = it },
                 searchHistoryCollapseRequestKey = searchHistoryCollapseRequestKey,
                 isSearchHistoryExpanded = isSearchHistoryExpanded,
+                clearRevealKey = clearRevealKey,
                 onSearchHistoryCollapseRequested = { searchHistoryCollapseRequestKey += 1 },
                 onOpenPermissionsSettings = onOpenPermissionsSettings,
                 onHomePinnedSectionOrderChange = onHomePinnedSectionOrderChange,
