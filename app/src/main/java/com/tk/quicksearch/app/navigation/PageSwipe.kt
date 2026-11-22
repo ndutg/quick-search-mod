@@ -187,8 +187,11 @@ class PageSwipeController internal constructor(
     private companion object {
         val navigationTween: AnimationSpec<Float> =
             tween(NAVIGATION_ANIMATION_DURATION_MS, easing = AppMotion.EmphasizedEasing)
+        // progress is a 0..1 fraction of the page width. The default Float threshold (0.01) ends
+        // the spring ~1% of the width early and jumps the rest, a visible snap on the last frame.
         val releaseSpring: AnimationSpec<Float> =
-            AppMotion.settle()
+            AppMotion.settle(visibilityThreshold = RELEASE_SPRING_THRESHOLD)
+        const val RELEASE_SPRING_THRESHOLD = 0.0005f
     }
 }
 
@@ -383,7 +386,7 @@ internal suspend fun PointerInputScope.detectPageSwipe(
  * is ignored entirely. Otherwise a vertical swipe that drifts sideways would start revealing the
  * neighbouring page.
  */
-private suspend fun PointerInputScope.detectHorizontalDominantDrag(
+internal suspend fun PointerInputScope.detectHorizontalDominantDrag(
     onDragStart: () -> Unit,
     onHorizontalDrag: (change: PointerInputChange, dragAmount: Float) -> Unit,
     onDragEnd: () -> Unit,
