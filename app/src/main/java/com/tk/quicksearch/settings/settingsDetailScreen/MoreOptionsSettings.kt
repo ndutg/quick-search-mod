@@ -21,6 +21,8 @@ import com.tk.quicksearch.search.apps.speedBump.SpeedBumpAccessibilityDisclosure
 import com.tk.quicksearch.search.apps.speedBump.SpeedBumpOutsideQuickSearchToggleState
 import com.tk.quicksearch.search.apps.speedBump.rememberSpeedBumpOutsideQuickSearchToggleState
 import com.tk.quicksearch.search.noted.NotedIntegrationSettingCard
+import com.tk.quicksearch.shared.ui.components.ChoiceOption
+import com.tk.quicksearch.shared.ui.components.ConnectedChoiceGroup
 import com.tk.quicksearch.shared.ui.components.SegmentedGroup
 import com.tk.quicksearch.settings.shared.SettingsCommand
 import com.tk.quicksearch.shared.ui.components.SegmentedToggleTile
@@ -32,6 +34,7 @@ import com.tk.quicksearch.shared.util.rememberPhysicalKeyboardConnected
 @Composable
 fun MoreOptionsSettings(
     isToggleEnabled: (AppSettingsToggleKey) -> Boolean,
+    notificationCountsEnabled: Boolean,
     onApplySettingsCommand: (SettingsCommand) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -67,13 +70,12 @@ fun MoreOptionsSettings(
                 subtitleRes = R.string.notification_dots_toggle_desc,
                 leadingIcon = MaterialSymbols.Notifications,
             ),
-            // App Lock only works while Quick Search is the default launcher.
             ToggleItem(
                 key = AppSettingsToggleKey.APP_LOCK_OUTSIDE_QUICK_SEARCH,
                 titleRes = R.string.app_lock_outside_quick_search_title,
                 subtitleRes = R.string.app_lock_outside_quick_search_desc,
                 leadingIcon = MaterialSymbols.Lock,
-            ).takeIf { isDefaultLauncher },
+            ),
             ToggleItem(
                 key = AppSettingsToggleKey.SPEED_BUMP_OUTSIDE_QUICK_SEARCH,
                 titleRes = R.string.speed_bump_outside_quick_search_title,
@@ -161,6 +163,7 @@ fun MoreOptionsSettings(
             isToggleEnabled = isMoreOptionEnabled,
             onApplySettingsCommand = onApplySettingsCommand,
             onNotificationDotsCheckedChange = onNotificationDotsCheckedChange,
+            notificationCountsEnabled = notificationCountsEnabled,
             speedBumpToggle = speedBumpToggle,
             appLockToggle = appLockToggle,
         )
@@ -171,6 +174,7 @@ fun MoreOptionsSettings(
             isToggleEnabled = isMoreOptionEnabled,
             onApplySettingsCommand = onApplySettingsCommand,
             onNotificationDotsCheckedChange = onNotificationDotsCheckedChange,
+            notificationCountsEnabled = notificationCountsEnabled,
             speedBumpToggle = speedBumpToggle,
             appLockToggle = appLockToggle,
         )
@@ -187,6 +191,7 @@ private fun MoreOptionsToggleGroup(
     isToggleEnabled: (AppSettingsToggleKey) -> Boolean,
     onApplySettingsCommand: (SettingsCommand) -> Unit,
     onNotificationDotsCheckedChange: (Boolean) -> Unit,
+    notificationCountsEnabled: Boolean,
     speedBumpToggle: SpeedBumpOutsideQuickSearchToggleState,
     appLockToggle: AppLockOutsideQuickSearchToggleState,
 ) {
@@ -230,9 +235,34 @@ private fun MoreOptionsToggleGroup(
                 icon = item.leadingIcon,
                 index = index,
                 count = items.size,
+                expandedContent =
+                    if (item.key == AppSettingsToggleKey.NOTIFICATION_DOTS) {
+                        {
+                            NotificationBadgeStyleChoice(
+                                showCount = notificationCountsEnabled,
+                                onSelect = { onApplySettingsCommand(SettingsCommand.NotificationCountsSetting(it)) },
+                            )
+                        }
+                    } else {
+                        null
+                    },
             )
         }
     }
+}
+
+/** Dots or Count for the notification badge on app icons. */
+@Composable
+private fun NotificationBadgeStyleChoice(
+    showCount: Boolean,
+    onSelect: (Boolean) -> Unit,
+) {
+    val options =
+        listOf(
+            ChoiceOption(false, stringResource(R.string.notification_dots_style_dots)),
+            ChoiceOption(true, stringResource(R.string.notification_dots_style_count)),
+        )
+    ConnectedChoiceGroup(options = options, selected = showCount, onSelect = onSelect)
 }
 
 private data class ToggleItem(
