@@ -24,7 +24,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.foundation.gestures.detectVerticalDragGestures
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.positionChange
+import kotlin.math.abs
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -36,7 +40,6 @@ import com.tk.quicksearch.search.apps.LocalAllAppsDrawerController
 import com.tk.quicksearch.search.core.AiSearchStatus
 import com.tk.quicksearch.search.core.SearchSection
 import com.tk.quicksearch.search.core.SearchTarget
-import com.tk.quicksearch.search.core.SearchUiState
 import com.tk.quicksearch.search.searchHistory.RecentSearchEntry
 import com.tk.quicksearch.searchEngines.inline.InsetSearchBarGeometry
 import com.tk.quicksearch.searchEngines.getId
@@ -75,8 +78,6 @@ internal data class SearchScreenSwipeActions(
 
 @Composable
 internal fun rememberSearchScreenSwipeActions(
-    state: SearchUiState,
-    expandedSection: ExpandedSection,
     swipeUpAction: SwipeGestureAction,
     swipeDownAction: SwipeGestureAction,
     swipeUpAliasTarget: String?,
@@ -142,35 +143,47 @@ internal fun rememberSearchScreenSwipeActions(
     // The engine strip and search bar (top or bottom) sit outside the results area, so they need
     // their own vertical drag detector to forward the same swipe gestures. Their inner
     // scrollers are horizontal only, so vertical drags reach this detector unconsumed.
-    // Swipe up mirrors the results area: it only fires on an empty query.
+    // Unlike the results area (where swipe up would compete with scrolling), these surfaces
+    // don't scroll vertically, so both directions fire regardless of the query.
     val currentOnLauncherSwipeUp by rememberUpdatedState(onLauncherSwipeUp)
     val currentOnLauncherSwipeDown by rememberUpdatedState(onLauncherSwipeDown)
-    val bottomBarSwipeUpEnabled = state.query.isBlank() && expandedSection == ExpandedSection.NONE
     val bottomBarSwipeModifier =
-        Modifier.pointerInput(bottomBarSwipeUpEnabled) {
-            var accumulatedDragY = 0f
-            var gestureHandled = false
-            detectVerticalDragGestures(
-                onDragStart = {
-                    accumulatedDragY = 0f
-                    gestureHandled = false
-                },
-                onVerticalDrag = { change, dragAmount ->
-                    change.consume()
-                    if (gestureHandled) return@detectVerticalDragGestures
-                    accumulatedDragY += dragAmount
-                    when {
-                        accumulatedDragY < -BOTTOM_BAR_SWIPE_THRESHOLD_PX -> {
-                            if (bottomBarSwipeUpEnabled) currentOnLauncherSwipeUp()
-                            gestureHandled = true
-                        }
-                        accumulatedDragY > BOTTOM_BAR_SWIPE_THRESHOLD_PX -> {
+        Modifier.pointerInput(Unit) {
+            // Watch in the Initial pass so children that consume touches (the search
+            // TextField's tap/selection handling) can't swallow the swipe first. The gesture
+            // is only claimed once it is clearly vertical, so taps, cursor placement, and
+            // horizontal scrolling (engine strip, long queries) still reach the children.
+            awaitEachGesture {
+                val down = awaitFirstDown(requireUnconsumed = false, pass = PointerEventPass.Initial)
+                var totalX = 0f
+                var totalY = 0f
+                var claimed = false
+                while (true) {
+                    val event = awaitPointerEvent(PointerEventPass.Initial)
+                    val change = event.changes.firstOrNull { it.id == down.id } ?: break
+                    if (!change.pressed) {
+                        if (claimed) change.consume()
+                        break
+                    }
+                    if (claimed) {
+                        change.consume()
+                        continue
+                    }
+                    val delta = change.positionChange()
+                    totalX += delta.x
+                    totalY += delta.y
+                    if (abs(totalX) > viewConfiguration.touchSlop && abs(totalX) >= abs(totalY)) break
+                    if (abs(totalY) > BOTTOM_BAR_SWIPE_THRESHOLD_PX && abs(totalY) > abs(totalX)) {
+                        claimed = true
+                        change.consume()
+                        if (totalY < 0f) {
+                            currentOnLauncherSwipeUp()
+                        } else {
                             currentOnLauncherSwipeDown()
-                            gestureHandled = true
                         }
                     }
-                },
-            )
+                }
+            }
         }
 
     return SearchScreenSwipeActions(onLauncherSwipeUp, onLauncherSwipeDown, bottomBarSwipeModifier)
