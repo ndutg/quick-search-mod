@@ -502,8 +502,6 @@
 <string name="error_whatsapp_video_call_missing_data">Impossible de passer l\'appel vidéo WhatsApp - données de contact manquantes</string>
 <string name="error_whatsapp_video_call_unavailable">WhatsApp n\'est pas disponible pour les appels vidéo</string>
 <string name="settings_call_permission_title">Téléphone</string>
-<string name="permissions_background_usage_title">Autoriser l\'utilisation en arrière-plan</string>
-<string name="permissions_background_usage_desc">Autorisez l\'utilisation en arrière-plan pour un démarrage plus rapide des applications.</string>
 <string name="settings_calls_texts_title">Appels &amp; SMS</string>
 <string name="settings_contact_first_button_title">Premier bouton</string>
 <string name="settings_contact_second_button_title">Deuxième bouton</string>
@@ -741,7 +739,7 @@
 <string name="settings_compact_layout_title">Disposition compacte</string>
 <string name="settings_compact_layout_desc">Mise en page sans cartes dans l\'accueil et la recherche pour afficher plus de contenu à l\'écran</string>
 <string name="settings_cache_cleared_toast">Cache effacé. Reconstitution de l\'index de l\'application\u2026</string>
-<string name="settings_circular_app_icons_desc">Forcer les icônes d\'applications circulaires</string>
+<string name="settings_circular_app_icons_desc">Modifier l\'arrondi des coins des icônes d\'applications</string>
 <string name="settings_circular_app_icons_title">Icônes d\'applications circulaires</string>
 <string name="settings_compact_rows_one_row">Une ligne</string>
 <string name="settings_compact_rows_two_rows">Deux lignes</string>
@@ -1183,6 +1181,13 @@
 <string name="widget_countdown_format_progress">Progression %</string>
 <string name="widget_countdown_progress_hint">Indique la part du temps écoulée depuis que vous avez choisi la date.</string>
 <string name="widget_world_clock_widget_title">Widget d\'horloge mondiale</string>
+<string name="widget_reminders_widget_title">Widget de rappels</string>
+<string name="widget_reminders_empty">Aucun rappel à venir</string>
+<string name="widget_reminders_show_today_tomorrow">Afficher les rappels à venir pour aujourd\'hui et demain</string>
+<plurals name="widget_reminders_show_next_days">
+    <item quantity="one">Afficher les rappels à venir pour le prochain %d jour</item>
+    <item quantity="other">Afficher les rappels à venir pour les %d prochains jours</item>
+</plurals>
 <string name="widget_world_clock_locations">Lieux</string>
 <string name="widget_world_clock_add_location">Ajouter un lieu</string>
 <string name="widget_world_clock_search_hint">Rechercher un pays ou un fuseau horaire</string>
@@ -1228,6 +1233,12 @@
 <string name="widgets_picker_title">Ajouter un widget</string>
 <string name="widgets_picker_widget_count">%1$d widgets</string>
 <string name="widgets_picker_widget_grid_size">%1$d x %2$d</string>
+<string name="widget_add_to_stack">Ajouter à la pile</string>
+<string name="widget_stack_picker_empty">Aucun widget ne tient dans cette taille.</string>
+<string name="widget_stack_picker_subtitle">Widgets qui tiennent dans cette pile</string>
+<string name="widget_reorder_stack">Réorganiser la pile</string>
+<string name="widget_reorder_stack_info">Faites glisser pour réorganiser. Le widget du haut s\'affiche en premier.</string>
+<string name="widget_stack_page_indicator">Page %1$d sur %2$d</string>
 
 <!-- ============================================================================
      Permissions &amp; Onboarding

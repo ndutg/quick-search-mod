@@ -511,8 +511,6 @@
     <string name="error_whatsapp_video_call_missing_data">Nie można nawiązać rozmowy wideo WhatsApp – brak danych kontaktu</string>
     <string name="error_whatsapp_video_call_unavailable">WhatsApp jest niedostępny dla rozmów wideo</string>
     <string name="settings_call_permission_title">Telefon</string>
-    <string name="permissions_background_usage_title">Zezwól na działanie w tle</string>
-    <string name="permissions_background_usage_desc">Zezwól na działanie w tle, aby przyspieszyć uruchamianie aplikacji.</string>
     <string name="settings_calls_texts_title">Połączenia i wiadomości</string>
     <string name="settings_contact_first_button_title">Pierwszy przycisk</string>
     <string name="settings_contact_second_button_title">Drugi przycisk</string>
@@ -773,7 +771,7 @@
     <string name="settings_compact_layout_title">Układ kompaktowy</string>
     <string name="settings_compact_layout_desc">Układ bez kart na ekranie głównym i w wyszukiwaniu, aby zmieścić więcej treści na ekranie</string>
     <string name="settings_cache_cleared_toast">Pamięć podręczna wyczyszczona. Odbudowywanie indeksu aplikacji…</string>
-    <string name="settings_circular_app_icons_desc">Wymuś okrągłe ikony aplikacji</string>
+    <string name="settings_circular_app_icons_desc">Zmień zaokrąglenie rogów ikon aplikacji</string>
     <string name="settings_circular_app_icons_title">Okrągłe ikony aplikacji</string>
     <string name="settings_compact_rows_one_row">Jeden rząd</string>
     <string name="settings_compact_rows_two_rows">Dwa rzędy</string>
@@ -1224,6 +1222,15 @@ www.google.com/search?q={{query}}</string>
     <string name="widget_countdown_format_progress">Postęp %</string>
     <string name="widget_countdown_progress_hint">Pokazuje, ile czasu upłynęło od ustawienia daty.</string>
     <string name="widget_world_clock_widget_title">Widżet zegara światowego</string>
+    <string name="widget_reminders_widget_title">Widżet przypomnień</string>
+    <string name="widget_reminders_empty">Brak nadchodzących przypomnień</string>
+    <string name="widget_reminders_show_today_tomorrow">Pokaż nadchodzące przypomnienia na dziś i jutro</string>
+    <plurals name="widget_reminders_show_next_days">
+        <item quantity="one">Pokaż nadchodzące przypomnienia na następny %d dzień</item>
+        <item quantity="few">Pokaż nadchodzące przypomnienia na następne %d dni</item>
+        <item quantity="many">Pokaż nadchodzące przypomnienia na następne %d dni</item>
+        <item quantity="other">Pokaż nadchodzące przypomnienia na następne %d dnia</item>
+    </plurals>
     <string name="widget_world_clock_locations">Lokalizacje</string>
     <string name="widget_world_clock_add_location">Dodaj lokalizację</string>
     <string name="widget_world_clock_search_hint">Szukaj kraju lub strefy czasowej</string>
@@ -1269,6 +1276,12 @@ www.google.com/search?q={{query}}</string>
     <string name="widgets_picker_title">Dodaj widżet</string>
     <string name="widgets_picker_widget_count">%1$d widżetów</string>
     <string name="widgets_picker_widget_grid_size">%1$d x %2$d</string>
+    <string name="widget_add_to_stack">Dodaj do stosu</string>
+    <string name="widget_stack_picker_empty">Żaden widżet nie pasuje do tego rozmiaru.</string>
+    <string name="widget_stack_picker_subtitle">Widżety, które zmieszczą się w tym stosie</string>
+    <string name="widget_reorder_stack">Zmień kolejność stosu</string>
+    <string name="widget_reorder_stack_info">Przeciągnij, aby zmienić kolejność. Górny widżet jest pokazywany jako pierwszy.</string>
+    <string name="widget_stack_page_indicator">Strona %1$d z %2$d</string>
 
     <!-- ============================================================================
          Permissions &amp; Onboarding

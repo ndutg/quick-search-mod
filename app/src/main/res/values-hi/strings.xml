@@ -502,8 +502,6 @@
     <string name="error_whatsapp_video_call_missing_data">WhatsApp वीडियो कॉल नहीं की जा सकती - कॉन्टैक्ट डेटा नहीं है</string>
     <string name="error_whatsapp_video_call_unavailable">WhatsApp पर वीडियो कॉल उपलब्ध नहीं है</string>
     <string name="settings_call_permission_title">फोन</string>
-    <string name="permissions_background_usage_title">बैकग्राउंड में उपयोग की अनुमति दें</string>
-    <string name="permissions_background_usage_desc">तेज़ ऐप स्टार्टअप के लिए बैकग्राउंड उपयोग की अनुमति दें।</string>
     <string name="settings_calls_texts_title">कॉल्स और टेक्स्ट्स</string>
     <string name="settings_contact_first_button_title">पहला बटन</string>
     <string name="settings_contact_second_button_title">दूसरा बटन</string>
@@ -741,7 +739,7 @@
     <string name="settings_compact_layout_title">कॉम्पैक्ट लेआउट</string>
     <string name="settings_compact_layout_desc">होम और खोज में बिना कार्ड वाला लेआउट, ताकि स्क्रीन पर ज़्यादा सामग्री आ सके</string>
     <string name="settings_cache_cleared_toast">कैश साफ हो गया। ऐप इंडेक्स फिर से बनाया जा रहा है\u2026</string>
-    <string name="settings_circular_app_icons_desc">ऐप आइकनों को जबरन गोल बनाएं</string>
+    <string name="settings_circular_app_icons_desc">ऐप आइकनों के कोनों की गोलाई बदलें</string>
     <string name="settings_circular_app_icons_title">गोल ऐप आइकन</string>
     <string name="settings_compact_rows_one_row">एक पंक्ति</string>
     <string name="settings_compact_rows_two_rows">दो पंक्तियाँ</string>
@@ -1183,6 +1181,13 @@
     <string name="widget_countdown_format_progress">प्रगति %</string>
     <string name="widget_countdown_progress_hint">दिखाता है कि तारीख सेट करने के बाद से कितना समय बीत चुका है।</string>
     <string name="widget_world_clock_widget_title">विश्व घड़ी विजेट</string>
+    <string name="widget_reminders_widget_title">रिमाइंडर विजेट</string>
+    <string name="widget_reminders_empty">कोई आगामी रिमाइंडर नहीं</string>
+    <string name="widget_reminders_show_today_tomorrow">आज और कल के आगामी रिमाइंडर दिखाएं</string>
+    <plurals name="widget_reminders_show_next_days">
+        <item quantity="one">अगले %d दिन के आगामी रिमाइंडर दिखाएं</item>
+        <item quantity="other">अगले %d दिनों के आगामी रिमाइंडर दिखाएं</item>
+    </plurals>
     <string name="widget_world_clock_locations">स्थान</string>
     <string name="widget_world_clock_add_location">स्थान जोड़ें</string>
     <string name="widget_world_clock_search_hint">देश या समय क्षेत्र खोजें</string>
@@ -1228,6 +1233,12 @@
     <string name="widgets_picker_title">विजेट जोड़ें</string>
     <string name="widgets_picker_widget_count">%1$d विजेट्स</string>
     <string name="widgets_picker_widget_grid_size">%1$d x %2$d</string>
+    <string name="widget_add_to_stack">स्टैक में जोड़ें</string>
+    <string name="widget_stack_picker_empty">इस आकार में कोई विजेट फ़िट नहीं होता।</string>
+    <string name="widget_stack_picker_subtitle">इस स्टैक में फ़िट हो सकने वाले विजेट</string>
+    <string name="widget_reorder_stack">स्टैक का क्रम बदलें</string>
+    <string name="widget_reorder_stack_info">क्रम बदलने के लिए खींचें। सबसे ऊपर वाला विजेट पहले दिखता है।</string>
+    <string name="widget_stack_page_indicator">पेज %1$d / %2$d</string>
 
     <!-- ============================================================================
          Permissions &amp; Onboarding

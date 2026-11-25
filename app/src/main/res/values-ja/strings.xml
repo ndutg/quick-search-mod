@@ -506,8 +506,6 @@
     <string name="error_whatsapp_video_call_missing_data">WhatsAppビデオ通話を開始できません - 連絡先データが不足しています</string>
     <string name="error_whatsapp_video_call_unavailable">WhatsAppビデオ通話を利用できません</string>
     <string name="settings_call_permission_title">電話</string>
-    <string name="permissions_background_usage_title">バックグラウンドでの使用を許可</string>
-    <string name="permissions_background_usage_desc">アプリの起動を高速化するため、バックグラウンドでの使用を許可します。</string>
     <string name="settings_calls_texts_title">通話とSMS</string>
     <string name="settings_contact_first_button_title">1つ目のボタン</string>
     <string name="settings_contact_second_button_title">2つ目のボタン</string>
@@ -747,7 +745,7 @@
     <string name="settings_compact_layout_title">コンパクトレイアウト</string>
     <string name="settings_compact_layout_desc">ホームと検索をカードなしのレイアウトにして、画面により多くの内容を表示します</string>
     <string name="settings_cache_cleared_toast">キャッシュを消去しました。アプリインデックスを再構築中…</string>
-    <string name="settings_circular_app_icons_desc">アプリアイコンを円形に統一する</string>
+    <string name="settings_circular_app_icons_desc">アプリアイコンの角の丸みを変更</string>
     <string name="settings_circular_app_icons_title">円形アプリアイコン</string>
     <string name="settings_compact_rows_one_row">1行</string>
     <string name="settings_compact_rows_two_rows">2行</string>
@@ -1192,6 +1190,12 @@ www.google.com/search?q={{query}}</string>
     <string name="widget_countdown_format_progress">進捗 %</string>
     <string name="widget_countdown_progress_hint">日付を設定してから経過した時間の割合を表示します。</string>
     <string name="widget_world_clock_widget_title">世界時計ウィジェット</string>
+    <string name="widget_reminders_widget_title">リマインダーウィジェット</string>
+    <string name="widget_reminders_empty">今後のリマインダーはありません</string>
+    <string name="widget_reminders_show_today_tomorrow">今日と明日のリマインダーを表示</string>
+    <plurals name="widget_reminders_show_next_days">
+        <item quantity="other">今後%d日間のリマインダーを表示</item>
+    </plurals>
     <string name="widget_world_clock_locations">地域</string>
     <string name="widget_world_clock_add_location">地域を追加</string>
     <string name="widget_world_clock_search_hint">国または時間帯を検索</string>
@@ -1237,6 +1241,12 @@ www.google.com/search?q={{query}}</string>
     <string name="widgets_picker_title">ウィジェットを追加</string>
     <string name="widgets_picker_widget_count">%1$d個のウィジェット</string>
     <string name="widgets_picker_widget_grid_size">%1$d x %2$d</string>
+    <string name="widget_add_to_stack">スタックに追加</string>
+    <string name="widget_stack_picker_empty">このサイズに収まるウィジェットはありません。</string>
+    <string name="widget_stack_picker_subtitle">このスタックに収まるウィジェット</string>
+    <string name="widget_reorder_stack">スタックを並べ替え</string>
+    <string name="widget_reorder_stack_info">ドラッグして並べ替えます。一番上のウィジェットが最初に表示されます。</string>
+    <string name="widget_stack_page_indicator">%2$d ページ中 %1$d ページ目</string>
 
     <!-- ============================================================================
          Permissions &amp; Onboarding

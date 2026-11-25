@@ -20,6 +20,7 @@ import com.tk.quicksearch.app.navigation.detectPageSwipe
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -68,12 +69,12 @@ import androidx.core.os.bundleOf
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.compose.ui.platform.LocalView
 import com.tk.quicksearch.R
+import com.tk.quicksearch.search.searchScreen.searchScreenLayout.glance.rememberResumeRefreshKey
 import com.tk.quicksearch.shared.util.hapticGestureThreshold
 import com.tk.quicksearch.app.navigation.PageBackHandler
 import com.tk.quicksearch.search.core.AppTheme
 import com.tk.quicksearch.search.core.BackgroundSource
 import com.tk.quicksearch.search.core.SearchUiState
-import com.tk.quicksearch.search.data.preferences.NotesPreferences
 import com.tk.quicksearch.search.searchScreen.LocalSharedPageWallpaper
 import com.tk.quicksearch.search.searchScreen.searchRoute.SearchScreenWallpaperLogic
 import com.tk.quicksearch.settings.shared.SettingsScreenBackground
@@ -164,7 +165,6 @@ internal fun WidgetsPanelScreen(
     val pageSettled = LocalRootPageSettled.current
     val appWidgetManager = remember(appContext) { AppWidgetManager.getInstance(appContext) }
     val preferences = remember(appContext) { WidgetsPanelPreferences(appContext) }
-    val notesPreferences = remember(appContext) { NotesPreferences(appContext) }
     val sharedWallpaper = LocalSharedPageWallpaper.current
     val backdropDrawnByHost = sharedWallpaper != null
     val wallpaperState = sharedWallpaper ?: SearchScreenWallpaperLogic(
@@ -182,13 +182,17 @@ internal fun WidgetsPanelScreen(
     val effectiveBackgroundSource =
         if (wallpaperState.usesMonoThemeFallback) BackgroundSource.THEME else uiState.backgroundSource
     val effectiveAppTheme = if (wallpaperState.usesMonoThemeFallback) AppTheme.MONOCHROME else uiState.appTheme
-    var isQuickNoteEnabled by remember(appContext) { mutableStateOf(false) }
     var widgets by remember(appContext) { mutableStateOf(emptyList<PanelWidgetInfo>()) }
-    var quickNoteWidget by remember(appContext) { mutableStateOf<PanelWidgetInfo?>(null) }
     var isQuickNoteFocused by remember { mutableStateOf(false) }
     var editingWidgetId by remember { mutableStateOf<Int?>(null) }
     var layoutLocked by remember(appContext) { mutableStateOf<Boolean?>(null) }
     var showPicker by rememberSaveable { mutableStateOf(false) }
+    var reorderStackOwnerId by rememberSaveable { mutableStateOf<Int?>(null) }
+    // Set while the picker adds a page to this stack rather than a new widget to the panel.
+    // Saved so a bind or configure screen that recreates the activity still adds to the stack.
+    var stackTarget by rememberSaveable(stateSaver = WidgetStackTargetSaver) {
+        mutableStateOf<Pair<Int, WidgetStackFit>?>(null)
+    }
     // An app-widget backup can restore Quick Search's layout metadata, but Android does not
     // restore the corresponding system-owned app-widget IDs. Keep those obsolete records from
     // reserving invisible cells ahead of widgets added on this device.
@@ -225,29 +229,42 @@ internal fun WidgetsPanelScreen(
 
     fun persistPanelItems(next: List<PanelWidgetInfo>) {
         if (layoutLocked != false) return
-        next.firstOrNull { it.isQuickNoteWidget() }?.let { quickNote ->
-            quickNoteWidget = quickNote
-            preferences.setQuickNoteWidget(quickNote)
-        }
         // Home-only widgets are intentionally absent from the panel grid, so preserve them while
         // saving a panel reorder, resize, or other layout update.
-        persistWidgets(
-            widgets.filterNot { it.isInPanel } + next.filterNot { it.isQuickNoteWidget() },
-        )
+        persistWidgets(widgets.filterNot { it.isInPanel } + next)
+    }
+
+    fun removeStackPage(
+        widget: PanelWidgetInfo,
+        pageId: Int,
+    ) {
+        when {
+            isQuickNotePage(pageId) -> Unit
+            // Only the first page can also be on Home.
+            pageId != widget.appWidgetId || widget.home == null -> appWidgetHost.deleteAppWidgetId(pageId)
+            else -> appWidgetHost.removeSnapshot(pageId)
+        }
+        persistWidgets(preferences.removeStackPage(widget.appWidgetId, pageId))
     }
 
     val requestAddWidget =
         rememberWidgetAddFlow(appWidgetHost) { appWidgetId, provider, columnSpan, rowSpan ->
+            val ownerId = stackTarget?.first
             widgets =
-                preferences.addWidget(
-                    appWidgetId = appWidgetId,
-                    provider = provider.provider,
-                    columnSpan = columnSpan,
-                    rowSpan = rowSpan,
-                )
+                if (ownerId != null && widgets.any { it.appWidgetId == ownerId }) {
+                    preferences.addToStack(ownerId, appWidgetId, provider.provider)
+                } else {
+                    preferences.addWidget(
+                        appWidgetId = appWidgetId,
+                        provider = provider.provider,
+                        columnSpan = columnSpan,
+                        rowSpan = rowSpan,
+                    )
+                }
             HomePinnedWidgetsStore.publish(widgets)
             editingWidgetId = null
             showPicker = false
+            stackTarget = null
         }
 
     val configureExistingLauncher =
@@ -264,6 +281,13 @@ internal fun WidgetsPanelScreen(
         }
     }
 
+    // Flash stacks' page indicators each time the panel comes into view, so stacks are noticeable.
+    val resumeKey = rememberResumeRefreshKey()
+    var stackIndicatorRevealKey by remember { mutableIntStateOf(0) }
+    LaunchedEffect(pageSettled, resumeKey) {
+        if (pageSettled) stackIndicatorRevealKey++
+    }
+
     LaunchedEffect(appWidgetHost, pageSettled) {
         if (!pageSettled || showHostedWidgets) return@LaunchedEffect
         // Also handle direct entries from the shortcut or overlay, which bypass Home's IME hide.
@@ -275,20 +299,16 @@ internal fun WidgetsPanelScreen(
 
     LaunchedEffect(appWidgetHost) {
         layoutLocked = withContext(Dispatchers.IO) { preferences.isLayoutLocked() }
-        val (storedWidgets, storedQuickNote, quickNoteEnabled) =
-            withContext(Dispatchers.IO) {
-                Triple(preferences.getWidgets(), preferences.getQuickNoteWidget(), notesPreferences.isQuickNoteEnabled())
-            }
+        val storedWidgets = withContext(Dispatchers.IO) { preferences.getWidgets() }
         // A restored ActivityResult can add a widget while this snapshot is loading.
         if (widgets.isEmpty()) widgets = storedWidgets
-        val storedIds = storedWidgets.mapTo(HashSet()) { it.appWidgetId }
+        // The Quick Note is not a hosted widget, so it has no provider to validate.
+        val storedIds = storedWidgets.flatMapTo(HashSet()) { it.pageIds }.filterNotTo(HashSet(), ::isQuickNotePage)
         val invalidIds = storedIds - appWidgetHost.preloadProviderInfo(storedIds)
         if (invalidIds.isNotEmpty()) {
             invalidIds.forEach(appWidgetHost::removeSnapshot)
-            persistWidgets(widgets.filterNot { it.appWidgetId in invalidIds })
+            persistWidgets(widgets.dropUnboundPages(invalidIds))
         }
-        quickNoteWidget = storedQuickNote
-        isQuickNoteEnabled = quickNoteEnabled
         restoredWidgetIdsValidated = true
     }
 
@@ -315,9 +335,19 @@ internal fun WidgetsPanelScreen(
     }
 
     // Leaving the panel previews Search sliding in; closing the editor or picker stays a plain back.
-    PageBackHandler(enabled = editingWidgetId == null && !showPicker, onBack = onNavigateToSearch)
-    BackHandler(enabled = editingWidgetId != null || showPicker) {
-        if (editingWidgetId != null) editingWidgetId = null else showPicker = false
+    PageBackHandler(
+        enabled = editingWidgetId == null && !showPicker && reorderStackOwnerId == null,
+        onBack = onNavigateToSearch,
+    )
+    BackHandler(enabled = editingWidgetId != null || showPicker || reorderStackOwnerId != null) {
+        if (reorderStackOwnerId != null) {
+            reorderStackOwnerId = null
+        } else if (showPicker) {
+            showPicker = false
+            stackTarget = null
+        } else {
+            editingWidgetId = null
+        }
     }
 
     val pageSwipeController = LocalPageSwipeController.current
@@ -395,6 +425,7 @@ internal fun WidgetsPanelScreen(
                     onAddWidget = {
                         if (layoutLocked == false) {
                             focusManager.clearFocus(force = true)
+                            stackTarget = null
                             showPicker = true
                         }
                     },
@@ -405,11 +436,14 @@ internal fun WidgetsPanelScreen(
                 )
 
                 val panelWidgets = widgets.filter { it.isInPanel }
-                val isQuickNoteSolo = isQuickNoteEnabled && panelWidgets.isEmpty()
-                if (isQuickNoteSolo) {
-                    Box(
+                val soloQuickNote =
+                    panelWidgets.singleOrNull()?.takeIf { it.isQuickNoteWidget() && it.stack.isEmpty() }
+                if (soloQuickNote != null) {
+                    BoxWithConstraints(
                         modifier = Modifier.weight(1f).fillMaxWidth(),
                     ) {
+                        val soloCellWidth =
+                            (maxWidth - WidgetPanelGridGap * (WIDGET_PANEL_GRID_COLUMNS - 1)) / WIDGET_PANEL_GRID_COLUMNS
                         // Wrap the card so the edit outline matches its height rather than the
                         // full remaining panel height.
                         Box(modifier = Modifier.fillMaxWidth()) {
@@ -430,9 +464,22 @@ internal fun WidgetsPanelScreen(
                             if (editingWidgetId == QUICK_NOTE_PANEL_WIDGET_ID) {
                                 QuickNoteEditOverlay(
                                     onRemove = {
-                                        notesPreferences.setQuickNoteEnabled(false)
-                                        isQuickNoteEnabled = false
+                                        persistWidgets(
+                                            preferences.removeStackPage(QUICK_NOTE_PANEL_WIDGET_ID, QUICK_NOTE_PANEL_WIDGET_ID),
+                                        )
                                         editingWidgetId = null
+                                    },
+                                    onAddToStack = {
+                                        focusManager.clearFocus(force = true)
+                                        stackTarget =
+                                            QUICK_NOTE_PANEL_WIDGET_ID to
+                                            WidgetStackFit(
+                                                columnSpan = soloQuickNote.columnSpan ?: WIDGET_PANEL_GRID_COLUMNS,
+                                                rowSpan = soloQuickNote.rowSpan ?: WIDGET_PANEL_DEFAULT_ROW_SPAN,
+                                                cellWidthDp = soloCellWidth.value,
+                                            )
+                                        editingWidgetId = null
+                                        showPicker = true
                                     },
                                 )
                             }
@@ -489,11 +536,7 @@ internal fun WidgetsPanelScreen(
                                 ),
                         verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingLarge),
                     ) {
-                        val panelItems =
-                            buildList {
-                                if (isQuickNoteEnabled) quickNoteWidget?.let { add(it) }
-                                addAll(panelWidgets)
-                            }
+                        val panelItems = panelWidgets
                         if (panelItems.isNotEmpty() && restoredWidgetIdsValidated) {
                             WidgetPanelGrid(
                                 widgets = panelItems,
@@ -526,20 +569,19 @@ internal fun WidgetsPanelScreen(
                                     }
                                 },
                                 onQuickNoteFocusChanged = { isQuickNoteFocused = it },
-                                onRemoveWidget = { widget ->
-                                    if (widget.isQuickNoteWidget()) {
-                                        notesPreferences.setQuickNoteEnabled(false)
-                                        isQuickNoteEnabled = false
-                                    } else {
-                                        if (widget.home == null) {
-                                            appWidgetHost.deleteAppWidgetId(widget.appWidgetId)
-                                        } else {
-                                            appWidgetHost.removeSnapshot(widget.appWidgetId)
-                                        }
-                                        persistWidgets(
-                                            preferences.removeWidget(widget.appWidgetId),
-                                        )
-                                    }
+                                onRemoveWidget = { widget, pageId ->
+                                    removeStackPage(widget, pageId)
+                                    editingWidgetId = null
+                                },
+                                onAddToStack = { widget, fit ->
+                                    focusManager.clearFocus(force = true)
+                                    stackTarget = widget.appWidgetId to fit
+                                    editingWidgetId = null
+                                    showPicker = true
+                                },
+                                onReorderStack = { widget ->
+                                    focusManager.clearFocus(force = true)
+                                    reorderStackOwnerId = widget.appWidgetId
                                     editingWidgetId = null
                                 },
                                 onConfigureWidget = { _, configureIntent ->
@@ -548,6 +590,7 @@ internal fun WidgetsPanelScreen(
                                 },
                                 onPinWidgetToHome = ::pinWidgetToHome,
                                 modifier = Modifier.fillMaxWidth(),
+                                stackIndicatorRevealKey = stackIndicatorRevealKey,
                             )
                         } else {
                             Spacer(modifier = Modifier.height(DesignTokens.SpacingSmall))
@@ -561,15 +604,61 @@ internal fun WidgetsPanelScreen(
             if (showPicker && restoredWidgetIdsValidated && layoutLocked == false) {
                 WidgetPickerSheet(
                     appWidgetManager = appWidgetManager,
-                    showQuickNote = !isQuickNoteEnabled,
-                    onDismiss = { showPicker = false },
-                    onAddQuickNote = {
-                        notesPreferences.setQuickNoteEnabled(true)
-                        isQuickNoteEnabled = true
+                    // Home shows only a stack's first page, so the Quick Note stays out of the
+                    // stack of a widget that is also on Home.
+                    showQuickNote =
+                        !widgets.containsQuickNote() &&
+                            stackTarget?.let { (ownerId, fit) ->
+                                fit.columnSpan >= WIDGET_PANEL_GRID_COLUMNS &&
+                                    widgets.firstOrNull { it.appWidgetId == ownerId }?.home == null
+                            } != false,
+                    stackFit = stackTarget?.second,
+                    onDismiss = {
                         showPicker = false
+                        stackTarget = null
+                    },
+                    onAddQuickNote = {
+                        val ownerId = stackTarget?.first
+                        persistWidgets(
+                            if (ownerId != null && widgets.any { it.appWidgetId == ownerId }) {
+                                preferences.addQuickNoteToStack(ownerId)
+                            } else {
+                                preferences.addQuickNote()
+                            },
+                        )
+                        editingWidgetId = null
+                        showPicker = false
+                        stackTarget = null
                     },
                     onSelectWidget = requestAddWidget,
                 )
+            }
+
+            val reorderOwner = reorderStackOwnerId?.let { id -> widgets.firstOrNull { it.appWidgetId == id } }
+            if (reorderOwner != null && reorderOwner.stack.isNotEmpty()) {
+                WidgetStackReorderSheet(
+                    pageIds = reorderOwner.pageIds,
+                    appWidgetHost = appWidgetHost,
+                    onReorder = { ordered ->
+                        persistWidgets(preferences.reorderStack(reorderOwner.appWidgetId, ordered))
+                        reorderStackOwnerId = ordered.first()
+                    },
+                    onRemove = { pageId ->
+                        removeStackPage(reorderOwner, pageId)
+                        // Removing the first page hands the stack to the next one. A stack left with
+                        // one page is a plain widget, which closes the drawer below.
+                        reorderStackOwnerId =
+                            reorderOwner.pageIds.firstOrNull { it != pageId }
+                                ?.let { remaining -> widgets.stackOwnerOf(remaining)?.appWidgetId }
+                    },
+                    onDismiss = { reorderStackOwnerId = null },
+                )
+            }
+            // The stack was removed or broken up while the sheet was open.
+            LaunchedEffect(reorderOwner?.stack?.isNotEmpty(), restoredWidgetIdsValidated) {
+                if (reorderStackOwnerId != null && restoredWidgetIdsValidated && reorderOwner?.stack.isNullOrEmpty()) {
+                    reorderStackOwnerId = null
+                }
             }
         }
         }
