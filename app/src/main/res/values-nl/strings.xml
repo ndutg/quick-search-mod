@@ -520,8 +520,6 @@
     <string name="error_whatsapp_video_call_missing_data">Kan WhatsApp-videogesprek niet plaatsen – contactgegevens ontbreken</string>
     <string name="error_whatsapp_video_call_unavailable">WhatsApp is niet beschikbaar voor videogesprekken</string>
     <string name="settings_call_permission_title">Telefoon</string>
-    <string name="permissions_background_usage_title">Achtergrondgebruik toestaan</string>
-    <string name="permissions_background_usage_desc">Achtergrondgebruik toestaan voor sneller opstarten van de app.</string>
     <string name="settings_calls_texts_title">Oproepen &amp; berichten</string>
     <string name="settings_contact_first_button_title">Eerste knop</string>
     <string name="settings_contact_second_button_title">Tweede knop</string>
@@ -774,7 +772,7 @@
     <string name="settings_compact_layout_title">Compacte weergave</string>
     <string name="settings_compact_layout_desc">Indeling zonder kaarten in Start en Zoeken zodat er meer inhoud op het scherm past</string>
     <string name="settings_cache_cleared_toast">Cache gewist. App-index wordt opnieuw opgebouwd…</string>
-    <string name="settings_circular_app_icons_desc">Ronde app-iconen forceren</string>
+    <string name="settings_circular_app_icons_desc">Hoekradius van app-iconen wijzigen</string>
     <string name="settings_circular_app_icons_title">Ronde app-iconen</string>
     <string name="settings_compact_rows_one_row">Eén rij</string>
     <string name="settings_compact_rows_two_rows">Twee rijen</string>
@@ -1229,6 +1227,13 @@ www.google.com/search?q={{query}}</string>
     <string name="widget_countdown_format_progress">Voortgang %</string>
     <string name="widget_countdown_progress_hint">Toont hoeveel van de tijd sinds je de datum hebt ingesteld is verstreken.</string>
     <string name="widget_world_clock_widget_title">Wereldklok-widget</string>
+    <string name="widget_reminders_widget_title">Herinneringenwidget</string>
+    <string name="widget_reminders_empty">Geen komende herinneringen</string>
+    <string name="widget_reminders_show_today_tomorrow">Toon komende herinneringen voor vandaag en morgen</string>
+    <plurals name="widget_reminders_show_next_days">
+        <item quantity="one">Toon komende herinneringen voor de volgende %d dag</item>
+        <item quantity="other">Toon komende herinneringen voor de komende %d dagen</item>
+    </plurals>
     <string name="widget_world_clock_locations">Locaties</string>
     <string name="widget_world_clock_add_location">Locatie toevoegen</string>
     <string name="widget_world_clock_search_hint">Zoek land of tijdzone</string>
@@ -1274,6 +1279,12 @@ www.google.com/search?q={{query}}</string>
     <string name="widgets_picker_title">Widget toevoegen</string>
     <string name="widgets_picker_widget_count">%1$d widgets</string>
     <string name="widgets_picker_widget_grid_size">%1$d × %2$d</string>
+    <string name="widget_add_to_stack">Aan stapel toevoegen</string>
+    <string name="widget_stack_picker_empty">Er passen geen widgets in dit formaat.</string>
+    <string name="widget_stack_picker_subtitle">Widgets die in deze stapel passen</string>
+    <string name="widget_reorder_stack">Stapel herschikken</string>
+    <string name="widget_reorder_stack_info">Sleep om te herschikken. De bovenste widget wordt als eerste getoond.</string>
+    <string name="widget_stack_page_indicator">Pagina %1$d van %2$d</string>
 
     
     <!-- ============================================================================

@@ -500,8 +500,6 @@
     <string name="error_whatsapp_video_call_missing_data">无法进行 WhatsApp 视频通话 - 缺少联系人数据</string>
     <string name="error_whatsapp_video_call_unavailable">WhatsApp 目前不支持视频通话</string>
     <string name="settings_call_permission_title">电话</string>
-    <string name="permissions_background_usage_title">允许后台运行</string>
-    <string name="permissions_background_usage_desc">允许后台运行，以更快启动应用。</string>
     <string name="settings_calls_texts_title">通话与短信</string>
     <string name="settings_contact_first_button_title">第一个按钮</string>
     <string name="settings_contact_second_button_title">第二个按钮</string>
@@ -729,7 +727,7 @@
     <string name="settings_compact_layout_title">紧凑布局</string>
     <string name="settings_compact_layout_desc">主屏幕和搜索采用无卡片布局，让屏幕显示更多内容</string>
     <string name="settings_cache_cleared_toast">缓存已清除。正在重新构建应用索引\u2026</string>
-    <string name="settings_circular_app_icons_desc">强制将应用图标转换为圆形</string>
+    <string name="settings_circular_app_icons_desc">更改应用图标的圆角半径</string>
     <string name="settings_circular_app_icons_title">圆形应用图标</string>
     <string name="settings_compact_rows_one_row">单行</string>
     <string name="settings_compact_rows_two_rows">双行</string>
@@ -1169,6 +1167,12 @@
     <string name="widget_countdown_format_progress">进度 %</string>
     <string name="widget_countdown_progress_hint">显示自设定日期以来已过去的时间比例。</string>
     <string name="widget_world_clock_widget_title">世界时钟小部件</string>
+    <string name="widget_reminders_widget_title">提醒小部件</string>
+    <string name="widget_reminders_empty">没有即将到来的提醒</string>
+    <string name="widget_reminders_show_today_tomorrow">显示今天和明天即将到来的提醒</string>
+    <plurals name="widget_reminders_show_next_days">
+        <item quantity="other">显示接下来%d天即将到来的提醒</item>
+    </plurals>
     <string name="widget_world_clock_locations">地点</string>
     <string name="widget_world_clock_add_location">添加地点</string>
     <string name="widget_world_clock_search_hint">搜索国家/地区或时区</string>
@@ -1214,6 +1218,12 @@
     <string name="widgets_picker_title">添加小部件</string>
     <string name="widgets_picker_widget_count">%1$d 个小部件</string>
     <string name="widgets_picker_widget_grid_size">%1$d x %2$d</string>
+    <string name="widget_add_to_stack">添加到堆叠</string>
+    <string name="widget_stack_picker_empty">没有适合此尺寸的小组件。</string>
+    <string name="widget_stack_picker_subtitle">可放入此堆叠的小组件</string>
+    <string name="widget_reorder_stack">重新排列堆叠</string>
+    <string name="widget_reorder_stack_info">拖动以重新排序。最上面的小组件会最先显示。</string>
+    <string name="widget_stack_page_indicator">第 %1$d 页，共 %2$d 页</string>
 
     <!-- ============================================================================
          Permissions &amp; Onboarding

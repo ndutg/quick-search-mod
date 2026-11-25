@@ -501,8 +501,6 @@
 <string name="error_whatsapp_video_call_missing_data">WhatsApp görüntülü araması yapılamıyor - kişi verisi eksik</string>
 <string name="error_whatsapp_video_call_unavailable">WhatsApp görüntülü aramalar için kullanılamıyor</string>
 <string name="settings_call_permission_title">Telefon</string>
-<string name="permissions_background_usage_title">Arka Planda Kullanıma İzin Ver</string>
-<string name="permissions_background_usage_desc">Daha hızlı uygulama başlatma için arka plan kullanımına izin verin.</string>
 <string name="settings_calls_texts_title">Aramalar &amp; Mesajlar</string>
 <string name="settings_contact_first_button_title">Birinci Düğme</string>
 <string name="settings_contact_second_button_title">İkinci Düğme</string>
@@ -740,7 +738,7 @@
 <string name="settings_compact_layout_title">Kompakt düzen</string>
 <string name="settings_compact_layout_desc">Ekrana daha fazla içerik sığması için Ana ekran ve Aramada kartsız düzen</string>
 <string name="settings_cache_cleared_toast">Önbellek temizlendi. Uygulama dizini yeniden oluşturuluyor\u2026</string>
-<string name="settings_circular_app_icons_desc">Uygulama simgelerini yuvarlak olmaya zorla</string>
+<string name="settings_circular_app_icons_desc">Uygulama simgelerinin köşe yarıçapını değiştir</string>
 <string name="settings_circular_app_icons_title">Yuvarlak uygulama simgeleri</string>
 <string name="settings_compact_rows_one_row">Tek satır</string>
 <string name="settings_compact_rows_two_rows">İki satır</string>
@@ -1182,6 +1180,13 @@
 <string name="widget_countdown_format_progress">İlerleme %</string>
 <string name="widget_countdown_progress_hint">Tarihi belirlediğinizden bu yana geçen sürenin oranını gösterir.</string>
 <string name="widget_world_clock_widget_title">Dünya Saati Widget\'ı</string>
+<string name="widget_reminders_widget_title">Hatırlatıcılar Widget\'ı</string>
+<string name="widget_reminders_empty">Yaklaşan hatırlatıcı yok</string>
+<string name="widget_reminders_show_today_tomorrow">Bugün ve yarın için yaklaşan anımsatıcıları göster</string>
+<plurals name="widget_reminders_show_next_days">
+    <item quantity="one">Sonraki %d gün için yaklaşan anımsatıcıları göster</item>
+    <item quantity="other">Sonraki %d gün için yaklaşan anımsatıcıları göster</item>
+</plurals>
 <string name="widget_world_clock_locations">Konumlar</string>
 <string name="widget_world_clock_add_location">Konum ekle</string>
 <string name="widget_world_clock_search_hint">Ülke veya saat dilimi ara</string>
@@ -1227,6 +1232,12 @@
 <string name="widgets_picker_title">Widget ekle</string>
 <string name="widgets_picker_widget_count">%1$d widget</string>
 <string name="widgets_picker_widget_grid_size">%1$d x %2$d</string>
+<string name="widget_add_to_stack">Yığına ekle</string>
+<string name="widget_stack_picker_empty">Bu boyuta uyan widget yok.</string>
+<string name="widget_stack_picker_subtitle">Bu yığına sığabilecek widget\'lar</string>
+<string name="widget_reorder_stack">Yığını yeniden sırala</string>
+<string name="widget_reorder_stack_info">Yeniden sıralamak için sürükleyin. En üstteki widget önce gösterilir.</string>
+<string name="widget_stack_page_indicator">Sayfa %1$d / %2$d</string>
 
 <!-- ============================================================================
      Permissions &amp; Onboarding

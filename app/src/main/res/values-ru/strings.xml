@@ -506,8 +506,6 @@
 <string name="error_whatsapp_video_call_missing_data">Не удалось совершить видеозвонок в WhatsApp — отсутствуют данные контакта</string>
 <string name="error_whatsapp_video_call_unavailable">WhatsApp недоступен для видеозвонков</string>
 <string name="settings_call_permission_title">Телефон</string>
-<string name="permissions_background_usage_title">Разрешить работу в фоновом режиме</string>
-<string name="permissions_background_usage_desc">Разрешите работу в фоновом режиме для более быстрого запуска приложений.</string>
 <string name="settings_calls_texts_title">Звонки и сообщения</string>
 <string name="settings_contact_first_button_title">Первая кнопка</string>
 <string name="settings_contact_second_button_title">Вторая кнопка</string>
@@ -765,7 +763,7 @@
 <string name="settings_compact_layout_title">Компактный вид</string>
 <string name="settings_compact_layout_desc">Макет без карточек на главном экране и в поиске, чтобы на экране помещалось больше контента</string>
 <string name="settings_cache_cleared_toast">Кэш очищен. Перестройка индекса приложений\u2026</string>
-<string name="settings_circular_app_icons_desc">Принудительно делать значки приложений круглыми</string>
+<string name="settings_circular_app_icons_desc">Изменить радиус углов значков приложений</string>
 <string name="settings_circular_app_icons_title">Круглые значки приложений</string>
 <string name="settings_compact_rows_one_row">Одна строка</string>
 <string name="settings_compact_rows_two_rows">Две строки</string>
@@ -1211,6 +1209,15 @@
 <string name="widget_countdown_format_progress">Прогресс %</string>
 <string name="widget_countdown_progress_hint">Показывает, какая часть времени прошла с момента выбора даты.</string>
 <string name="widget_world_clock_widget_title">Виджет мировых часов</string>
+<string name="widget_reminders_widget_title">Виджет напоминаний</string>
+<string name="widget_reminders_empty">Нет предстоящих напоминаний</string>
+<string name="widget_reminders_show_today_tomorrow">Показывать предстоящие напоминания на сегодня и завтра</string>
+<plurals name="widget_reminders_show_next_days">
+    <item quantity="one">Показывать предстоящие напоминания на следующий %d день</item>
+    <item quantity="few">Показывать предстоящие напоминания на следующие %d дня</item>
+    <item quantity="many">Показывать предстоящие напоминания на следующие %d дней</item>
+    <item quantity="other">Показывать предстоящие напоминания на следующие %d дня</item>
+</plurals>
 <string name="widget_world_clock_locations">Места</string>
 <string name="widget_world_clock_add_location">Добавить место</string>
 <string name="widget_world_clock_search_hint">Поиск страны или часового пояса</string>
@@ -1256,6 +1263,12 @@
 <string name="widgets_picker_title">Добавить виджет</string>
 <string name="widgets_picker_widget_count">%1$d виджетов</string>
 <string name="widgets_picker_widget_grid_size">%1$d x %2$d</string>
+<string name="widget_add_to_stack">Добавить в стопку</string>
+<string name="widget_stack_picker_empty">Нет виджетов такого размера.</string>
+<string name="widget_stack_picker_subtitle">Виджеты, которые поместятся в эту стопку</string>
+<string name="widget_reorder_stack">Изменить порядок стопки</string>
+<string name="widget_reorder_stack_info">Перетащите, чтобы изменить порядок. Верхний виджет показывается первым.</string>
+<string name="widget_stack_page_indicator">Страница %1$d из %2$d</string>
 
 <!-- ============================================================================
      Permissions &amp; Onboarding

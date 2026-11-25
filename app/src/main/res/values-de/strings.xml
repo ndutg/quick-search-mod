@@ -502,8 +502,6 @@
     <string name="error_whatsapp_video_call_missing_data">WhatsApp-Videoanruf nicht möglich – Kontaktdaten fehlen</string>
     <string name="error_whatsapp_video_call_unavailable">WhatsApp für Videoanrufe nicht verfügbar</string>
     <string name="settings_call_permission_title">Telefon</string>
-    <string name="permissions_background_usage_title">Hintergrundnutzung zulassen</string>
-    <string name="permissions_background_usage_desc">Hintergrundnutzung für einen schnelleren App-Start zulassen.</string>
     <string name="settings_calls_texts_title">Anrufe &amp; Nachrichten</string>
     <string name="settings_contact_first_button_title">Erste Schaltfläche</string>
     <string name="settings_contact_second_button_title">Zweite Schaltfläche</string>
@@ -741,7 +739,7 @@
     <string name="settings_compact_layout_title">Kompaktes Layout</string>
     <string name="settings_compact_layout_desc">Kartenloses Layout auf Startseite und in der Suche, damit mehr Inhalt auf den Bildschirm passt</string>
     <string name="settings_cache_cleared_toast">Cache geleert. App-Index wird neu aufgebaut…</string>
-    <string name="settings_circular_app_icons_desc">App-Symbole als Kreise erzwingen</string>
+    <string name="settings_circular_app_icons_desc">Eckenradius der App-Symbole ändern</string>
     <string name="settings_circular_app_icons_title">Runde App-Symbole</string>
     <string name="settings_compact_rows_one_row">Eine Reihe</string>
     <string name="settings_compact_rows_two_rows">Zwei Reihen</string>
@@ -1183,6 +1181,13 @@
     <string name="widget_countdown_format_progress">Fortschritt %</string>
     <string name="widget_countdown_progress_hint">Zeigt, wie viel der Zeit seit dem Festlegen des Datums vergangen ist.</string>
     <string name="widget_world_clock_widget_title">Weltuhr-Widget</string>
+    <string name="widget_reminders_widget_title">Erinnerungs-Widget</string>
+    <string name="widget_reminders_empty">Keine anstehenden Erinnerungen</string>
+    <string name="widget_reminders_show_today_tomorrow">Anstehende Erinnerungen für heute und morgen anzeigen</string>
+    <plurals name="widget_reminders_show_next_days">
+        <item quantity="one">Anstehende Erinnerungen für den nächsten %d Tag anzeigen</item>
+        <item quantity="other">Anstehende Erinnerungen für die nächsten %d Tage anzeigen</item>
+    </plurals>
     <string name="widget_world_clock_locations">Orte</string>
     <string name="widget_world_clock_add_location">Ort hinzufügen</string>
     <string name="widget_world_clock_search_hint">Land oder Zeitzone suchen</string>
@@ -1228,6 +1233,12 @@
     <string name="widgets_picker_title">Widget hinzufügen</string>
     <string name="widgets_picker_widget_count">%1$d Widgets</string>
     <string name="widgets_picker_widget_grid_size">%1$d × %2$d</string>
+    <string name="widget_add_to_stack">Zum Stapel hinzufügen</string>
+    <string name="widget_stack_picker_empty">Keine Widgets passen in diese Größe.</string>
+    <string name="widget_stack_picker_subtitle">Widgets, die in diesen Stapel passen</string>
+    <string name="widget_reorder_stack">Stapel neu anordnen</string>
+    <string name="widget_reorder_stack_info">Zum Neuanordnen ziehen. Das oberste Widget wird zuerst angezeigt.</string>
+    <string name="widget_stack_page_indicator">Seite %1$d von %2$d</string>
 
     <!-- ============================================================================
          Permissions &amp; Onboarding

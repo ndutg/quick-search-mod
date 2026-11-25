@@ -511,8 +511,6 @@
     <string name="error_whatsapp_video_call_missing_data">تعذر إجراء مكالمة فيديو WhatsApp - بيانات جهة الاتصال مفقودة</string>
     <string name="error_whatsapp_video_call_unavailable">مكالمات فيديو WhatsApp غير متاحة</string>
     <string name="settings_call_permission_title">الهاتف</string>
-    <string name="permissions_background_usage_title">السماح بالاستخدام في الخلفية</string>
-    <string name="permissions_background_usage_desc">السماح بالاستخدام في الخلفية لبدء تشغيل التطبيقات بشكل أسرع.</string>
     <string name="settings_calls_texts_title">المكالمات والرسائل النصية</string>
     <string name="settings_contact_first_button_title">الزر الأول</string>
     <string name="settings_contact_second_button_title">الزر الثاني</string>
@@ -790,7 +788,7 @@
     <string name="settings_compact_layout_title">تخطيط مضغوط</string>
     <string name="settings_compact_layout_desc">تخطيط بدون بطاقات في الشاشة الرئيسية والبحث لعرض محتوى أكثر على الشاشة</string>
     <string name="settings_cache_cleared_toast">تم مسح ذاكرة التخزين المؤقت. إعادة إنشاء فهرس التطبيق\u2026</string>
-    <string name="settings_circular_app_icons_desc">فرض أيقونات التطبيقات الدائرية</string>
+    <string name="settings_circular_app_icons_desc">تغيير نصف قطر زوايا أيقونات التطبيقات</string>
     <string name="settings_circular_app_icons_title">أيقونات التطبيقات الدائرية</string>
     <string name="settings_compact_rows_one_row">صف واحد</string>
     <string name="settings_compact_rows_two_rows">صفان</string>
@@ -1240,6 +1238,17 @@
     <string name="widget_countdown_format_progress">التقدّم %</string>
     <string name="widget_countdown_progress_hint">يعرض مقدار ما مضى من الوقت منذ تعيين التاريخ.</string>
     <string name="widget_world_clock_widget_title">أداة الساعة العالمية</string>
+    <string name="widget_reminders_widget_title">أداة التذكيرات</string>
+    <string name="widget_reminders_empty">لا توجد تذكيرات قادمة</string>
+    <string name="widget_reminders_show_today_tomorrow">عرض التذكيرات القادمة لليوم وغدًا</string>
+    <plurals name="widget_reminders_show_next_days">
+        <item quantity="zero">عرض التذكيرات القادمة للـ%d يوم التالية</item>
+        <item quantity="one">عرض التذكيرات القادمة لليوم التالي</item>
+        <item quantity="two">عرض التذكيرات القادمة لليومين التاليين</item>
+        <item quantity="few">عرض التذكيرات القادمة للأيام الـ%d التالية</item>
+        <item quantity="many">عرض التذكيرات القادمة للـ%d يومًا التالية</item>
+        <item quantity="other">عرض التذكيرات القادمة للـ%d يوم التالية</item>
+    </plurals>
     <string name="widget_world_clock_locations">المواقع</string>
     <string name="widget_world_clock_add_location">إضافة موقع</string>
     <string name="widget_world_clock_search_hint">ابحث عن دولة أو منطقة زمنية</string>
@@ -1285,6 +1294,12 @@
     <string name="widgets_picker_title">إضافة عنصر واجهة مستخدم</string>
     <string name="widgets_picker_widget_count">%1$d من عناصر واجهة المستخدم</string>
     <string name="widgets_picker_widget_grid_size">%1$d × %2$d</string>
+    <string name="widget_add_to_stack">إضافة إلى المجموعة</string>
+    <string name="widget_stack_picker_empty">لا توجد أدوات تناسب هذا الحجم.</string>
+    <string name="widget_stack_picker_subtitle">الأدوات التي يمكن أن تتسع في هذه المجموعة</string>
+    <string name="widget_reorder_stack">إعادة ترتيب المجموعة</string>
+    <string name="widget_reorder_stack_info">اسحب لإعادة الترتيب. تظهر الأداة العلوية أولاً.</string>
+    <string name="widget_stack_page_indicator">الصفحة %1$d من %2$d</string>
 
     <!-- ============================================================================
          Permissions &amp; Onboarding
