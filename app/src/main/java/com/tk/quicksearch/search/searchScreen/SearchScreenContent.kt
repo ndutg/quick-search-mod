@@ -61,14 +61,13 @@ import com.tk.quicksearch.tools.setAlarm.SetAlarmHandler
 import com.tk.quicksearch.tools.setAlarm.StartTimerHandler
 import com.tk.quicksearch.reminders.ReminderNaturalLanguageParser
 import com.tk.quicksearch.shared.util.cachedDefaultHomeAppStatus
-import com.tk.quicksearch.shared.util.openNotificationShade
+import androidx.compose.ui.zIndex
 import com.tk.quicksearch.search.data.preferences.SwipeGestureAction
 import com.tk.quicksearch.search.data.preferences.HomeSwipeGestureAction
 import com.tk.quicksearch.search.other.OtherSearchItemRegistry
 import com.tk.quicksearch.search.other.OtherSearchItemId
 import com.tk.quicksearch.search.other.OtherSearchItemActionHandler
 import com.tk.quicksearch.widgets.customButtonsWidget.CustomWidgetButtonAction
-import com.tk.quicksearch.widgets.customButtonsWidget.WidgetActionActivity
 import com.tk.quicksearch.app.startup.StartupTrace
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.Dispatchers
@@ -181,7 +180,6 @@ internal fun SearchScreenContent(
     var delayedOpenKeyboardActionVisible by remember {
         mutableStateOf(returningFromInAppPage && openKeyboardPillMemory.visibleWhenLeft)
     }
-    var hideOpenKeyboardActionInstantly by remember { mutableStateOf(false) }
     var hasSeenStartupKeyboardVisible by
             remember(isOverlayPresentation) { mutableStateOf(false) }
     var hasClosedStartupKeyboardAfterLaunch by
@@ -217,6 +215,8 @@ internal fun SearchScreenContent(
     val isImeVisible by remember(imeInsets, density) {
         derivedStateOf { imeInsets.getBottom(density) > 0 }
     }
+    val isImeTargetVisible by rememberImeTargetVisible()
+    val isImeOpening by rememberImeOpening()
     LaunchedEffect(isImeVisible) {
         if (isImeVisible) {
             StartupTrace.mark("QS.Home.KeyboardVisible")
@@ -318,7 +318,8 @@ internal fun SearchScreenContent(
     val shouldShowOpenKeyboardAction =
             expandedSection == ExpandedSection.NONE &&
                     !showBottomSearchBar &&
-                    !isImeVisible &&
+                    // An already visible pill stays while the keyboard opens over it, then goes.
+                    (if (isImeTargetVisible) isImeOpening && delayedOpenKeyboardActionVisible else !isImeVisible) &&
                     !isPhysicalKeyboardConnected &&
                     canShowOpenKeyboardPill &&
                     hasClosedStartupKeyboardAfterLaunch &&
@@ -333,7 +334,6 @@ internal fun SearchScreenContent(
         }
         if (delayedOpenKeyboardActionVisible) return@LaunchedEffect
 
-        hideOpenKeyboardActionInstantly = false
         delayedOpenKeyboardActionVisible = false
         delay(OPEN_KEYBOARD_ACTION_APPEAR_DELAY_MS)
         delayedOpenKeyboardActionVisible = true
@@ -557,12 +557,6 @@ internal fun SearchScreenContent(
                 onClearDetectedShortcut = onClearDetectedShortcut,
                 onSectionSelected = onSectionSelected,
                 onWelcomeAnimationCompleted = onWelcomeAnimationCompleted,
-                onPressWhileKeyboardClosed = {
-                    if (!isImeVisible) {
-                        hideOpenKeyboardActionInstantly = true
-                        delayedOpenKeyboardActionVisible = false
-                    }
-                },
                 focusRequester = searchFocusRequester,
                 forceRestingOutline = showBottomSearchBar,
                 transparentBackground = useInsetEngineStrip,
@@ -616,6 +610,8 @@ internal fun SearchScreenContent(
         )
     }
 
+    val homeWidgetEditGuard = com.tk.quicksearch.widgetsPanel.LocalHomeWidgetEditGuard.current
+    val isHomeWidgetEditing = { homeWidgetEditGuard?.isEditing == true }
     val swipeActions = rememberSearchScreenSwipeActions(
         swipeUpAction = swipeUpAction,
         swipeDownAction = swipeDownAction,
@@ -632,6 +628,7 @@ internal fun SearchScreenContent(
         isImeVisible = isImeVisible,
         searchFocusRequester = searchFocusRequester,
         keyboardController = keyboardController,
+        isGestureBlocked = isHomeWidgetEditing,
     )
     val onLauncherSwipeUp = swipeActions.onLauncherSwipeUp
     val onLauncherSwipeDown = swipeActions.onLauncherSwipeDown
@@ -643,10 +640,12 @@ internal fun SearchScreenContent(
         LocalSearchResultQuery provides state.query.trim(),
         LocalInsetCardBackdrop provides searchBarGeometry.insetCardBackdrop,
         LocalSearchChromeBlurEnabled provides state.searchChromeBlurEnabled,
+        LocalOverlayResultCardColor provides overlayCardColor,
         com.tk.quicksearch.tools.calculator.LocalCalculatorResultQueryHandler provides onQueryChanged,
     ) {
     Column(modifier = contentModifier, verticalArrangement = Arrangement.Top) {
-        if (showSearchField && !showBottomSearchBar) Box(Modifier.fillMaxWidth().then(bottomBarSwipeModifier)) { searchFieldContent() }
+        // Above the results, which extend up behind it and would otherwise take its taps.
+        if (showSearchField && !showBottomSearchBar) Box(Modifier.fillMaxWidth().zIndex(1f).then(bottomBarSwipeModifier)) { searchFieldContent() }
         if (!showSearchField) PinnedGlanceFocusTarget(searchFocusRequester)
 
         if (showSearchField && !showBottomSearchBar && !state.oneHandedMode) {
@@ -716,19 +715,23 @@ internal fun SearchScreenContent(
                 aiSearchState = state.AiSearchState,
                 isOverlayPresentation = isOverlayPresentation,
                 onBottomOneHandedOverscrollUp = {
-                    searchFocusRequester.requestFocus()
-                    keyboardController?.show()
+                    if (!isHomeWidgetEditing()) {
+                        searchFocusRequester.requestFocus()
+                        keyboardController?.show()
+                    }
                 },
                 onLauncherOverscrollUp = onLauncherSwipeUp,
                 onLauncherOverscrollDown = onLauncherSwipeDown,
                 onHomeDoubleTap = {
-                    homeDoubleTapAction.performHomeGesture(
-                        homeDoubleTapCustomActionJson,
-                        homeDoubleTapAliasTarget,
-                        context,
-                        { action, target -> onGestureAliasTarget(action, target) },
-                        onCloseQuickSearch,
-                    )
+                    if (!isHomeWidgetEditing()) {
+                        homeDoubleTapAction.performHomeGesture(
+                            homeDoubleTapCustomActionJson,
+                            homeDoubleTapAliasTarget,
+                            context,
+                            { action, target -> onGestureAliasTarget(action, target) },
+                            onCloseQuickSearch,
+                        )
+                    }
                 },
                 selectedTopMatchIndex = selectedTopMatchIndex,
                 topMatches = topMatchSubmission.topMatches,
@@ -778,12 +781,12 @@ internal fun SearchScreenContent(
             searchFieldContent = searchFieldContent,
             shouldShowOpenKeyboardAction = shouldShowOpenKeyboardAction,
             delayedOpenKeyboardActionVisible = delayedOpenKeyboardActionVisible,
-            hideOpenKeyboardActionInstantly = hideOpenKeyboardActionInstantly,
+            // The opening keyboard has already covered it; collapsing it again would jump.
+            hideOpenKeyboardActionInstantly = isImeTargetVisible,
             openKeyboardText = openKeyboardText,
             onVoiceClick = onVoiceClick,
             onOpenKeyboardActionClicked = {
                 if (delayedOpenKeyboardActionVisible) {
-                    delayedOpenKeyboardActionVisible = false
                     searchFocusRequester.requestFocus()
                     openKeyboardActionScope.launch {
                         withFrameNanos { }

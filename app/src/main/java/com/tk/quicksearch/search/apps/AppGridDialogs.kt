@@ -98,6 +98,9 @@ internal fun AllAppsDrawer(
     AppPickerDrawer(
             title = title,
             onDismiss = onDismiss,
+            // Opening the drawer closes the Home keyboard; following its inset would grow the
+            // sheet and relayout the grid on every frame of that animation.
+            avoidKeyboard = false,
     ) {
         val gridState = rememberLazyGridState()
         var scrollbarDragFraction by remember { mutableStateOf<Float?>(null) }
@@ -105,10 +108,7 @@ internal fun AllAppsDrawer(
             LazyVerticalGrid(
                     state = gridState,
                     columns = GridCells.Fixed(dialogColumns),
-                    modifier =
-                            Modifier
-                                    .fillMaxWidth()
-                                    .padding(end = LazyGridScrollbarTouchWidth),
+                    modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium),
                     verticalArrangement = Arrangement.spacedBy(AllAppsDialogRowSpacing),
             ) {
@@ -187,6 +187,8 @@ internal fun AllAppsDrawer(
             LazyGridVerticalScrollbar(
                     state = gridState,
                     modifier = Modifier.align(Alignment.CenterEnd),
+                    // Sit the thumb in the drawer's end padding, clear of the last column.
+                    thumbEndOutset = DesignTokens.ContentHorizontalPadding - DesignTokens.SpacingSmall,
                     onDragFractionChange = { scrollbarDragFraction = it },
             )
         }
