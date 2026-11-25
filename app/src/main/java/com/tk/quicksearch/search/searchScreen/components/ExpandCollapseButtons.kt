@@ -2,6 +2,7 @@ package com.tk.quicksearch.search.searchScreen.components
 
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.search.searchScreen.shared.SearchResultCardDefaults
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
@@ -28,6 +29,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.searchScreen.frostedCardBackground
@@ -43,6 +45,11 @@ private const val EXPAND_ICON_SIZE = 18
 private val COMPACT_EXPAND_BUTTON_MIN_HEIGHT = 48.dp
 private val EXPAND_SEGMENT_MIN_HEIGHT = 40.dp
 private val COLLAPSE_BUTTON_HEIGHT = 48.dp
+
+// Between the M3 extra-small (32dp) and small (40dp) buttons; the Surface still keeps a 48dp
+// touch target around it.
+private val COMPACT_SECTION_ACTION_PILL_HEIGHT = 36.dp
+private val COMPACT_SECTION_ACTION_ICON_SIZE = 16.dp
 
 /**
  * Divider between a section's last row and its More button. Only flat rows (card layout off) get
@@ -147,25 +154,63 @@ internal fun CollapseButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     showWallpaperBackground: Boolean = false,
+) = SectionActionPill(
+    text = stringResource(R.string.desc_collapse),
+    icon = MaterialSymbols.ExpandLess,
+    onClick = onClick,
+    modifier = modifier,
+    showWallpaperBackground = showWallpaperBackground,
+)
+
+/**
+ * The Collapse button's pill, for other section-level actions that should match it (such as All
+ * Apps): frosted result-tile surface, primary icon and `labelLarge` label, corners that square
+ * while pressed.
+ *
+ * @param compact Uses a 36dp height, a 16dp icon, and tighter padding, for actions that sit under
+ *   dense content (All Apps under the app grid).
+ */
+@Composable
+internal fun SectionActionPill(
+    text: String,
+    icon: ImageVector,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    showWallpaperBackground: Boolean = false,
+    compact: Boolean = false,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val contentColor = MaterialTheme.colorScheme.primary
     val shape = floatingActionShape(interactionSource)
+    val containerColor = SearchResultCardDefaults.containerColor(showWallpaperBackground)
     Surface(
         onClick = onClick,
-        // Frosted like the result cards it floats over, with their lighter frosted scrim.
-        modifier = modifier.height(COLLAPSE_BUTTON_HEIGHT).frostedCardBackground(shape),
+        modifier = modifier.height(if (compact) COMPACT_SECTION_ACTION_PILL_HEIGHT else COLLAPSE_BUTTON_HEIGHT),
         shape = shape,
-        color = SearchResultCardDefaults.containerColor(showWallpaperBackground),
+        color = Color.Transparent,
         contentColor = contentColor,
         interactionSource = interactionSource,
     ) {
-        ExpandCollapseButtonContent(
-            text = stringResource(R.string.desc_collapse),
-            icon = MaterialSymbols.ExpandLess,
-            contentColor = contentColor,
-            modifier = Modifier.padding(start = DesignTokens.SpacingLarge, end = DesignTokens.SpacingXLarge),
-        )
+        // Frosted like the result cards it floats over, with their lighter frosted scrim. Drawn
+        // inside the Surface so it matches the visible pill: on the Surface's own modifier it
+        // would take the 48dp touch-target size and show as a halo around the compact pill.
+        Box(
+            modifier = Modifier.frostedCardBackground(shape).background(containerColor, shape),
+            contentAlignment = Alignment.Center,
+        ) {
+            ExpandCollapseButtonContent(
+                text = text,
+                icon = icon,
+                contentColor = contentColor,
+                iconSize = if (compact) COMPACT_SECTION_ACTION_ICON_SIZE else EXPAND_ICON_SIZE.dp,
+                modifier =
+                    if (compact) {
+                        Modifier.padding(start = DesignTokens.SpacingMedium, end = DesignTokens.SpacingLarge)
+                    } else {
+                        Modifier.padding(start = DesignTokens.SpacingLarge, end = DesignTokens.SpacingXLarge)
+                    },
+            )
+        }
     }
 }
 
@@ -176,6 +221,7 @@ private fun ExpandCollapseButtonContent(
     icon: ImageVector,
     contentColor: Color,
     modifier: Modifier = Modifier,
+    iconSize: Dp = EXPAND_ICON_SIZE.dp,
 ) {
     Row(
         modifier = modifier,
@@ -186,7 +232,7 @@ private fun ExpandCollapseButtonContent(
             imageVector = icon,
             contentDescription = null,
             tint = contentColor,
-            modifier = Modifier.size(EXPAND_ICON_SIZE.dp),
+            modifier = Modifier.size(iconSize),
         )
         Spacer(modifier = Modifier.width(DesignTokens.SpacingSmall))
         Text(
