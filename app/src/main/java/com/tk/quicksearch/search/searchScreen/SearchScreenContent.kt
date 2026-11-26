@@ -445,6 +445,9 @@ internal fun SearchScreenContent(
     // Search engine scroll state for auto-scroll during onboarding
     val searchEngineScrollState = rememberLazyListState()
 
+    // Bottom-anchored Home rides on the keyboard as one block, so slide it on a layer.
+    val slideWithIme = !isOverlayPresentation && showBottomSearchBar && state.oneHandedMode &&
+            state.query.isBlank() && expandedSection == ExpandedSection.NONE && !isSearchHistoryExpanded
     val contentModifier =
             if (isOverlayPresentation) {
                 modifier.fillMaxWidth()
@@ -454,10 +457,6 @@ internal fun SearchScreenContent(
                                 end = DesignTokens.SpacingXLarge,
                         )
             } else {
-                // Bottom-anchored Home rides on the keyboard as one block, so slide it on a layer.
-                val slideWithIme =
-                        showBottomSearchBar && state.oneHandedMode && state.query.isBlank() &&
-                                expandedSection == ExpandedSection.NONE && !isSearchHistoryExpanded
                 modifier.fillMaxSize()
                         .safeDrawingPaddingWithImeSlide(enabled = slideWithIme)
                         .padding(
@@ -612,7 +611,7 @@ internal fun SearchScreenContent(
 
     val homeWidgetEditGuard = com.tk.quicksearch.widgetsPanel.LocalHomeWidgetEditGuard.current
     val isHomeWidgetEditing = { homeWidgetEditGuard?.isEditing == true }
-    val swipeActions = rememberSearchScreenSwipeActions(
+    val (onLauncherSwipeUp, onLauncherSwipeDown, bottomBarSwipeModifier) = rememberSearchScreenSwipeActions(
         swipeUpAction = swipeUpAction,
         swipeDownAction = swipeDownAction,
         swipeUpAliasTarget = swipeUpAliasTarget,
@@ -629,10 +628,8 @@ internal fun SearchScreenContent(
         searchFocusRequester = searchFocusRequester,
         keyboardController = keyboardController,
         isGestureBlocked = isHomeWidgetEditing,
+        hasQuery = state.query.isNotBlank(),
     )
-    val onLauncherSwipeUp = swipeActions.onLauncherSwipeUp
-    val onLauncherSwipeDown = swipeActions.onLauncherSwipeDown
-    val bottomBarSwipeModifier = swipeActions.bottomBarSwipeModifier
 
     CompositionLocalProvider(
         LocalSearchColorTheme provides searchColorTheme,
@@ -723,7 +720,7 @@ internal fun SearchScreenContent(
                 onLauncherOverscrollUp = onLauncherSwipeUp,
                 onLauncherOverscrollDown = onLauncherSwipeDown,
                 onHomeDoubleTap = {
-                    if (!isHomeWidgetEditing()) {
+                    if (!isHomeWidgetEditing() && state.query.isBlank()) {
                         homeDoubleTapAction.performHomeGesture(
                             homeDoubleTapCustomActionJson,
                             homeDoubleTapAliasTarget,
@@ -736,6 +733,7 @@ internal fun SearchScreenContent(
                 selectedTopMatchIndex = selectedTopMatchIndex,
                 topMatches = topMatchSubmission.topMatches,
                 isBottomChromeAnimating = searchBarGeometry.isInsetEngineStripAnimating,
+                isImeSliding = slideWithIme,
         )
         }
 

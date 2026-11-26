@@ -1,6 +1,8 @@
 package com.tk.quicksearch.search.searchScreen.searchScreenLayout
 
 import com.tk.quicksearch.search.searchScreen.rememberImeSettledHeight
+import com.tk.quicksearch.search.searchScreen.rememberImeTargetVisible
+import com.tk.quicksearch.search.searchScreen.extendAboveImeSlide
 import com.tk.quicksearch.search.searchScreen.SearchTopMatchesState
 import com.tk.quicksearch.search.searchScreen.LocalInsetCardBackdrop
 import com.tk.quicksearch.search.searchScreen.contentBottomInset
@@ -149,6 +151,8 @@ internal fun SearchContentArea(
     topMatches: SearchTopMatchesState,
     /** True while the bottom chrome animates its height; card heights hold until it settles. */
     isBottomChromeAnimating: () -> Boolean = { false },
+    /** True when the screen slides with the keyboard on a layer (see safeDrawingPaddingWithImeSlide). */
+    isImeSliding: Boolean = false,
 ) {
     val currentOnHomeDoubleTap by rememberUpdatedState(onHomeDoubleTap)
     val useOneHandedMode =
@@ -177,11 +181,15 @@ internal fun SearchContentArea(
     val isImeVisible by remember(imeInsets, imeDensity) {
         derivedStateOf { imeInsets.getBottom(imeDensity) > 0 }
     }
+    // Swap back as soon as the keyboard starts closing, mirroring how opening swaps on its first
+    // frame; waiting for the inset to reach zero left the grid alone on screen before Home faded in.
+    val isImeTargetVisible by rememberImeTargetVisible()
     // With Open Keyboard off, focusing the bar means the user is about to type: clear Home
     // and wait for the query instead of showing suggestions behind the keyboard.
     val hideHomeWhileAwaitingQuery =
         !state.openKeyboardOnLaunch &&
             isImeVisible &&
+            isImeTargetVisible &&
             !hasQuery &&
             !hideOtherResults &&
             renderingState.expandedSection == ExpandedSection.NONE &&
@@ -230,7 +238,9 @@ internal fun SearchContentArea(
     val overlayCardColor = overlayThemeTints.cardColor
     val overlayDividerTint = overlayThemeTints.dividerTint
     val overlayActionTint = overlayThemeTints.actionTint
-    val keyboardGesturesEnabled = scrollState.maxValue == 0
+    // Derived: the scroll range changes on every frame of the keyboard slide; only its sign matters here.
+    val hasScrollRange by remember(scrollState) { derivedStateOf { scrollState.maxValue > 0 } }
+    val keyboardGesturesEnabled = !hasScrollRange
     val launcherOverscrollUpEnabled =
         keyboardGesturesEnabled &&
             hasQuery.not() &&
@@ -385,7 +395,7 @@ internal fun SearchContentArea(
                 }
 
             val needsEdgeFade =
-                !shouldHideScrollView && scrollState.maxValue > 0
+                !shouldHideScrollView && hasScrollRange
             val edgeFadeModifier =
                 if (needsEdgeFade) {
                     Modifier
@@ -480,6 +490,7 @@ internal fun SearchContentArea(
                 Column(
                     modifier =
                         Modifier
+                            .extendAboveImeSlide(isImeSliding)
                             .edgeBleed(edgeBleed).fillMaxWidth()
                             .then(heightModifier)
                             .clip(LocalInsetCardBackdrop.current.resultsClipShape(TopRoundedShape, edgeBleed))
@@ -553,22 +564,18 @@ internal fun SearchContentArea(
                             modifier = Modifier.fillMaxWidth(),
                             contentAlignment = if (alignResultsToBottom) Alignment.BottomCenter else Alignment.TopCenter,
                         ) {
-                        androidx.compose.animation.AnimatedVisibility(
-                            visible = hideHomeWhileAwaitingQuery && shouldShowAwaitingQueryRecentApps(appsParams),
-                            enter = fadeIn(tween(AppMotion.DurationShort)),
-                            exit = fadeOut(tween(AppMotion.DurationExit)),
-                        ) {
-                            AwaitingQueryRecentApps(appsParams = appsParams)
+                        // Composed ahead of the keyboard: building the grid on its first frame dropped frames.
+                        if (!state.openKeyboardOnLaunch && !hasQuery && shouldShowAwaitingQueryRecentApps(appsParams)) {
+                            AwaitingSwapSlot(visible = hideHomeWhileAwaitingQuery, enterOffset = DesignTokens.SpacingLarge) {
+                                AwaitingQueryRecentApps(appsParams = appsParams)
+                            }
                         }
-                        androidx.compose.animation.AnimatedVisibility(
+                        // Home stays composed while hidden, so the keyboard closing doesn't rebuild it either.
+                        // A query snaps it in, as the recents grid leaves with the first character.
+                        AwaitingSwapSlot(
                             visible = !hideHomeWhileAwaitingQuery,
-                            enter = fadeIn(tween(AppMotion.DurationShort)),
-                            exit =
-                                if (homeHideFromQueryClear) {
-                                    ExitTransition.None
-                                } else {
-                                    fadeOut(tween(AppMotion.DurationExit))
-                                },
+                            enterOffset = -DesignTokens.SpacingLarge,
+                            snap = homeHideFromQueryClear || hasQuery,
                         ) {
                         key(state.backgroundSource, state.showWallpaperBackground) {
                             ContentLayout(
