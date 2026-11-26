@@ -56,6 +56,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -102,9 +103,12 @@ internal val WidgetEditRingWidth = 2.dp
 internal val WidgetEditBadgeScrimHeight = DesignTokens.MinTouchTarget + DesignTokens.SpacingSmall
 internal val WidgetEditBorderWidth = 1.dp
 
-// How far edit badges and resize handles can extend past a widget's top edge: the badge's 9dp
-// corner offset, the edit lift scale on a tall widget, and the badge shadow. The edge-fade layer
-// clips to the viewport, so anything past this is cut off.
+// How far edit badges and resize handles can extend past a widget's top or bottom edge: the
+// badge's 9dp corner offset, the edit lift scale on a tall widget, and the badge shadow. The
+// edge-fade layer clips to the viewport, so anything past this is cut off. The bottom overhang
+// must stay within the screen's bottom padding (SpacingLarge). Content is padded back only at the
+// top, so the bottom extension is spare room rather than extra scroll (which would turn on the
+// bottom edge fade over a panel that fits).
 private val WidgetEditOverhang = 16.dp
 
 // How far the edit scale, side resize handles, and corner badges can extend past a widget's
@@ -155,6 +159,7 @@ internal fun WidgetsPanelScreen(
     uiState: SearchUiState,
     appWidgetHost: WidgetPanelHost,
     modifier: Modifier = Modifier,
+    folderActions: WidgetPanelFolderActions? = null,
 ) {
     val context = LocalContext.current
     val activity = remember(context) { context.findActivity() }
@@ -204,6 +209,7 @@ internal fun WidgetsPanelScreen(
     // being dragged near the top/bottom edge.
     var scrollViewportTopPx by remember { mutableFloatStateOf(0f) }
     var scrollViewportHeightPx by remember { mutableIntStateOf(0) }
+    var panelGridHeightPx by remember { mutableIntStateOf(0) }
 
     fun persistWidgets(next: List<PanelWidgetInfo>) {
         if (next == widgets) return
@@ -215,7 +221,7 @@ internal fun WidgetsPanelScreen(
     // Moves the widget (or stack) out of the panel onto Home; the panel and Home never share one.
     fun moveWidgetToHome(widget: PanelWidgetInfo) {
         // Home has no Quick Note.
-        if (widget.pageIds.any(::isQuickNotePage)) return
+        if (widget.pageIds.any(::isBuiltInPanelPage)) return
         persistWidgets(
             widgets.map { item ->
                 if (item.isOwner(widget.appWidgetId, onHome = false)) {
@@ -243,7 +249,7 @@ internal fun WidgetsPanelScreen(
         val next = preferences.removeStackPage(widget.appWidgetId, pageId)
         // Home widgets saved before the panel and Home kept separate instances can still share
         // an id with a panel widget; that id stays bound while Home shows it.
-        if (!isQuickNotePage(pageId) && !next.referencesWidgetId(pageId)) appWidgetHost.deleteAppWidgetId(pageId)
+        if (!isBuiltInPanelPage(pageId) && !next.referencesWidgetId(pageId)) appWidgetHost.deleteAppWidgetId(pageId)
         persistWidgets(next)
     }
 
@@ -303,13 +309,28 @@ internal fun WidgetsPanelScreen(
         // A restored ActivityResult can add a widget while this snapshot is loading.
         if (widgets.isEmpty()) widgets = storedWidgets
         // The Quick Note is not a hosted widget, so it has no provider to validate.
-        val storedIds = storedWidgets.flatMapTo(HashSet()) { it.pageIds }.filterNotTo(HashSet(), ::isQuickNotePage)
+        val storedIds = storedWidgets.flatMapTo(HashSet()) { it.pageIds }.filterNotTo(HashSet(), ::isBuiltInPanelPage)
         val invalidIds = storedIds - appWidgetHost.preloadProviderInfo(storedIds)
         if (invalidIds.isNotEmpty()) {
             invalidIds.forEach(appWidgetHost::removeSnapshot)
             persistWidgets(widgets.dropUnboundPages(invalidIds))
         }
         restoredWidgetIdsValidated = true
+    }
+
+    // The Search page, which hosts the swipe action picker, is disposed while the panel is shown.
+    if (folderActions != null && pageSettled) {
+        com.tk.quicksearch.search.apps.swipeGestures.AppSwipeGesturePickerHost(
+            searchState = uiState,
+            onQueryChange = folderActions.onQueryChange,
+        )
+    }
+
+    // Folders moved to the panel get a tile; folders moved Home or deleted lose theirs.
+    val panelFolders = rememberPanelFolders(uiState)
+    val panelFolderIds = remember(uiState.appFolders) { uiState.appFolders.filter { it.inWidgetsPanel }.map { it.id } }
+    LaunchedEffect(restoredWidgetIdsValidated, panelFolderIds) {
+        if (restoredWidgetIdsValidated) persistWidgets(widgets.withPanelFolders(panelFolderIds))
     }
 
     LaunchedEffect(appWidgetHost, panelScrollState) {
@@ -490,7 +511,7 @@ internal fun WidgetsPanelScreen(
                         modifier =
                             Modifier
                                 .weight(1f)
-                                // Grow the scroll viewport upward and sideways (and pad its content
+                                // Grow the scroll viewport vertically and sideways (and pad its content
                                 // back) so edit badges, handles, and the edit scale that overhang
                                 // the grid aren't clipped by the scroll container or the edge-fade
                                 // layer, without moving the layout.
@@ -507,10 +528,10 @@ internal fun WidgetsPanelScreen(
                                                     } else {
                                                         constraints.maxWidth
                                                     },
-                                                minHeight = constraints.minHeight + overhangPx,
+                                                minHeight = constraints.minHeight + overhangPx * 2,
                                                 maxHeight =
                                                     if (constraints.hasBoundedHeight) {
-                                                        constraints.maxHeight + overhangPx
+                                                        constraints.maxHeight + overhangPx * 2
                                                     } else {
                                                         constraints.maxHeight
                                                     },
@@ -518,7 +539,7 @@ internal fun WidgetsPanelScreen(
                                         )
                                     layout(
                                         placeable.width - sideOverhangPx * 2,
-                                        placeable.height - overhangPx,
+                                        placeable.height - overhangPx * 2,
                                     ) {
                                         placeable.place(-sideOverhangPx, -overhangPx)
                                     }
@@ -589,14 +610,29 @@ internal fun WidgetsPanelScreen(
                                     editingWidgetId = null
                                 },
                                 onPinWidgetToHome = ::moveWidgetToHome,
-                                modifier = Modifier.fillMaxWidth(),
+                                folderTiles =
+                                    folderActions?.let {
+                                        PanelFolderTiles(panelFolders, uiState.panelFolderAppearance(), it)
+                                    },
+                                modifier =
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .onSizeChanged { panelGridHeightPx = it.height },
                                 stackIndicatorRevealKey = stackIndicatorRevealKey,
                             )
                         } else {
                             Spacer(modifier = Modifier.height(DesignTokens.SpacingSmall))
                         }
 
-                        Spacer(modifier = Modifier.height(WidgetPanelBottomScrollSpace))
+                        // Extra room to scroll the last row clear of the bottom fade, only when
+                        // the grid already overflows; otherwise a panel that fits wouldn't scroll.
+                        val panelOverflows =
+                            panelItems.isNotEmpty() &&
+                                panelGridHeightPx + with(density) { WidgetEditOverhang.roundToPx() } >
+                                scrollViewportHeightPx
+                        if (panelOverflows) {
+                            Spacer(modifier = Modifier.height(WidgetPanelBottomScrollSpace))
+                        }
                     }
                 }
             }
