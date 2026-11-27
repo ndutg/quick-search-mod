@@ -233,6 +233,7 @@
     <string name="dialog_done">Selesai</string>
     <string name="dialog_edit_alias_error_prefix">Alias ini sudah digunakan.</string>
     <string name="dialog_edit_alias_error_trigger_conflict">Alias ini sama dengan pemicu yang sudah ada.</string>
+    <string name="dialog_alias_multiple_hint">Pisahkan beberapa alias dengan koma</string>
     <string name="dialog_edit_alias_for_search_type_title">Edit Alias untuk "%1$s"</string>
     <string name="dialog_edit_alias_title">Edit alias</string>
     <string name="dialog_edit_amazon_domain_error">Domain tidak valid</string>
@@ -251,7 +252,7 @@
     <string name="dialog_trigger_error_alias_conflict">Pemicu ini sama dengan alias yang sudah ada.</string>
     <string name="dialog_trigger_error_taken">Pemicu ini sudah digunakan.</string>
     <string name="dialog_trigger_hint">Kata pemicu</string>
-    <string name="dialog_trigger_message">Masukkan satu kata pemicu untuk "%1$s".</string>
+    <string name="dialog_trigger_message">Masukkan satu kata pemicu untuk \"%1$s\". Pisahkan beberapa pemicu dengan koma.</string>
     <string name="exclude_marker"> disembunyikan dari </string>
     <string name="permission_action_manage_android">Kelola di pengaturan Android</string>
     <string name="permission_settings_dialog_message">Tindakan ini memerlukan izin %1$s. Anda akan diarahkan ke pengaturan sistem untuk memberikannya.</string>
@@ -404,6 +405,7 @@
     <string name="error_shortcut_creation_failed">Gagal membuat pintasan</string>
     <string name="error_shortcut_disabled">Pintasan dinonaktifkan.</string>
     <string name="error_shortcut_launch_failed">Gagal membuka pintasan: %1$s.</string>
+    <string name="error_shortcut_unavailable">Quick Search tidak dapat mengakses pintasan</string>
     <string name="error_shortcut_no_activity_resolves">Tidak ada aktivitas yang dapat menangani intent.</string>
     <string name="error_shortcut_requires_permission">Pintasan memerlukan izin: %1$s.</string>
     <string name="error_shortcuts_not_supported">Menambahkan pintasan ke layar utama tidak didukung di perangkat ini</string>
@@ -1233,6 +1235,9 @@
     <string name="widget_decrease_height">Kurangi tinggi</string>
     <string name="widgets_panel_lock_layout">Kunci tata letak</string>
     <string name="widgets_panel_unlock_layout">Buka kunci tata letak</string>
+    <string name="widgets_panel_page_zone_previous">Halaman sebelumnya</string>
+    <string name="widgets_panel_page_zone_next">Halaman berikutnya</string>
+    <string name="widgets_panel_page_zone_new">Halaman baru</string>
     <string name="widgets_picker_empty">Widget tidak ditemukan.</string>
     <string name="widgets_picker_preview_unavailable">Pratinjau tidak tersedia</string>
     <string name="widgets_picker_title">Tambah Widget</string>

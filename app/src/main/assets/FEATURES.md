@@ -78,6 +78,7 @@ Type an alias before your query to tell Quick Search what you want to do.
 
 - **Search Section Aliases** - Search only one section, such as apps, app shortcuts, contacts, files, or device settings. For contacts and files, this also runs a deeper search.
 - **Search Engine Aliases** - Search a specific engine by typing its alias (e.g. `ggl` for Google). Aliases also work at the end of a query; press space to trigger them.
+- **Multiple Aliases** - Give the same section, search engine, or tool more than one alias.
 - **Tool Aliases** - Set aliases to switch the search bar into a tool's mode, such as calculator, date & time calculator, currency converter, dictionary, or weather (`wtr` by default).
 - **Empty Alias** - Type just an alias to see items from that section without a query: recently opened items, your files, contacts, and settings (upcoming events for calendar).
 
@@ -101,7 +102,7 @@ Type an alias before your query to tell Quick Search what you want to do.
 
 Long-press on most results to open a context menu with quick actions.
 
-- **Triggers** - Add a trigger phrase to a result. Type the trigger and press space to open that result instantly.
+- **Triggers** - Add one or more trigger phrases to a result. Type a trigger and press space to open that result instantly.
 - **Pin / Unpin** - Pin apps, app shortcuts, contacts, files, and device settings to Home. Drag pinned items to reorder them, or long-press and tap **Move Up** / **Move Down**. Tap a pinned section header to expand or collapse it.
 - **Pin to Notification Panel** - Pin a result to the notification panel, either grouped with other items or in its own notification.
 - **Nicknames** - Give apps, app shortcuts, contacts, files, and device settings one or more custom names to search by.
@@ -134,6 +135,7 @@ Available when Quick Search is set as your launcher.
 ### Widgets
 
 - **Widgets Panel** - A side panel inside Quick Search for your home-screen widgets and Quick Note. You don't need to set Quick Search as your launcher; open it with a swipe gesture. Use the lock button to lock the layout so widgets can't be moved or resized by accident.
+- **Widgets Panel Pages** - Spread your widgets across multiple pages and swipe up or down to move between them. Drag a widget to the top or bottom edge to move it to the previous or next page, or drop it on **New Page** at the bottom of the last page to start a new one.
 - **Add Widgets to Home** - Long-press a widget in the Widgets Panel to pin it to Home, or long-press an empty area on Home and choose **Widgets** from the popup menu. Long-press a widget on Home to move it above or below other Home items, resize it, or remove it.
 - **Move Folders Between Home and the Widgets Panel** - Long-press a pinned folder on Home and select **Move to Widget Panel**. To move it back, long-press the folder in the Widgets Panel and select **Move to Home Screen**.
 - **Search Widget** - Tap to open Quick Search. Supports a mic button and up to 2 custom buttons.

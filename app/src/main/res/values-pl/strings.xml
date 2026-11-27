@@ -233,6 +233,7 @@
     <string name="dialog_done">Gotowe</string>
     <string name="dialog_edit_alias_error_prefix">Ten alias jest już zajęty.</string>
     <string name="dialog_edit_alias_error_trigger_conflict">Ten alias pokrywa się z istniejącym wyzwalaczem.</string>
+    <string name="dialog_alias_multiple_hint">Oddziel kilka aliasów przecinkami</string>
     <string name="dialog_edit_alias_for_search_type_title">Edytuj alias dla "%1$s"</string>
     <string name="dialog_edit_alias_title">Edytuj alias</string>
     <string name="dialog_edit_amazon_domain_error">Nieprawidłowa domena</string>
@@ -251,7 +252,7 @@
     <string name="dialog_trigger_error_alias_conflict">Ten wyzwalacz pokrywa się z istniejącym aliasem.</string>
     <string name="dialog_trigger_error_taken">Ten wyzwalacz jest już zajęty.</string>
     <string name="dialog_trigger_hint">Słowo wyzwalające</string>
-    <string name="dialog_trigger_message">Wpisz jednowyrazowy wyzwalacz dla "%1$s".</string>
+    <string name="dialog_trigger_message">Wpisz jednowyrazowy wyzwalacz dla \"%1$s\". Oddziel kilka wyzwalaczy przecinkami.</string>
     <string name="exclude_marker"> ukryto w </string>
     <string name="permission_action_manage_android">Zarządzaj w ustawieniach Androida</string>
     <string name="permission_settings_dialog_message">To działanie wymaga uprawnienia %1$s. Nastąpi przekierowanie do ustawień systemowych, aby je przyznać.</string>
@@ -407,6 +408,7 @@
     <string name="error_shortcut_creation_failed">Nie udało się utworzyć skrótu</string>
     <string name="error_shortcut_disabled">Skrót jest wyłączony.</string>
     <string name="error_shortcut_launch_failed">Nie udało się uruchomić skrótu: %1$s.</string>
+    <string name="error_shortcut_unavailable">Quick Search nie może uzyskać dostępu do skrótu</string>
     <string name="error_shortcut_no_activity_resolves">Żadna aktywność nie obsługuje intencji.</string>
     <string name="error_shortcut_requires_permission">Skrót wymaga uprawnienia: %1$s.</string>
     <string name="error_shortcuts_not_supported">Dodawanie skrótów do ekranu głównego nie jest obsługiwane na tym urządzeniu</string>
@@ -1274,6 +1276,9 @@ www.google.com/search?q={{query}}</string>
     <string name="widget_decrease_height">Zmniejsz wysokość</string>
     <string name="widgets_panel_lock_layout">Zablokuj układ</string>
     <string name="widgets_panel_unlock_layout">Odblokuj układ</string>
+    <string name="widgets_panel_page_zone_previous">Poprzednia strona</string>
+    <string name="widgets_panel_page_zone_next">Następna strona</string>
+    <string name="widgets_panel_page_zone_new">Nowa strona</string>
     <string name="widgets_picker_empty">Nie znaleziono widżetów.</string>
     <string name="widgets_picker_preview_unavailable">Podgląd niedostępny</string>
     <string name="widgets_picker_title">Dodaj widżet</string>
