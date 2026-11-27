@@ -1,5 +1,6 @@
 package com.tk.quicksearch.search.searchScreen
 
+import com.tk.quicksearch.searchEngines.AliasValidator.splitAliasCodes
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.unit.Dp
@@ -178,10 +179,7 @@ internal fun detectSuffixSearchTargetAlias(
         val targetId = target.getId()
         if (shortcutEnabled[targetId] != true) return@forEach
 
-        val aliasCode = shortcutCodes[targetId].orEmpty().trim()
-        if (aliasCode.isEmpty()) return@forEach
-
-        aliases[aliasCode.lowercase(Locale.getDefault())] = target
+        splitAliasCodes(shortcutCodes[targetId].orEmpty()).forEach { aliases[it] = target }
     }
     if (aliases.isEmpty()) return null
 
@@ -279,6 +277,8 @@ data class AppShortcutsSectionParams(
     val onEditShortcutIcon: (StaticShortcut) -> Unit,
     val getShortcutNickname: (String) -> String?,
     val getShortcutTrigger: (String) -> com.tk.quicksearch.search.data.preferences.ResultTrigger?,
+    /** Called with a trigger matcher when no loaded item matched; true when it handled the query. */
+    val onUnavailableShortcutTrigger: ((com.tk.quicksearch.search.data.preferences.ResultTrigger) -> Boolean) -> Boolean = { false },
     val showAllResults: Boolean,
     val showExpandControls: Boolean,
     val onExpandClick: () -> Unit,

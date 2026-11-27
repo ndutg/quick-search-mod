@@ -231,6 +231,7 @@
 <string name="dialog_done">Bitti</string>
 <string name="dialog_edit_alias_error_prefix">Bu kısaltma zaten kullanımda.</string>
 <string name="dialog_edit_alias_error_trigger_conflict">Bu kısaltma mevcut bir tetikleyici ile çakışıyor.</string>
+<string name="dialog_alias_multiple_hint">Birden fazla kısaltmayı virgülle ayırın</string>
 <string name="dialog_edit_alias_for_search_type_title">"%1$s" için kısaltmayı düzenle</string>
 <string name="dialog_edit_alias_title">Kısaltmayı düzenle</string>
 <string name="dialog_edit_amazon_domain_error">Geçersiz alan adı</string>
@@ -249,7 +250,7 @@
 <string name="dialog_trigger_error_alias_conflict">Bu tetikleyici mevcut bir kısaltma ile çakışıyor.</string>
 <string name="dialog_trigger_error_taken">Bu tetikleyici zaten kullanımda.</string>
 <string name="dialog_trigger_hint">Tetikleyici kelime</string>
-<string name="dialog_trigger_message">"%1$s" için tek kelimelik bir tetikleyici girin.</string>
+<string name="dialog_trigger_message">\"%1$s\" için tek kelimelik bir tetikleyici girin. Birden fazla tetikleyiciyi virgülle ayırın.</string>
 <string name="exclude_marker"> - </string>
 <string name="permission_action_manage_android">Android ayarlarından yönet</string>
 <string name="permission_settings_dialog_message">Bu işlem %1$s izni gerektiriyor. İzin vermek için sistem ayarlarına yönlendirileceksiniz.</string>
@@ -403,6 +404,7 @@
 <string name="error_shortcut_creation_failed">Kısayol oluşturulamadı</string>
 <string name="error_shortcut_disabled">Kısayol devre dışı.</string>
 <string name="error_shortcut_launch_failed">Kısayol başlatılamadı: %1$s.</string>
+<string name="error_shortcut_unavailable">Quick Search kısayola erişemiyor</string>
 <string name="error_shortcut_no_activity_resolves">İstemi (intent) karşılayan hiçbir aktivite bulunamadı.</string>
 <string name="error_shortcut_requires_permission">Kısayol şu izni gerektiriyor: %1$s.</string>
 <string name="error_shortcuts_not_supported">Ana ekrana kısayol ekleme bu cihazda desteklenmiyor</string>
@@ -1230,6 +1232,9 @@
 <string name="widget_decrease_height">Yüksekliği azalt</string>
 <string name="widgets_panel_lock_layout">Düzeni kilitle</string>
 <string name="widgets_panel_unlock_layout">Düzenin kilidini aç</string>
+<string name="widgets_panel_page_zone_previous">Önceki sayfa</string>
+<string name="widgets_panel_page_zone_next">Sonraki sayfa</string>
+<string name="widgets_panel_page_zone_new">Yeni sayfa</string>
 <string name="widgets_picker_empty">Widget bulunamadı.</string>
 <string name="widgets_picker_preview_unavailable">Önizleme mevcut değil</string>
 <string name="widgets_picker_title">Widget ekle</string>

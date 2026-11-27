@@ -232,6 +232,7 @@
 <string name="dialog_done">Terminé</string>
 <string name="dialog_edit_alias_error_prefix">Cet alias est déjà utilisé.</string>
 <string name="dialog_edit_alias_error_trigger_conflict">Cet alias correspond à un déclencheur existant.</string>
+<string name="dialog_alias_multiple_hint">Séparez plusieurs alias par des virgules</string>
 <string name="dialog_edit_alias_for_search_type_title">Modifier l\'alias pour « %1$s »</string>
 <string name="dialog_edit_alias_title">Modifier l\'alias</string>
 <string name="dialog_edit_amazon_domain_error">Domaine non valide</string>
@@ -250,7 +251,7 @@
 <string name="dialog_trigger_error_alias_conflict">Ce déclencheur correspond à un alias existant.</string>
 <string name="dialog_trigger_error_taken">Ce déclencheur est déjà utilisé.</string>
 <string name="dialog_trigger_hint">Mot déclencheur</string>
-<string name="dialog_trigger_message">Saisissez un déclencheur en un seul mot pour « %1$s ».</string>
+<string name="dialog_trigger_message">Saisissez un déclencheur en un seul mot pour « %1$s ». Séparez plusieurs déclencheurs par des virgules.</string>
 <string name="exclude_marker"> masqué des </string>
 <string name="permission_action_manage_android">Gérer dans les paramètres Android</string>
 <string name="permission_settings_dialog_message">Cette action nécessite l\'autorisation %1$s. Vous allez être redirigé vers les paramètres système pour l\'accorder.</string>
@@ -404,6 +405,7 @@
 <string name="error_shortcut_creation_failed">Échec de la création du raccourci</string>
 <string name="error_shortcut_disabled">Le raccourci est désactivé.</string>
 <string name="error_shortcut_launch_failed">Impossible de lancer le raccourci : %1$s.</string>
+<string name="error_shortcut_unavailable">Quick Search ne peut pas accéder au raccourci</string>
 <string name="error_shortcut_no_activity_resolves">Aucune activité ne résout l\'intent.</string>
 <string name="error_shortcut_requires_permission">Le raccourci nécessite l\'autorisation : %1$s.</string>
 <string name="error_shortcuts_not_supported">L\'ajout de raccourcis sur l\'écran d\'accueil n\'est pas pris en charge sur cet appareil</string>
@@ -1231,6 +1233,9 @@
 <string name="widget_decrease_height">Réduire la hauteur</string>
 <string name="widgets_panel_lock_layout">Verrouiller la disposition</string>
 <string name="widgets_panel_unlock_layout">Déverrouiller la disposition</string>
+<string name="widgets_panel_page_zone_previous">Page précédente</string>
+<string name="widgets_panel_page_zone_next">Page suivante</string>
+<string name="widgets_panel_page_zone_new">Nouvelle page</string>
 <string name="widgets_picker_empty">Aucun widget trouvé.</string>
 <string name="widgets_picker_preview_unavailable">Aperçu indisponible</string>
 <string name="widgets_picker_title">Ajouter un widget</string>

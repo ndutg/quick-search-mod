@@ -232,6 +232,7 @@
     <string name="dialog_done">Listo</string>
     <string name="dialog_edit_alias_error_prefix">Este alias ya está en uso.</string>
     <string name="dialog_edit_alias_error_trigger_conflict">Este alias coincide con un activador existente.</string>
+    <string name="dialog_alias_multiple_hint">Separa varios alias con comas</string>
     <string name="dialog_edit_alias_for_search_type_title">Editar alias para "%1$s"</string>
     <string name="dialog_edit_alias_title">Editar alias</string>
     <string name="dialog_edit_amazon_domain_error">Dominio no válido</string>
@@ -250,7 +251,7 @@
     <string name="dialog_trigger_error_alias_conflict">Este activador coincide con un alias existente.</string>
     <string name="dialog_trigger_error_taken">Este activador ya está en uso.</string>
     <string name="dialog_trigger_hint">Palabra de activación</string>
-    <string name="dialog_trigger_message">Introduce una sola palabra como activador para "%1$s".</string>
+    <string name="dialog_trigger_message">Introduce una sola palabra como activador para \"%1$s\". Separa varios activadores con comas.</string>
     <string name="exclude_marker"> ocultado de </string>
     <string name="permission_action_manage_android">Gestionar en los ajustes de Android</string>
     <string name="permission_settings_dialog_message">Esta acción requiere el permiso de %1$s. Se te redirigirá a los ajustes del sistema para concederlo.</string>
@@ -404,6 +405,7 @@
     <string name="error_shortcut_creation_failed">Error al crear el acceso directo</string>
     <string name="error_shortcut_disabled">El acceso directo está desactivado.</string>
     <string name="error_shortcut_launch_failed">Error al abrir el acceso directo: %1$s.</string>
+    <string name="error_shortcut_unavailable">Quick Search no puede acceder al acceso directo</string>
     <string name="error_shortcut_no_activity_resolves">Ninguna actividad resuelve el intent.</string>
     <string name="error_shortcut_requires_permission">El acceso directo requiere el permiso: %1$s.</string>
     <string name="error_shortcuts_not_supported">Añadir accesos directos a la pantalla de inicio no es compatible con este dispositivo</string>
@@ -1231,6 +1233,9 @@
     <string name="widget_decrease_height">Reducir la altura</string>
     <string name="widgets_panel_lock_layout">Bloquear diseño</string>
     <string name="widgets_panel_unlock_layout">Desbloquear diseño</string>
+    <string name="widgets_panel_page_zone_previous">Página anterior</string>
+    <string name="widgets_panel_page_zone_next">Página siguiente</string>
+    <string name="widgets_panel_page_zone_new">Página nueva</string>
     <string name="widgets_picker_empty">No se encontraron widgets.</string>
     <string name="widgets_picker_preview_unavailable">Vista previa no disponible</string>
     <string name="widgets_picker_title">Añadir widget</string>

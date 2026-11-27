@@ -232,6 +232,7 @@
     <string name="dialog_done">Τέλος</string>
     <string name="dialog_edit_alias_error_prefix">Αυτή η συντομογραφία χρησιμοποιείται ήδη.</string>
     <string name="dialog_edit_alias_error_trigger_conflict">Αυτή η συντομογραφία συμπίπτει με μια υπάρχουσα ενεργοποίηση.</string>
+    <string name="dialog_alias_multiple_hint">Διαχωρίστε πολλές συντομογραφίες με κόμματα</string>
     <string name="dialog_edit_alias_for_search_type_title">Επεξεργασία συντομογραφίας για "%1$s"</string>
     <string name="dialog_edit_alias_title">Επεξεργασία συντομογραφίας</string>
     <string name="dialog_edit_amazon_domain_error">Μη έγκυρο domain</string>
@@ -250,7 +251,7 @@
     <string name="dialog_trigger_error_alias_conflict">Αυτή η ενεργοποίηση συμπίπτει με μια υπάρχουσα συντομογραφία.</string>
     <string name="dialog_trigger_error_taken">Αυτή η ενεργοποίηση χρησιμοποιείται ήδη.</string>
     <string name="dialog_trigger_hint">Λέξη ενεργοποίησης</string>
-    <string name="dialog_trigger_message">Εισαγάγετε μια μονολεκτική λέξη ενεργοποίησης για το "%1$s".</string>
+    <string name="dialog_trigger_message">Εισαγάγετε μια μονολεκτική λέξη ενεργοποίησης για το \"%1$s\". Διαχωρίστε πολλές λέξεις ενεργοποίησης με κόμματα.</string>
     <string name="exclude_marker"> αποκρύφτηκε από </string>
     <string name="permission_action_manage_android">Διαχείριση στις ρυθμίσεις Android</string>
     <string name="permission_settings_dialog_message">Αυτή η ενέργεια απαιτεί την άδεια %1$s. Θα μεταφερθείτε στις ρυθμίσεις συστήματος για να τη χορηγήσετε.</string>
@@ -404,6 +405,7 @@
     <string name="error_shortcut_creation_failed">Αποτυχία δημιουργίας συντόμευσης</string>
     <string name="error_shortcut_disabled">Η συντόμευση είναι απενεργοποιημένη.</string>
     <string name="error_shortcut_launch_failed">Αποτυχία εκκίνησης συντόμευσης: %1$s.</string>
+    <string name="error_shortcut_unavailable">Το Quick Search δεν μπορεί να αποκτήσει πρόσβαση στη συντόμευση</string>
     <string name="error_shortcut_no_activity_resolves">Καμία δραστηριότητα δεν επιλύει το intent.</string>
     <string name="error_shortcut_requires_permission">Η συντόμευση απαιτεί άδεια: %1$s.</string>
     <string name="error_shortcuts_not_supported">Η προσθήκη συντομεύσεων στην αρχική οθόνη δεν υποστηρίζεται σε αυτή τη συσκευή</string>
@@ -1231,6 +1233,9 @@
     <string name="widget_decrease_height">Μείωση ύψους</string>
     <string name="widgets_panel_lock_layout">Κλείδωμα διάταξης</string>
     <string name="widgets_panel_unlock_layout">Ξεκλείδωμα διάταξης</string>
+    <string name="widgets_panel_page_zone_previous">Προηγούμενη σελίδα</string>
+    <string name="widgets_panel_page_zone_next">Επόμενη σελίδα</string>
+    <string name="widgets_panel_page_zone_new">Νέα σελίδα</string>
     <string name="widgets_picker_empty">Δεν βρέθηκαν widgets.</string>
     <string name="widgets_picker_preview_unavailable">Η προεπισκόπηση δεν είναι διαθέσιμη</string>
     <string name="widgets_picker_title">Προσθήκη widget</string>

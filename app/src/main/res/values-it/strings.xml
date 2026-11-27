@@ -231,6 +231,7 @@
     <string name="dialog_done">Fine</string>
     <string name="dialog_edit_alias_error_prefix">Questo alias è già in uso.</string>
     <string name="dialog_edit_alias_error_trigger_conflict">Questo alias coincide con un trigger esistente.</string>
+    <string name="dialog_alias_multiple_hint">Separa più alias con delle virgole</string>
     <string name="dialog_edit_alias_for_search_type_title">Modifica alias per "%1$s"</string>
     <string name="dialog_edit_alias_title">Modifica alias</string>
     <string name="dialog_edit_amazon_domain_error">Dominio non valido</string>
@@ -249,7 +250,7 @@
     <string name="dialog_trigger_error_alias_conflict">Questo trigger coincide con un alias esistente.</string>
     <string name="dialog_trigger_error_taken">Questo trigger è già in uso.</string>
     <string name="dialog_trigger_hint">Parola chiave trigger</string>
-    <string name="dialog_trigger_message">Inserisci una sola parola come trigger per "%1$s".</string>
+    <string name="dialog_trigger_message">Inserisci una sola parola come trigger per \"%1$s\". Separa più trigger con delle virgole.</string>
     <string name="exclude_marker"> nascosto dai </string>
     <string name="permission_action_manage_android">Gestisci nelle impostazioni Android</string>
     <string name="permission_settings_dialog_message">Questa azione richiede l\u2019autorizzazione %1$s. Verrai reindirizzato alle impostazioni di sistema per concederla.</string>
@@ -403,6 +404,7 @@
     <string name="error_shortcut_creation_failed">Impossibile creare la scorciatoia</string>
     <string name="error_shortcut_disabled">La scorciatoia è disattivata.</string>
     <string name="error_shortcut_launch_failed">Impossibile avviare la scorciatoia: %1$s.</string>
+    <string name="error_shortcut_unavailable">Quick Search non riesce ad accedere alla scorciatoia</string>
     <string name="error_shortcut_no_activity_resolves">Nessuna activity risolve l\u2019intent.</string>
     <string name="error_shortcut_requires_permission">La scorciatoia richiede l\u2019autorizzazione: %1$s.</string>
     <string name="error_shortcuts_not_supported">L\u2019aggiunta di scorciatoie alla schermata iniziale non è supportata su questo dispositivo</string>
@@ -1230,6 +1232,9 @@
     <string name="widget_decrease_height">Riduci l’altezza</string>
     <string name="widgets_panel_lock_layout">Blocca layout</string>
     <string name="widgets_panel_unlock_layout">Sblocca layout</string>
+    <string name="widgets_panel_page_zone_previous">Pagina precedente</string>
+    <string name="widgets_panel_page_zone_next">Pagina successiva</string>
+    <string name="widgets_panel_page_zone_new">Nuova pagina</string>
     <string name="widgets_picker_empty">Nessun widget trovato.</string>
     <string name="widgets_picker_preview_unavailable">Anteprima non disponibile</string>
     <string name="widgets_picker_title">Aggiungi widget</string>
