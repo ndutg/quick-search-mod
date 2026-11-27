@@ -286,6 +286,8 @@
     <string name="app_suggestions_toggle_desc">హోమ్ స్క్రీన్‌పై సూచించిన యాప్‌లను చూపించు లేదా దాచు</string>
     <string name="app_suggestions_toggle_title">యాప్ సూచనలు</string>
     <string name="show_all_apps_button_toggle_desc">యాప్ సూచనల క్రింద \"అన్ని యాప్‌లు\" బటన్‌ను చూపించు</string>
+    <string name="full_app_names_toggle_title">యాప్ పూర్తి పేర్లను చూపించు</string>
+    <string name="full_app_names_toggle_desc">యాప్ ఫలితాల్లో పొడవైన యాప్ పేర్లను కత్తిరించకుండా తదుపరి పంక్తికి చూపించు</string>
     <string name="app_suggestions_usage_access_link">వినియోగ ప్రాప్యత అనుమతి</string>
     <string name="app_suggestions_usage_access_tip">మరింత తగిన సూచనలను చూడటానికి వినియోగ ప్రాప్యత అనుమతిని మంజూరు చేయండి</string>
     <string name="clear_query_toggle_desc">యాప్ ప్రారంభమైనప్పుడు మునుపటి శోధనను స్వయంచాలకంగా క్లియర్ చేయి</string>
@@ -390,6 +392,7 @@
     <string name="settings_app_sort_least_used">అత్యంత తక్కువగా ఉపయోగించినవి</string>
     <string name="settings_app_sort_name">పేరు</string>
     <string name="settings_app_uninstall_selected_format">అన్‌ఇన్‌స్టాల్ చేయి (%1$d)</string>
+    <string name="all_apps_select_to_uninstall">అన్‌ఇన్‌స్టాల్ చేయడానికి యాప్‌లను ఎంచుకోండి</string>
     <string name="settings_apps_empty">యాప్‌లు ఏవీ కనుగొనబడలేదు.</string>
     <string name="settings_manage_apps_desc">మీ యాప్‌లను నిర్వహించండి</string>
     <string name="settings_manage_apps_title">యాప్‌లను నిర్వహించండి</string>
@@ -808,6 +811,8 @@
     <string name="settings_launcher_icon_reset_default">డిఫాల్ట్‌కి రీసెట్ చేయి</string>
     <string name="settings_launcher_icon_title">యాప్ ఐకాన్ మార్చు</string>
     <string name="settings_search_bar_style_title">సెర్చ్ బార్</string>
+    <string name="settings_result_card_style_title">హోమ్ మరియు ఫలితాల కార్డ్‌లు</string>
+    <string name="settings_result_card_blur_desc">కార్డ్‌ల వెనుక వాల్‌పేపర్‌ను బ్లర్ చేయండి.</string>
     <string name="settings_search_bar_background_color_label">నేపథ్య రంగు</string>
     <string name="settings_search_bar_color_accent">యాక్సెంట్</string>
     <string name="settings_layout_option_bottom_desc">సులభంగా యాక్సెస్ చేయడానికి అత్యంత సంబంధిత అంశాలు దిగువన కనిపిస్తాయి</string>
@@ -1033,6 +1038,17 @@
     <string name="settings_backup_export_option_pinned_items_title">పిన్ చేసిన అంశాలు</string>
     <string name="settings_backup_export_option_api_keys">API కీలు</string>
     <string name="settings_backup_export_selection_title">డేటాను ఎగుమతి చేయి</string>
+    <string name="auto_backup_schedule_title">ఆటో-బ్యాకప్ షెడ్యూల్ చేయండి</string>
+    <string name="auto_backup_configured_title">ఆటో-బ్యాకప్ సెట్ చేయబడింది</string>
+    <string name="auto_backup_schedule_desc">డేటాను ఎగుమతి చేయి‌లో ఎంచుకున్న అంశాలను మీరు ఎంచుకున్న ఫోల్డర్‌కు బ్యాకప్ చేస్తుంది.</string>
+    <string name="auto_backup_frequency_every_3_days">ప్రతి 3 రోజులకు</string>
+    <string name="auto_backup_choose_folder">ఫోల్డర్ ఎంచుకోండి</string>
+    <string name="auto_backup_folder_title">బ్యాకప్ ఫోల్డర్</string>
+    <string name="auto_backup_kept_backups_title">ఉంచాల్సిన బ్యాకప్‌లు</string>
+    <string name="auto_backup_status_last_backup">చివరి బ్యాకప్ %1$s</string>
+    <string name="auto_backup_status_pending">మొదటి బ్యాకప్ పెండింగ్‌లో ఉంది</string>
+    <string name="auto_backup_status_failed">చివరి బ్యాకప్ విఫలమైంది</string>
+    <string name="auto_backup_folder_failed">ఆ ఫోల్డర్‌ను ఉపయోగించలేకపోయాము. వేరొకటి ఎంచుకోండి.</string>
     <string name="settings_backup_import_button">దిగుమతి చేయి</string>
     <string name="settings_backup_import_failed">సెట్టింగ్‌లను దిగుమతి చేయడం సాధ్యపడలేదు.</string>
     <string name="settings_backup_import_success">సెట్టింగ్‌లు విజయవంతంగా దిగుమతి చేయబడ్డాయి.</string>

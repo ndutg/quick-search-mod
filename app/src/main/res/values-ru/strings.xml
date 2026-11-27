@@ -286,6 +286,8 @@
 <string name="app_suggestions_toggle_desc">Показывать или скрывать рекомендуемые приложения на главном экране</string>
 <string name="app_suggestions_toggle_title">Подсказки приложений</string>
 <string name="show_all_apps_button_toggle_desc">Показывать кнопку \"Все приложения\" под подсказками приложений</string>
+<string name="full_app_names_toggle_title">Показывать полные названия приложений</string>
+<string name="full_app_names_toggle_desc">Переносить длинные названия приложений в результатах вместо обрезки</string>
 <string name="app_suggestions_usage_access_link">доступ к истории использования</string>
 <string name="app_suggestions_usage_access_tip">Предоставьте доступ к истории использования, чтобы видеть более точные рекомендации</string>
     <string name="clear_query_toggle_desc">Автоматически очищать старый запрос при запуске приложения</string>
@@ -392,6 +394,7 @@
 <string name="settings_app_sort_least_used">Редко используемые</string>
     <string name="settings_app_sort_name">Название</string>
 <string name="settings_app_uninstall_selected_format">Удалить (%1$d)</string>
+<string name="all_apps_select_to_uninstall">Выберите приложения для удаления</string>
 <string name="settings_apps_empty">Приложения не найдены.</string>
 <string name="settings_manage_apps_desc">Управление вашими приложениями</string>
 <string name="settings_manage_apps_title">Управление приложениями</string>
@@ -832,6 +835,8 @@
 <string name="settings_launcher_icon_reset_default">Сбросить по умолчанию</string>
 <string name="settings_launcher_icon_title">Изменить значок приложения</string>
 <string name="settings_search_bar_style_title">Строка поиска</string>
+<string name="settings_result_card_style_title">Карточки главного экрана и результатов</string>
+<string name="settings_result_card_blur_desc">Размывать обои за карточками.</string>
 <string name="settings_search_bar_background_color_label">Цвет фона</string>
 <string name="settings_search_bar_color_accent">Акцент</string>
 <string name="settings_layout_option_bottom_desc">Наиболее важные элементы отображаются внизу для удобного доступа</string>
@@ -1061,6 +1066,17 @@
 <string name="settings_backup_export_option_pinned_items_title">Закрепленные элементы</string>
 <string name="settings_backup_export_option_api_keys">API-ключи</string>
 <string name="settings_backup_export_selection_title">Экспорт данных</string>
+<string name="auto_backup_schedule_title">Расписание автобэкапа</string>
+<string name="auto_backup_configured_title">Автоматическое резервное копирование настроено</string>
+<string name="auto_backup_schedule_desc">Сохраняет отмеченные в «Экспорт данных» элементы в выбранную папку.</string>
+<string name="auto_backup_frequency_every_3_days">Каждые 3 дня</string>
+<string name="auto_backup_choose_folder">Выбрать папку</string>
+<string name="auto_backup_folder_title">Папка для резервных копий</string>
+<string name="auto_backup_kept_backups_title">Хранить резервных копий</string>
+<string name="auto_backup_status_last_backup">Последний бэкап %1$s</string>
+<string name="auto_backup_status_pending">Первый бэкап ожидается</string>
+<string name="auto_backup_status_failed">Последний бэкап не удался</string>
+<string name="auto_backup_folder_failed">Не удалось использовать эту папку. Выберите другую.</string>
 <string name="settings_backup_import_button">Импорт</string>
 <string name="settings_backup_import_failed">Не удалось импортировать настройки.</string>
 <string name="settings_backup_import_success">Настройки успешно импортированы.</string>
