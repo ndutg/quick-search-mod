@@ -285,6 +285,8 @@
 <string name="app_suggestions_toggle_desc">Ana ekranda önerilen uygulamaları göster veya gizle</string>
 <string name="app_suggestions_toggle_title">Uygulama önerileri</string>
 <string name="show_all_apps_button_toggle_desc">Uygulama önerilerinin altında \"Tüm uygulamalar\" düğmesini göster</string>
+<string name="full_app_names_toggle_title">Tam uygulama adlarını göster</string>
+<string name="full_app_names_toggle_desc">Uygulama sonuçlarındaki uzun uygulama adlarını kesmek yerine alt satıra kaydır</string>
 <string name="app_suggestions_usage_access_link">kullanım erişimi izni</string>
 <string name="app_suggestions_usage_access_tip">Daha uygun öneriler görmek için kullanım erişimi izni verin</string>
 <string name="clear_query_toggle_desc">Uygulama başlatıldığında eski sorguyu otomatik olarak temizle</string>
@@ -389,6 +391,7 @@
 <string name="settings_app_sort_least_used">En az kullanılan</string>
 <string name="settings_app_sort_name">Ad</string>
 <string name="settings_app_uninstall_selected_format">Kaldır (%1$d)</string>
+<string name="all_apps_select_to_uninstall">Kaldırılacak uygulamaları seçin</string>
 <string name="settings_apps_empty">Uygulama bulunamadı.</string>
 <string name="settings_manage_apps_desc">Uygulamalarını yönet</string>
 <string name="settings_manage_apps_title">Uygulamaları yönet</string>
@@ -807,6 +810,8 @@
 <string name="settings_launcher_icon_reset_default">Varsayılana sıfırla</string>
 <string name="settings_launcher_icon_title">Uygulama simgesini değiştir</string>
 <string name="settings_search_bar_style_title">Arama çubuğu</string>
+<string name="settings_result_card_style_title">Ana ekran ve sonuç kartları</string>
+<string name="settings_result_card_blur_desc">Kartların arkasındaki duvar kağıdını bulanıklaştır.</string>
 <string name="settings_search_bar_background_color_label">Arka plan rengi</string>
 <string name="settings_search_bar_color_accent">Vurgu</string>
 <string name="settings_layout_option_bottom_desc">Kolay erişim için en ilgili öğeler altta görünür</string>
@@ -1032,6 +1037,17 @@
 <string name="settings_backup_export_option_pinned_items_title">Sabitlenen öğeler</string>
 <string name="settings_backup_export_option_api_keys">API anahtarları</string>
 <string name="settings_backup_export_selection_title">Verileri dışa aktar</string>
+<string name="auto_backup_schedule_title">Otomatik yedeklemeyi planla</string>
+<string name="auto_backup_configured_title">Otomatik Yedekleme Yapılandırıldı</string>
+<string name="auto_backup_schedule_desc">Verileri dışa aktar bölümünde işaretli öğeleri seçtiğiniz bir klasöre yedekler.</string>
+<string name="auto_backup_frequency_every_3_days">3 günde bir</string>
+<string name="auto_backup_choose_folder">Klasör seç</string>
+<string name="auto_backup_folder_title">Yedekleme klasörü</string>
+<string name="auto_backup_kept_backups_title">Saklanacak yedek sayısı</string>
+<string name="auto_backup_status_last_backup">Son yedekleme %1$s</string>
+<string name="auto_backup_status_pending">İlk yedekleme bekleniyor</string>
+<string name="auto_backup_status_failed">Son yedekleme başarısız</string>
+<string name="auto_backup_folder_failed">Bu klasör kullanılamadı. Başka bir klasör seçin.</string>
 <string name="settings_backup_import_button">İçe aktar</string>
 <string name="settings_backup_import_failed">Ayarlar içe aktarılamadı.</string>
 <string name="settings_backup_import_success">Ayarlar başarıyla içe aktarıldı.</string>

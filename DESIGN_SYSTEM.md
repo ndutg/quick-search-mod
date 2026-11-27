@@ -138,7 +138,7 @@ Main `AppColors` groups:
   (folder tile scrim over an image background), `FolderTileBorder`.
 - **Indicators and trust:** `indicatorBase(lightFill)` (the neutral that grid indicators blend
   the primary color into), `TrustAccent` (open-source and permission reassurance green, tuned per
-  surface luminance).
+  surface luminance; also the success check on the auto-backup status line).
 - **Settings and dialogs:** `getSettingsCardContainerColor()`, `SettingsDivider`,
   `getDialogContainerColor()`, `DialogBackground`, `DialogText`, `Overlay*`.
 - **Drawers and sheets:** `DrawerTileBackground` (`AccentTintSubtle`) fills tiles and fields on a
@@ -269,6 +269,13 @@ Appearance (`LocalSearchChromeBlurEnabled`) restores frosted chrome. Result card
 - **Roles:** `card`, `resultCard`, `widgetPanelCard`, `segmentGroup`, `iconTile`, `iconFrame`,
   `favicon`, `faviconScaled` (corner is 20% of the icon, for favicons drawn at several sizes),
   `engineHighlight`, `inlineInput`, `field`. Use `full` rather than `CircleShape`.
+- **User card style:** Appearance → Home and Result Cards sets the outer corner radius, background
+  transparency and wallpaper blur of result and home cards (`ResultCardStyle`, provided as `LocalResultCardStyle`).
+  `SearchResultCardDefaults.shape`, `SearchResultCardDefaults.containerColor`, and `ResultSegment`
+  apply it; read those (or `resultCardOuterCorner()`) instead of `resultCard` or
+  `SegmentedListOuterCorner` for anything drawn as a result card.
+  `frostedCardBackground` skips the blur when it is off; search chrome passes
+  `followCardBlurSetting = false` because its own Blurred Background setting controls it.
 - **Builders:** `corners(...)`, `segment(...)`, `connected(...)`, `stacked(...)`.
 - **Press morphs:** buttons and icon buttons use Material's own morph (`ButtonDefaults.shapes`,
   `IconButtonDefaults.shapes`) inside their wrappers. Surfaces Material doesn't cover use
@@ -344,10 +351,11 @@ settings and add a property in sorted order.
 | `AppDialogSurface` | Dialog (custom content) | Custom centered content (File Preview, Pinned Notification Items). The feature owns sizing and actions |
 | `AppBottomSheet` | Modal bottom sheet | Bottom sheets with 28dp top corners. `scrimColor = Color.Transparent` keeps the screen behind undimmed for live previews |
 | `AppPickerDrawer`, `AppPickerDrawerRow`, `AppPickerDrawerSearch` | Bottom sheet with list | Pick one item from a list, with an optional search field, header, and footer. Prefer it over a dialog with a radio list. The search bar section picker uses it with a scrollable grid |
-| `AppDrawerHeader` | Sheet header | `titleLarge` drawer header with optional leading content and a 48dp close button |
+| `AppDrawerHeader` | Sheet header | `titleLarge` drawer header with optional leading content, optional trailing icon-button actions (`AppPickerDrawer`'s `titleActions`, such as the All Apps sort toggle), and a 48dp close button |
 | `AppBottomPopup` | Bottom sheet (floating) | Bottom-anchored floating popup with the drawer header, 28dp corners, and a 640dp max width. `animateSizeChanges` animates height changes with the bottom anchored |
 | `ItemMenuPopup` | Menu (expressive) | Long-press action menus: tonal quick-action tiles, segmented option rows, and pill buttons on `surfaceContainerHighest`. Contact action popups reuse its tiles. Reflow options so gaps fall only at the end of the last row |
-| `AppDropdownMenu`, `AppDropdownMenuItem`, `AppSelectableDropdownMenuItem`, `AppDropdownMenuDivider`, `AppOverflowMenu` | Menu | Every three-dot and long-press dropdown: Material's expressive `DropdownMenuPopup` with one `DropdownMenuGroup`, 28dp corners on `surfaceContainer`; long menus scroll inside the group. `destructive = true` items must still confirm with `AppAlertDialog`. `AppDropdownMenuItem` takes an `icon: ImageVector` or a `leadingIcon` slot for custom leading content. A single choice inside a menu (sort order) uses `AppSelectableDropdownMenuItem` (Material `SelectableDropdownMenuItem`: check, accent tint, radio semantics); don't use raw `DropdownMenuItem` |
+| `AppDropdownMenu`, `AppDropdownMenuItem`, `AppSelectableDropdownMenuItem`, `AppDropdownMenuDivider`, `AppOverflowMenu` | Expressive vertical menu | All anchored menus use Material 3’s `DropdownMenuPopup` and `DropdownMenuGroup` with rounded surfaces and scrollable, inset rows. Deviation: the surface is `surfaceContainerHighest` with a level-3 shadow (`AppDropdownMenuDefaults.containerColor`), not Material's `surfaceContainerLow`, which blends into the drawers and sheets menus open over. Single-choice rows (sort) are transparent until selected, then a `secondaryContainer` pill (matching the tonal sort button) with a trailing check. Destructive actions use the error role and retain their confirmation flow. |
+| `AppSortControls` (`AppSortControls.kt`) | Tonal button + menu | Full-width row: the "Sort by" button stretches across the free space and its menu matches its width, followed by a 48dp tonal direction toggle and optional `trailingActions` sized with `SortRowIconButtonSize` (All Apps adds the uninstall-selection toggle). Used by Manage Apps and the All Apps drawer. |
 | `AppUndoSnackbarHost`, `AppUndoSnackbarPopup`, `rememberUndoSnackbarController()` | Snackbar | Undo after a removal. Put the host in a screen's root overlay; settings pages without one use the popup. It lifts above `Modifier.undoSnackbarAvoidArea()` so it never covers the bottom search bar. `showMessage` shows a message with no action |
 | `AppMessages`, `AppMessageSnackbarHost` (`AppMessages.kt`) | Snackbar | Brief feedback in place of a `Toast`. `AppMessages.show(context, text or @StringRes, long)` works from any thread and goes to the highest-priority host registered by a resumed screen, falling back to a `Toast` when none is. The search route and overlay register their undo snackbar with `AppMessages.HostEffect(controller, ScreenHostPriority)`; navigation's root and `WidgetConfigScaffold` (with `inScaffold = true`) hold an `AppMessageSnackbarHost` at fallback priority |
 | `AppDatePickerDialog` | Date picker dialog | Picking a date. Wraps Material's `DatePickerDialog` and `DatePicker` with `AppTextButton` confirm and cancel actions |

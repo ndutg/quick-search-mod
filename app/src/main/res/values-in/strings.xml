@@ -287,6 +287,8 @@
     <string name="app_suggestions_toggle_desc">Tampilkan atau sembunyikan aplikasi yang disarankan di layar utama</string>
     <string name="app_suggestions_toggle_title">Saran Aplikasi</string>
     <string name="show_all_apps_button_toggle_desc">Tampilkan tombol Semua Aplikasi di bawah saran aplikasi</string>
+    <string name="full_app_names_toggle_title">Tampilkan nama aplikasi lengkap</string>
+    <string name="full_app_names_toggle_desc">Tampilkan nama aplikasi panjang dalam beberapa baris di hasil aplikasi alih-alih memotongnya</string>
     <string name="app_suggestions_usage_access_link">izin akses penggunaan</string>
     <string name="app_suggestions_usage_access_tip">Berikan izin akses penggunaan untuk melihat saran yang lebih sesuai</string>
     <string name="clear_query_toggle_desc">Hapus kueri lama secara otomatis saat aplikasi dibuka</string>
@@ -390,6 +392,7 @@
     <string name="settings_app_sort_least_used">Paling Jarang Digunakan</string>
     <string name="settings_app_sort_name">Nama</string>
     <string name="settings_app_uninstall_selected_format">Copot pemasangan (%1$d)</string>
+    <string name="all_apps_select_to_uninstall">Pilih aplikasi yang akan di-uninstal</string>
     <string name="settings_apps_empty">Aplikasi tidak ditemukan.</string>
     <string name="settings_manage_apps_desc">Kelola aplikasi Anda</string>
     <string name="settings_manage_apps_title">Kelola Aplikasi</string>
@@ -811,6 +814,8 @@
     <string name="settings_launcher_icon_reset_default">Reset ke default</string>
     <string name="settings_launcher_icon_title">Ubah Ikon Aplikasi</string>
     <string name="settings_search_bar_style_title">Bilah Pencarian</string>
+    <string name="settings_result_card_style_title">Kartu Beranda dan Hasil</string>
+    <string name="settings_result_card_blur_desc">Buramkan wallpaper di belakang kartu.</string>
     <string name="settings_search_bar_background_color_label">Warna latar belakang</string>
     <string name="settings_search_bar_color_accent">Aksen</string>
     <string name="settings_layout_option_bottom_desc">Item paling relevan muncul di bagian bawah agar mudah dijangkau</string>
@@ -1034,6 +1039,17 @@
     <string name="settings_backup_export_option_pinned_items_title">Item yang disematkan</string>
     <string name="settings_backup_export_option_api_keys">Kunci API</string>
     <string name="settings_backup_export_selection_title">Ekspor Data</string>
+    <string name="auto_backup_schedule_title">Jadwalkan Pencadangan Otomatis</string>
+    <string name="auto_backup_configured_title">Pencadangan Otomatis Dikonfigurasi</string>
+    <string name="auto_backup_schedule_desc">Mencadangkan item yang dicentang di Ekspor Data ke folder pilihan Anda.</string>
+    <string name="auto_backup_frequency_every_3_days">Setiap 3 hari</string>
+    <string name="auto_backup_choose_folder">Pilih folder</string>
+    <string name="auto_backup_folder_title">Folder cadangan</string>
+    <string name="auto_backup_kept_backups_title">Cadangan yang disimpan</string>
+    <string name="auto_backup_status_last_backup">Cadangan terakhir %1$s</string>
+    <string name="auto_backup_status_pending">Cadangan pertama tertunda</string>
+    <string name="auto_backup_status_failed">Cadangan terakhir gagal</string>
+    <string name="auto_backup_folder_failed">Tidak dapat menggunakan folder itu. Pilih folder lain.</string>
     <string name="settings_backup_import_button">Impor</string>
     <string name="settings_backup_import_failed">Tidak dapat mengimpor pengaturan.</string>
     <string name="settings_backup_import_success">Pengaturan berhasil diimpor.</string>

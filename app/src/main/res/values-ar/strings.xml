@@ -287,6 +287,8 @@
     <string name="app_suggestions_toggle_desc">إظهار أو إخفاء التطبيقات المقترحة على الشاشة الرئيسية</string>
     <string name="app_suggestions_toggle_title">اقتراحات التطبيقات</string>
     <string name="show_all_apps_button_toggle_desc">إظهار زر \"جميع التطبيقات\" أسفل اقتراحات التطبيقات</string>
+    <string name="full_app_names_toggle_title">عرض أسماء التطبيقات كاملة</string>
+    <string name="full_app_names_toggle_desc">التفاف أسماء التطبيقات الطويلة في نتائج التطبيقات بدلاً من قصّها</string>
     <string name="app_suggestions_usage_access_link">إذن الوصول إلى بيانات الاستخدام</string>
     <string name="app_suggestions_usage_access_tip">امنح إذن الوصول إلى بيانات الاستخدام للحصول على اقتراحات أكثر ملاءمة</string>
     <string name="clear_query_toggle_desc">مسح عبارة البحث السابقة تلقائياً عند تشغيل التطبيق</string>
@@ -395,6 +397,7 @@
     <string name="settings_app_sort_least_used">الأقل استخداماً</string>
     <string name="settings_app_sort_name">الاسم</string>
     <string name="settings_app_uninstall_selected_format">إلغاء التثبيت (%1$d)</string>
+    <string name="all_apps_select_to_uninstall">اختر التطبيقات لإلغاء تثبيتها</string>
     <string name="settings_apps_empty">لم يتم العثور على أي تطبيقات.</string>
     <string name="settings_manage_apps_desc">إدارة تطبيقاتك</string>
     <string name="settings_manage_apps_title">إدارة التطبيقات</string>
@@ -857,6 +860,8 @@
     <string name="settings_launcher_icon_reset_default">إعادة تعيين للأيقونة الافتراضية</string>
     <string name="settings_launcher_icon_title">تغيير أيقونة التطبيق</string>
     <string name="settings_search_bar_style_title">شريط البحث</string>
+    <string name="settings_result_card_style_title">بطاقات الشاشة الرئيسية والنتائج</string>
+    <string name="settings_result_card_blur_desc">تمويه الخلفية خلف البطاقات.</string>
     <string name="settings_search_bar_background_color_label">لون الخلفية</string>
     <string name="settings_search_bar_color_accent">لون السمة</string>
     <string name="settings_layout_option_bottom_desc">عرض العناصر الهامة بالأسفل لسهولة الوصول إليها</string>
@@ -1090,6 +1095,17 @@
     <string name="settings_backup_export_option_pinned_items_title">العناصر المثبتة</string>
     <string name="settings_backup_export_option_api_keys">مفاتيح API</string>
     <string name="settings_backup_export_selection_title">تصدير البيانات</string>
+    <string name="auto_backup_schedule_title">جدولة النسخ الاحتياطي التلقائي</string>
+    <string name="auto_backup_configured_title">تم إعداد النسخ الاحتياطي التلقائي</string>
+    <string name="auto_backup_schedule_desc">ينسخ العناصر المحددة في تصدير البيانات احتياطيًا إلى مجلد تختاره.</string>
+    <string name="auto_backup_frequency_every_3_days">كل 3 أيام</string>
+    <string name="auto_backup_choose_folder">اختيار مجلد</string>
+    <string name="auto_backup_folder_title">مجلد النسخ الاحتياطي</string>
+    <string name="auto_backup_kept_backups_title">عدد النسخ الاحتياطية المحفوظة</string>
+    <string name="auto_backup_status_last_backup">آخر نسخة احتياطية %1$s</string>
+    <string name="auto_backup_status_pending">النسخة الاحتياطية الأولى قيد الانتظار</string>
+    <string name="auto_backup_status_failed">فشلت آخر نسخة احتياطية</string>
+    <string name="auto_backup_folder_failed">تعذّر استخدام هذا المجلد. اختر مجلدًا آخر.</string>
     <string name="settings_backup_import_button">استيراد</string>
     <string name="settings_backup_import_failed">تعذر استيراد الإعدادات.</string>
     <string name="settings_backup_import_success">تم استيراد الإعدادات بنجاح.</string>

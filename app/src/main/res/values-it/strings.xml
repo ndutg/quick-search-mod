@@ -285,6 +285,8 @@
     <string name="app_suggestions_toggle_desc">Mostra o nascondi le app consigliate nella schermata iniziale</string>
     <string name="app_suggestions_toggle_title">Suggerimenti app</string>
     <string name="show_all_apps_button_toggle_desc">Mostra il pulsante \"Tutte le app\" sotto i suggerimenti di app</string>
+    <string name="full_app_names_toggle_title">Mostra nomi completi delle app</string>
+    <string name="full_app_names_toggle_desc">Manda a capo i nomi lunghi delle app nei risultati invece di troncarli</string>
     <string name="app_suggestions_usage_access_link">autorizzazione di accesso ai dati di utilizzo</string>
     <string name="app_suggestions_usage_access_tip">Concedi l\u2019autorizzazione di accesso ai dati di utilizzo per vedere suggerimenti più pertinenti</string>
     <string name="clear_query_toggle_desc">Cancella automaticamente la query precedente all\u2019avvio dell\u2019app</string>
@@ -389,6 +391,7 @@
     <string name="settings_app_sort_least_used">Meno usate</string>
     <string name="settings_app_sort_name">Nome</string>
     <string name="settings_app_uninstall_selected_format">Disinstalla (%1$d)</string>
+    <string name="all_apps_select_to_uninstall">Seleziona le app da disinstallare</string>
     <string name="settings_apps_empty">Nessuna app trovata.</string>
     <string name="settings_manage_apps_desc">Gestisci le tue app</string>
     <string name="settings_manage_apps_title">Gestisci app</string>
@@ -807,6 +810,8 @@
     <string name="settings_launcher_icon_reset_default">Ripristina predefinita</string>
     <string name="settings_launcher_icon_title">Cambia icona dell’app</string>
     <string name="settings_search_bar_style_title">Barra di ricerca</string>
+    <string name="settings_result_card_style_title">Schede Home e risultati</string>
+    <string name="settings_result_card_blur_desc">Sfoca lo sfondo dietro le schede.</string>
     <string name="settings_search_bar_background_color_label">Colore di sfondo</string>
     <string name="settings_search_bar_color_accent">Accento</string>
     <string name="settings_layout_option_bottom_desc">Gli elementi più rilevanti appaiono in basso per un facile accesso</string>
@@ -1032,6 +1037,17 @@
     <string name="settings_backup_export_option_pinned_items_title">Elementi fissati</string>
     <string name="settings_backup_export_option_api_keys">Chiavi API</string>
     <string name="settings_backup_export_selection_title">Esporta dati</string>
+    <string name="auto_backup_schedule_title">Pianifica backup automatico</string>
+    <string name="auto_backup_configured_title">Backup automatico configurato</string>
+    <string name="auto_backup_schedule_desc">Esegue il backup degli elementi selezionati in Esporta dati in una cartella a tua scelta.</string>
+    <string name="auto_backup_frequency_every_3_days">Ogni 3 giorni</string>
+    <string name="auto_backup_choose_folder">Scegli cartella</string>
+    <string name="auto_backup_folder_title">Cartella di backup</string>
+    <string name="auto_backup_kept_backups_title">Backup da conservare</string>
+    <string name="auto_backup_status_last_backup">Ultimo backup %1$s</string>
+    <string name="auto_backup_status_pending">Primo backup in attesa</string>
+    <string name="auto_backup_status_failed">Ultimo backup non riuscito</string>
+    <string name="auto_backup_folder_failed">Impossibile usare quella cartella. Scegline un\'altra.</string>
     <string name="settings_backup_import_button">Importa</string>
     <string name="settings_backup_import_failed">Impossibile importare le impostazioni.</string>
     <string name="settings_backup_import_success">Impostazioni importate con successo.</string>

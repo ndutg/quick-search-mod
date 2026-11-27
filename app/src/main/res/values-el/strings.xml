@@ -286,6 +286,8 @@
     <string name="app_suggestions_toggle_desc">Εμφάνιση ή απόκρυψη προτεινόμενων εφαρμογών στην αρχική οθόνη</string>
     <string name="app_suggestions_toggle_title">Προτάσεις εφαρμογών</string>
     <string name="show_all_apps_button_toggle_desc">Εμφάνιση του κουμπιού \"Όλες οι εφαρμογές\" κάτω από τις προτάσεις εφαρμογών</string>
+    <string name="full_app_names_toggle_title">Εμφάνιση πλήρων ονομάτων εφαρμογών</string>
+    <string name="full_app_names_toggle_desc">Αναδίπλωση μεγάλων ονομάτων εφαρμογών στα αποτελέσματα αντί για περικοπή</string>
     <string name="app_suggestions_usage_access_link">άδεια πρόσβασης στη χρήση</string>
     <string name="app_suggestions_usage_access_tip">Χορηγήστε την άδεια πρόσβασης στη χρήση για να βλέπετε πιο κατάλληλες προτάσεις</string>
     <string name="clear_query_toggle_desc">Αυτόματος καθαρισμός του παλιού ερωτήματος κατά την εκκίνηση της εφαρμογής</string>
@@ -390,6 +392,7 @@
     <string name="settings_app_sort_least_used">Λιγότερο χρησιμοποιούμενα</string>
     <string name="settings_app_sort_name">Όνομα</string>
     <string name="settings_app_uninstall_selected_format">Απεγκατάσταση (%1$d)</string>
+    <string name="all_apps_select_to_uninstall">Επιλέξτε εφαρμογές για απεγκατάσταση</string>
     <string name="settings_apps_empty">Δεν βρέθηκαν εφαρμογές.</string>
     <string name="settings_manage_apps_desc">Διαχειριστείτε τις εφαρμογές σας</string>
     <string name="settings_manage_apps_title">Διαχείριση εφαρμογών</string>
@@ -808,6 +811,8 @@
     <string name="settings_launcher_icon_reset_default">Επαναφορά στο προεπιλεγμένο</string>
     <string name="settings_launcher_icon_title">Αλλαγή εικονιδίου εφαρμογής</string>
     <string name="settings_search_bar_style_title">Γραμμή αναζήτησης</string>
+    <string name="settings_result_card_style_title">Κάρτες αρχικής και αποτελεσμάτων</string>
+    <string name="settings_result_card_blur_desc">Θόλωμα της ταπετσαρίας πίσω από τις κάρτες.</string>
     <string name="settings_search_bar_background_color_label">Χρώμα φόντου</string>
     <string name="settings_search_bar_color_accent">Έμφαση</string>
     <string name="settings_layout_option_bottom_desc">Τα πιο σχετικά στοιχεία εμφανίζονται στο κάτω μέρος για εύκολη πρόσβαση</string>
@@ -1033,6 +1038,17 @@
     <string name="settings_backup_export_option_pinned_items_title">Καρφιτσωμένα στοιχεία</string>
     <string name="settings_backup_export_option_api_keys">Κλειδιά API</string>
     <string name="settings_backup_export_selection_title">Εξαγωγή δεδομένων</string>
+    <string name="auto_backup_schedule_title">Προγραμματισμός αυτόματου αντιγράφου ασφαλείας</string>
+    <string name="auto_backup_configured_title">Η αυτόματη δημιουργία αντιγράφων ασφαλείας ρυθμίστηκε</string>
+    <string name="auto_backup_schedule_desc">Δημιουργεί αντίγραφο ασφαλείας των στοιχείων που έχουν επιλεγεί στην Εξαγωγή δεδομένων σε φάκελο της επιλογής σας.</string>
+    <string name="auto_backup_frequency_every_3_days">Κάθε 3 ημέρες</string>
+    <string name="auto_backup_choose_folder">Επιλογή φακέλου</string>
+    <string name="auto_backup_folder_title">Φάκελος αντιγράφων ασφαλείας</string>
+    <string name="auto_backup_kept_backups_title">Αντίγραφα ασφαλείας προς διατήρηση</string>
+    <string name="auto_backup_status_last_backup">Τελευταίο αντίγραφο %1$s</string>
+    <string name="auto_backup_status_pending">Εκκρεμεί το πρώτο αντίγραφο</string>
+    <string name="auto_backup_status_failed">Το τελευταίο αντίγραφο απέτυχε</string>
+    <string name="auto_backup_folder_failed">Δεν ήταν δυνατή η χρήση αυτού του φακέλου. Επιλέξτε άλλον.</string>
     <string name="settings_backup_import_button">Εισαγωγή</string>
     <string name="settings_backup_import_failed">Αδυναμία εισαγωγής ρυθμίσεων.</string>
     <string name="settings_backup_import_success">Οι ρυθμίσεις εισήχθησαν επιτυχώς.</string>
